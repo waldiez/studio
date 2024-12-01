@@ -19,7 +19,9 @@ help:
 	@echo " test             Run the tests"
 	@echo " clean            Remove unneeded files (__pycache__, .mypy_cache, etc.)"
 	@echo " build            Build the python package"
-	@echo " dev              Generate (and install) requirements, lint, test"
+	@echo " dev-back         Run the development server"
+	@echo " dev-front        Run the development server for the frontend"
+	@echo " dev          	 Run the development server for the backend and frontend"
 	@echo ""
 
 .PHONY: format
@@ -77,19 +79,25 @@ test: .before_test
 		--junitxml=${.REPORTS_DIR}/xunit.xml \
 		${.TESTS_DIR}/
 
+.PHONY: build-front
+build-front:
+	yarn build:front
+
+.PHONY: build-back
+build-back:
+	yarn build:back
+
 .PHONY: build
-build:
-	python -c 'import os; os.makedirs("dist", exist_ok=True); os.makedirs("build", exist_ok=True)'
-	python -c 'import shutil; shutil.rmtree("dist", ignore_errors=True); shutil.rmtree("build", ignore_errors=True)'
-	python -m pip install --upgrade pip wheel
-	python -m pip install -r requirements/main.txt
-	python -m pip install build twine
-	python -m build --sdist --wheel --outdir dist/
-	python -m twine check dist/*.whl
-	python -c 'import shutil; shutil.rmtree("build", ignore_errors=True)'
+build: build-front build-back
+
+.PHONY: dev-back
+dev-back:
+	python -m waldiez_studio --reload --debug
+
+.PHONY: dev-front
+dev-front:
+	yarn dev:front
 
 .PHONY: dev
-dev: clean requirements
-	python -m pip install -r requirements/all.txt
-	make forlint
-	make test
+dev:
+	yarn dev

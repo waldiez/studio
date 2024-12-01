@@ -9,6 +9,7 @@ anyio==4.6.2.post1
     #   httpx
     #   openai
     #   starlette
+    #   watchfiles
 attrs==24.2.0
     # via
     #   jsonschema
@@ -20,6 +21,8 @@ certifi==2024.8.30
     #   requests
 charset-normalizer==3.4.0
     # via requests
+click==8.1.7
+    # via uvicorn
 diskcache==5.6.3
     # via ag2
 distro==1.9.0
@@ -33,9 +36,13 @@ fastjsonschema==2.21.0
 flaml==2.3.2
     # via ag2
 h11==0.14.0
-    # via httpcore
+    # via
+    #   httpcore
+    #   uvicorn
 httpcore==1.0.7
     # via httpx
+httptools==0.6.4
+    # via uvicorn
 httpx==0.28.0
     # via openai
 idna==3.10
@@ -80,12 +87,20 @@ pydantic==2.10.2
     #   ag2
     #   fastapi
     #   openai
+    #   pydantic-settings
 pydantic-core==2.27.1
     # via pydantic
+pydantic-settings==2.6.1
+    # via waldiez-studio (pyproject.toml)
 python-dotenv==1.0.1
-    # via ag2
+    # via
+    #   ag2
+    #   pydantic-settings
+    #   uvicorn
 pyyaml==6.0.2
-    # via jupytext
+    # via
+    #   jupytext
+    #   uvicorn
 referencing==0.35.1
     # via
     #   jsonschema
@@ -126,5 +141,13 @@ urllib3==2.2.3
     # via
     #   docker
     #   requests
+uvicorn==0.32.1
+    # via waldiez-studio (pyproject.toml)
+uvloop==0.21.0
+    # via uvicorn
 waldiez==0.1.11
     # via waldiez-studio (pyproject.toml)
+watchfiles==1.0.0
+    # via uvicorn
+websockets==14.1
+    # via uvicorn

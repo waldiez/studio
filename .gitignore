@@ -4,6 +4,12 @@
 build/
 dist/
 site/
+waldiez_studio/static/
+.env
+.yarn/
+public/vs/
+public/monaco_latest_version
+node_modules/
 reports/
 waldiez_out/
 **/logs/
@@ -22,5 +28,6 @@ dmypy.json
 .ruff_cache/
 .DS_Store
 .coverage
+**/*.tsbuildinfo
 **/*.coverage*
 **/*.ffs_db

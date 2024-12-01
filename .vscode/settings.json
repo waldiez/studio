@@ -6,6 +6,8 @@
     "cSpell.words": [
         "addopts",
         "autoflake",
+        "autohiding",
+        "csstree",
         "DEVNULL",
         "dmypy",
         "docparams",
@@ -13,13 +15,17 @@
         "epytext",
         "filterwarnings",
         "forlint",
+        "healthz",
         "Ioannidou",
         "isort",
         "junitxml",
         "Kasnesis",
+        "levelprefix",
         "makedirs",
         "mccabe",
         "metaclass",
+        "msapplication",
+        "mstile",
         "nosemgrep",
         "numpy",
         "ounospanas",
@@ -36,9 +42,13 @@
         "shutil",
         "siioannidou",
         "subclassing",
+        "trustedhost",
         "venv",
         "Waldiez",
+        "watchgod",
+        "webp",
         "xdist",
-        "xunit"
+        "xunit",
+        "xyflow"
     ]
 }

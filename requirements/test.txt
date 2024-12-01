@@ -2,6 +2,8 @@
 #    uv pip compile pyproject.toml --output-file requirements/test.txt --extra=test --no-deps --no-strip-extras
 fastapi==0.115.5
     # via waldiez-studio (pyproject.toml)
+pydantic-settings==2.6.1
+    # via waldiez-studio (pyproject.toml)
 pytest==8.3.3
     # via waldiez-studio (pyproject.toml)
 pytest-cov==6.0.0
@@ -13,6 +15,8 @@ pytest-sugar==1.0.0
 pytest-timeout==2.3.1
     # via waldiez-studio (pyproject.toml)
 pytest-xdist==3.6.1
+    # via waldiez-studio (pyproject.toml)
+uvicorn[standard]==0.32.1
     # via waldiez-studio (pyproject.toml)
 waldiez==0.1.11
     # via waldiez-studio (pyproject.toml)

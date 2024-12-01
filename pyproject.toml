@@ -24,18 +24,25 @@ classifiers = [
 dependencies = [
     'waldiez==0.1.11',
     "fastapi==0.115.5",
+    'pydantic-settings==2.6.1',
+    "uvicorn[standard]==0.32.1"
 ]
 
 [project.urls]
 homepage = 'https://github.com/waldiez/studio.git'
 repository = 'https://github.com/waldiez/studio.git'
 
+[project.scripts]
+waldiez-studio = "waldiez_studio.run:main"
+
 [tool.hatch.build.targets.sdist]
 packages = ["waldiez_studio", "waldiez_studio.*"]
 exclude = [ "**/example.py", ".gitignore" ]
+artifacts = ["waldiez_studio/static/frontend"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["waldiez_studio", "waldiez_studio.*"]
+artifacts = ["waldiez_studio/static/frontend"]
 exclude = [ "**/example.py" ]
 
 [project.optional-dependencies]
