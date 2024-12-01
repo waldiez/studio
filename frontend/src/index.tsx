@@ -5,8 +5,6 @@ import { Waldiez } from '@waldiez/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-const isProd = import.meta.env.PROD;
-
 // the actions should be handled by other components
 // that use `Waldiez` as a child component
 
@@ -59,7 +57,7 @@ const onUserInput = null;
 const onRunDev = (flowString: string) => {
   console.info(flowString);
 };
-const onRun = isProd ? null : onRunDev;
+const onRun = onRunDev;
 
 /**
  * OnUpload
@@ -88,7 +86,7 @@ const onUploadDev = (files: File[]) => {
     });
   });
 };
-const onUpload = isProd ? null : onUploadDev;
+const onUpload = onUploadDev;
 
 /**
  * Monaco Editor
