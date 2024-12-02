@@ -26,6 +26,8 @@ python-dotenv==1.0.1
     # via waldiez-studio (pyproject.toml)
 ruff==0.8.1
     # via waldiez-studio (pyproject.toml)
+typer==0.12.5
+    # via waldiez-studio (pyproject.toml)
 types-pyyaml==6.0.12.20240917
     # via waldiez-studio (pyproject.toml)
 uvicorn[standard]==0.32.1

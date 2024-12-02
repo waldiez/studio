@@ -1,6 +1,6 @@
 """Studio entry point module."""
 
-from .run import main
+from .cli import cli_app
 
 if __name__ == "__main__":
-    main()
+    cli_app()

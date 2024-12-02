@@ -15,6 +15,7 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from waldiez_studio.config import Settings
 from waldiez_studio.extra_static_files import ensure_extra_static_files
 from waldiez_studio.middleware import SecurityHeadersMiddleware
+from waldiez_studio.routes import api_router
 
 ROOT_DIR = Path(__file__).parent
 STATIC_DIR = ROOT_DIR / "static"
@@ -77,14 +78,24 @@ app.mount(
     StaticFiles(directory=STATIC_DIR / "monaco" / "min-maps"),
     name="min-maps",
 )
-app.mount(
-    "/",
-    StaticFiles(directory=STATIC_DIR / "frontend", html=True),
-    name="frontend",
-)
+
+# include api routes
+app.include_router(api_router, prefix="/api")
 
 
 # common routes
+@app.get("/robots.txt")
+async def robots() -> Response:
+    """Serve the robots.txt file.
+
+    Returns
+    -------
+    Response
+        The robots.txt file
+    """
+    return FileResponse(STATIC_DIR / "frontend" / "robots.txt")
+
+
 @app.get("/favicon.ico")
 async def favicon() -> Response:
     """Serve the favicon.
@@ -95,7 +106,7 @@ async def favicon() -> Response:
         The favicon file
 
     """
-    return FileResponse(STATIC_DIR / "favicon.ico")
+    return FileResponse(STATIC_DIR / "frontend" / "favicon.ico")
 
 
 @app.get("/health")
@@ -109,6 +120,14 @@ async def healthz() -> Response:
         The health check
     """
     return Response(status_code=200)
+
+
+# serve the frontend if no other route matches
+app.mount(
+    "/",
+    StaticFiles(directory=STATIC_DIR / "frontend", html=True),
+    name="frontend",
+)
 
 
 # catch all route

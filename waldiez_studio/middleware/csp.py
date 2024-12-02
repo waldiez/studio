@@ -59,6 +59,7 @@ def parse_policy(policy: Dict[str, str | List[str]] | str) -> str:
     return parsed_policy
 
 
+# pylint: disable=too-few-public-methods
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to all responses."""
 
