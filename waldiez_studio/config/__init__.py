@@ -14,7 +14,6 @@ from .lib import (
     get_trusted_hosts,
     get_trusted_origins,
 )
-from .logging import get_logging_config
 
 
 class Settings(BaseSettings):
@@ -82,4 +81,4 @@ class Settings(BaseSettings):
         return value
 
 
-__all__ = ["get_logging_config", "Settings"]
+__all__ = ["Settings"]

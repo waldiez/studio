@@ -22,8 +22,11 @@ classifiers = [
   "Intended Audience :: Developers",
 ]
 dependencies = [
+    'aiofiles==24.1.0',
+    'snowflake-id==1.0.2',
     'fastapi==0.115.5',
     'pydantic-settings==2.6.1',
+    'python-multipart==0.0.19',
     # together 1.2.0 depends on typer<0.13 and >=0.9
     'typer>=0.9,<0.13',
     'uvicorn[standard]==0.32.1',
@@ -57,14 +60,15 @@ dev = [
     'mypy==1.13.0',
     'pre-commit==4.0.1',
     'pydocstyle==6.3.0',
-    'pylint==3.3.1',
+    'pylint==3.3.2',
     'python-dotenv==1.0.1',
     'ruff==0.8.1',
+    'types-aiofiles==24.1.0.20240626',
     'types-PyYAML==6.0.12.20240917',
     'yamllint==1.35.1',
 ]
 test = [
-    'pytest==8.3.3',
+    'pytest==8.3.4',
     'pytest-cov==6.0.0',
     'pytest-html==4.1.1',
     'pytest-sugar==1.0.0',

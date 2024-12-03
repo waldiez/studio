@@ -5,6 +5,7 @@
     "mypy-type-checker.args": ["--config pyproject.toml"],
     "cSpell.words": [
         "addopts",
+        "aiofiles",
         "autoflake",
         "autohiding",
         "csstree",

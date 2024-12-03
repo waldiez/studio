@@ -22,12 +22,13 @@ else:
     load_dotenv()
 
 try:
-    from waldiez_studio.config import Settings, get_logging_config
+    from waldiez_studio._version import __version__
 except ImportError:
     sys.path.append(str(Path(__file__).parent))
-    from waldiez_studio.config import Settings, get_logging_config
+    from waldiez_studio._version import __version__
 
-from waldiez_studio._version import __version__
+from waldiez_studio.config import Settings
+from waldiez_studio.utils import get_logging_config
 
 DEFAULT_HOST = os.environ.get("WALDIEZ_STUDIO_HOST", "localhost")
 _DEFAULT_PORT = os.environ.get("WALDIEZ_STUDIO_PORT", "8000")

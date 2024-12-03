@@ -2,6 +2,8 @@
 #    uv pip compile pyproject.toml --output-file requirements/main.txt
 ag2==0.4.1
     # via waldiez
+aiofiles==24.1.0
+    # via waldiez-studio (pyproject.toml)
 annotated-types==0.7.0
     # via pydantic
 anyio==4.6.2.post1
@@ -102,6 +104,8 @@ python-dotenv==1.0.1
     #   ag2
     #   pydantic-settings
     #   uvicorn
+python-multipart==0.0.19
+    # via waldiez-studio (pyproject.toml)
 pyyaml==6.0.2
     # via
     #   jupytext
@@ -128,6 +132,8 @@ sniffio==1.3.1
     # via
     #   anyio
     #   openai
+snowflake-id==1.0.2
+    # via waldiez-studio (pyproject.toml)
 starlette==0.41.3
     # via fastapi
 termcolor==2.5.0

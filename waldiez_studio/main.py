@@ -13,9 +13,9 @@ from fastapi.staticfiles import StaticFiles
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from waldiez_studio.config import Settings
-from waldiez_studio.extra_static_files import ensure_extra_static_files
 from waldiez_studio.middleware import SecurityHeadersMiddleware
 from waldiez_studio.routes import api_router
+from waldiez_studio.utils import ensure_extra_static_files
 
 ROOT_DIR = Path(__file__).parent
 STATIC_DIR = ROOT_DIR / "static"
