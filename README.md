@@ -1,6 +1,8 @@
 # Waldiez Studio
 
-![Screenshot](public/files/screenshots/1.webp)
+![CI Build](https://github.com/waldiez/studio/actions/workflows/base.yaml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/waldiez/studio/badge.svg)](https://coveralls.io/github/waldiez/studio)
+
+![Screenshot](https://github.com/waldiez/studio/blob/main/public/files/screenshots/1.webp)
 
 ## Status
 
