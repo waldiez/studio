@@ -1,0 +1,12 @@
+node_modules
+reports
+coverage
+**/*.md
+**/lib
+.venv/
+**/dist/
+**/.local/
+**/package.json
+!/package.json
+**/vs/
+!/docs/

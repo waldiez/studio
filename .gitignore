@@ -4,7 +4,16 @@
 build/
 dist/
 site/
+waldiez_studio/static/
+waldiez_studio/files/
+.env
+.yarn/
+public/*
+!public/files/
+node_modules/
 reports/
+coverage/
+**/lcov.info
 waldiez_out/
 **/logs/
 **/tmp/
@@ -22,5 +31,7 @@ dmypy.json
 .ruff_cache/
 .DS_Store
 .coverage
+**/*.tsbuildinfo
 **/*.coverage*
-**/*.ffs_db
+**/*cache
+**/*db

@@ -12,11 +12,13 @@ def _read_version() -> str:
     with version_py.open() as f:
         for line in f:
             if line.startswith("__version__"):
-                version = line.split()[-1].strip('"')
+                version = line.split()[-1].strip('"').strip("'")
                 break
     return version
 
 
 def test_version() -> None:
     """Test __version__."""
-    assert waldiez_studio.__version__ == _read_version()
+    from_file = _read_version()
+    assert from_file != "0.0.0"
+    assert waldiez_studio.__version__ == from_file
