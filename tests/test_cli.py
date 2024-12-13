@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long,unused-argument
 
+import re
 from typing import Generator
 from unittest.mock import MagicMock, patch
 
@@ -11,6 +12,23 @@ from typer.testing import CliRunner
 from waldiez_studio.cli import app
 
 runner = CliRunner()
+
+
+def escape_ansi(text: str) -> str:
+    """Remove ANSI escape sequences from a string.
+
+    Parameters
+    ----------
+    text : str
+        The text to process.
+
+    Returns
+    -------
+    str
+        The text without ANSI escape sequences.
+    """
+    ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+    return ansi_escape.sub("", text)
 
 
 @pytest.fixture(name="mock_uvicorn_run")
@@ -45,16 +63,17 @@ def test_cli_help() -> None:
     """Test the CLI help message."""
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "Usage" in result.output
-    assert "--version" in result.output
-    assert "run" in result.output
+    escaped_output = escape_ansi(result.output)
+    assert "Usage" in escaped_output
+    assert "--version" in escaped_output
+    assert "run" in escaped_output
 
 
 def test_cli_version() -> None:
     """Test the CLI version flag."""
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "Waldiez Studio" in result.output
+    assert "Waldiez Studio" in escape_ansi(result.output)
 
 
 def test_run_command_defaults(
