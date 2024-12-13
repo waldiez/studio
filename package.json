@@ -95,7 +95,7 @@
         "lint": "yarn lint:front",
         "forlint": "yarn format && yarn lint",
         "eslint": "yarn eslint:check --fix",
-        "eslint:check": "eslint --report-unused-disable-directives --max-warnings 0 --cache frontend",
+        "eslint:check": "eslint --report-unused-disable-directives --max-warnings 0 --cache --config eslint.config.mjs frontend/**/*{.ts,.tsx} --debug",
         "prettier": "prettier \"**/*{.ts,.tsx,.js,.mjs,.css,.json,.md}\" --write --list-different",
         "prettier:check": "prettier \"frontend/**/*{.ts,.tsx,.js,.mjs,.css,.json,.md}\" --check",
         "stylelint": "yarn stylelint:check --fix",

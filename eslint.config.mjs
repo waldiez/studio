@@ -28,15 +28,21 @@ function legacyPlugin(name, alias = name) {
     return fixupPluginRules(plugin);
 }
 
+const customBaseConfig = {
+    ...eslint.configs.recommended,
+    files: ['**/*.{ts,tsx}'], // Override default file patterns
+    ignores: ['**/*.js', '**/*.mjs', '**/*.jsx'] // Explicitly ignore .js files
+};
+
 const defaultConfig = eslintTs.config({
-    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['node_modules', 'dist', '.local', 'coverage'],
+    files: ['frontend/src/**/*.{ts,tsx}'],
     extends: [
-        eslint.configs.recommended,
+        customBaseConfig,
         ...eslintTs.configs.recommended,
         ...compat.extends('plugin:import/typescript'),
         eslintPluginPrettierRecommended
     ],
-    ignores: ['node_modules', 'dist', 'public', '.local', '**/assets/**'],
     settings: {
         'import/resolver': {
             typescript: {
@@ -120,12 +126,14 @@ const defaultConfig = eslintTs.config({
 export default [
     ...defaultConfig.map(config => ({
         ...config,
-        files: ['frontend/**/*.{ts,tsx}']
+        files: ['frontend/**/*.{ts,tsx}'],
+        ignores: ['node_modules', 'dist', '.local', 'coverage']
     })),
     // overrides
     ...defaultConfig.map(config => ({
         ...config,
         files: ['frontend/tests/**/*.{ts,tsx}'],
+        ignores: ['node_modules', 'dist', '.local', 'coverage'],
         rules: {
             ...config.rules,
             'max-statements': 'off',
