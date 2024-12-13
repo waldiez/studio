@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="60"
-   height="60"
-   viewBox="0 0 60 60"
+   width="48"
+   height="55.695"
+   viewBox="0 0 48 55.695"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -12,7 +12,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"><defs
      id="defs1" /><g
-     id="layer1"><image
+     id="layer1"
+     transform="translate(-6,-2.1525002)"><image
        width="55.694748"
        height="55.694748"
        preserveAspectRatio="none"

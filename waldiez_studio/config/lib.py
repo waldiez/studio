@@ -35,12 +35,15 @@ def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
         trusted_hosts.append(domain_name)
     if host not in trusted_hosts and host not in ["localhost", "0.0.0.0"]:
         trusted_hosts.append(host)
-    if "--trusted-host" in sys.argv:
-        trusted_host_index = sys.argv.index("--trusted-host") + 1
+    if "--trusted-hosts" in sys.argv:
+        trusted_host_index = sys.argv.index("--trusted-hosts") + 1
         if trusted_host_index < len(sys.argv):
-            trusted_host = sys.argv[trusted_host_index]
-            if trusted_host and trusted_host not in trusted_hosts:
-                trusted_hosts.append(trusted_host)
+            trusted_hosts_arg = sys.argv[trusted_host_index]
+            if trusted_hosts_arg:
+                trusted_hosts_split = trusted_hosts_arg.split(",")
+                for trusted_host in trusted_hosts_split:
+                    if trusted_host and trusted_host not in trusted_hosts:
+                        trusted_hosts.append(trusted_host)
     return trusted_hosts
 
 
@@ -123,8 +126,8 @@ def get_default_host() -> str:
     str
         The default host
     """
-    if "--app-host" in sys.argv:
-        host_index = sys.argv.index("--app-host") + 1
+    if "--host" in sys.argv:
+        host_index = sys.argv.index("--host") + 1
         if host_index < len(sys.argv):
             host = sys.argv[host_index]
             if host:
@@ -141,8 +144,8 @@ def get_default_port() -> int:
     int
         The default port
     """
-    if "--app-port" in sys.argv:
-        port_index = sys.argv.index("--app-port") + 1
+    if "--port" in sys.argv:
+        port_index = sys.argv.index("--port") + 1
         if port_index < len(sys.argv):
             try:
                 port = int(sys.argv[port_index])

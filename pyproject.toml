@@ -1,3 +1,8 @@
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "waldiez_studio"
 description = 'waldiez studio'
@@ -23,14 +28,15 @@ classifiers = [
 ]
 dependencies = [
     'aiofiles==24.1.0',
-    'snowflake-id==1.0.2',
-    'fastapi==0.115.5',
+    'aiohttp==3.11.10',
+    'fastapi==0.115.6',
     'pydantic-settings==2.6.1',
     'python-multipart==0.0.19',
-    # together 1.2.0 depends on typer<0.13 and >=0.9
+    'tenacity==9.0.0',
+    # together (ag2-extra) 1.2.0 depends on typer<0.13 and >=0.9
     'typer>=0.9,<0.13',
     'uvicorn[standard]==0.32.1',
-    'waldiez==0.1.11',
+    'waldiez==0.1.15',
 ]
 
 [project.urls]
@@ -42,13 +48,13 @@ waldiez-studio = "waldiez_studio.cli:app"
 
 [tool.hatch.build.targets.sdist]
 packages = ["waldiez_studio", "waldiez_studio.*"]
+artifacts = ["waldiez_studio/static/frontend", "!waldiez_studio/static/frontend/last-build.txt"]
 exclude = [ "**/example.py", ".gitignore" ]
-artifacts = ["waldiez_studio/static/frontend"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["waldiez_studio", "waldiez_studio.*"]
-artifacts = ["waldiez_studio/static/frontend"]
-exclude = [ "**/example.py" ]
+artifacts = ["waldiez_studio/static/frontend", "!waldiez_studio/static/frontend/last-build.txt"]
+exclude = [ "**/example.py", ".gitignore" ]
 
 [project.optional-dependencies]
 dev = [
@@ -56,31 +62,41 @@ dev = [
     'bandit==1.8.0',
     'black==24.10.0',
     'flake8==7.1.1',
+    'hatchling==1.26.3',
     'isort==5.13.2',
     'mypy==1.13.0',
     'pre-commit==4.0.1',
     'pydocstyle==6.3.0',
     'pylint==3.3.2',
     'python-dotenv==1.0.1',
-    'ruff==0.8.1',
+    'ruff==0.8.2',
+    'toml; python_version <= "3.10"',
     'types-aiofiles==24.1.0.20240626',
     'types-PyYAML==6.0.12.20240917',
+    'types-toml== 0.10.8.20240310',
     'yamllint==1.35.1',
 ]
 test = [
+    'asgi-lifespan==2.1.0',
+    'httpx',
     'pytest==8.3.4',
+    'pytest-asyncio==0.24.0',
     'pytest-cov==6.0.0',
     'pytest-html==4.1.1',
+    'pytest-httpx==0.35.0',
     'pytest-sugar==1.0.0',
     'pytest-timeout==2.3.1',
-    'pytest-xdist==3.6.1',
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 [tool.hatch.version]
 path = "waldiez_studio/_version.py"
+
+[tool.hatch.metadata.hooks.custom]
+path = "scripts/hooks/metadata.py"
+
+[tool.hatch.build.hooks.custom]
+path = "scripts/hooks/pre_build.py"
+
 # black
 [tool.black]
 line-length = 80
@@ -100,6 +116,8 @@ exclude = '''
   | __init__.py
   | .local
   | examples
+  | node_modules
+  | waldiez_studio/files
 )/
 '''
 
@@ -129,13 +147,17 @@ plugins = [
 exclude = [
     '.venv',
     '.local',
+    '.yarn',
     'examples',
+    'node_modules',
+    'frontend',
+    'waldiez_studio/files',
 ]
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
-warn_required_dynamic_aliases = true
+warn_required_dynamic_aliases = false
 
 # isort
 [tool.isort]
@@ -144,6 +166,8 @@ skip=[
     '.venv',
     '.local',
     'examples',
+    'node_modules',
+    'waldiez_studio/files',
 ]
 include_trailing_comma=true
 force_grid_wrap=0
@@ -172,8 +196,9 @@ ignore-paths = [
     ".venv",
     ".local*",
     "examples",
+    "node_modules",
+    'waldiez_studio/files',
 ]
-
 unsafe-load-any-extension="no"
 
 [tool.pylint.messages_control]
@@ -206,7 +231,9 @@ default-docstring-type = "numpy"
 exclude_dirs = [
     ".venv",
     ".local",
-    "examples"
+    "examples",
+    "node_modules",
+    'waldiez_studio/files'
 ]
 # B104: bind to all interfaces (0.0.0.0)
 # B110: allow pass on try/except
@@ -216,7 +243,6 @@ skips = ['B104', 'B110', 'B404', 'B602', 'B603' ]
 [tool.bandit.assert_used]
 skips = ['*_test.py', '*/test_*.py']
 
-
 # ruff
 [tool.ruff]
 line-length = 80
@@ -224,6 +250,8 @@ extend-exclude = [
     ".venv",
     ".local",
     "examples",
+    "node_modules",
+    'waldiez_studio/files',
 ]
 
 [tool.ruff.lint]
@@ -248,6 +276,8 @@ line-ending = "lf"
 
 # pytest
 [tool.pytest.ini_options]
+asyncio_mode = 'auto'
+asyncio_default_fixture_loop_scope='session'
 filterwarnings = [
 ]
 python_files = [
@@ -256,8 +286,6 @@ python_files = [
     "*_tests.py",
 ]
 addopts = """
-    -d \
-    -n auto \
     --exitfirst \
     --durations=10 \
     --color=yes \
@@ -268,13 +296,18 @@ addopts = """
 # coverage
 [tool.coverage.run]
 omit = [
-  "example.py",
+    ".venv/*",
+    ".local/*",
+    "examples/*",
+    "node_modules/*",
+    'waldiez_studio/files/*',
 ]
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
+    "except ImportError:",
 ]
-# fail_under = 80
+fail_under = 80
 precision = 2

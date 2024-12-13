@@ -19,8 +19,8 @@ def get_logging_config(log_level: str) -> Dict[str, Any]:
     Dict[str, Any]
         The logging config dict
     """
-    modules_to_exclude = [
-        "aiosqlite",
+    # skip spamming logs from these modules
+    modules_to_have_level_info = [
         "watchgod",
         "watchfiles",
         "httpcore",
@@ -41,7 +41,7 @@ def get_logging_config(log_level: str) -> Dict[str, Any]:
     logging_config["loggers"]["httpcore"] = http_core_logger
     logging_config["loggers"]["httpcore"]["handlers"] = ["default"]
     logging_config["loggers"]["httpcore"]["level"] = log_level
-    for module in modules_to_exclude:
+    for module in modules_to_have_level_info:
         logging_config["loggers"][module] = {
             "handlers": ["default"],
             "level": "INFO",

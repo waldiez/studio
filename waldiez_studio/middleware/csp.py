@@ -17,7 +17,7 @@ CSP: dict[str, str | list[str]] = {
     "script-src": "'self'",
     "img-src": ["'self'", "data:"],
     "worker-src": ["'self'", "blob:"],
-    "connect-src": "'self'",
+    "connect-src": "*",
     "font-src": "'self'",
     "manifest-src": "'self'",
     "media-src": ["'self'", "data:"],
@@ -93,6 +93,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         Response
             The response
         """
+        # if we are on '/docs', skip the middleware
+        if request.url.path == "/docs":
+            return await call_next(request)
         headers = {
             "Content-Security-Policy": (
                 "" if not self.csp else parse_policy(CSP)

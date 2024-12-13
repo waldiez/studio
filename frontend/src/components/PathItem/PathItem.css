@@ -1,0 +1,115 @@
+.path-item {
+    padding: 10px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.path-item:hover {
+    background-color: var(--primary-alt-color);
+}
+
+.path-item.read-only {
+    cursor: default;
+    background-color: transparent;
+}
+
+.path-item a {
+    text-decoration: none;
+}
+
+.path-item a:hover {
+    text-decoration: underline;
+}
+
+.path-item a:visited {
+    color: var(--text-color);
+}
+
+.path-item .path-name {
+    margin-left: 0;
+    flex-grow: 1;
+    font-size: 14px;
+    max-width: 140px;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.path-item.up .path-name {
+    margin-left: 1em;
+    max-width: unset;
+}
+
+.path-item.read-only .path-name {
+    pointer-events: none;
+}
+
+.path-item-icon {
+    font-size: 1em;
+    color: var(--primary-color);
+    min-width: 1em;
+}
+
+.path-item-icon.waldiez-file {
+    max-width: 1.2em;
+    margin-left: -0.1em;
+    margin-right: -0.1em;
+}
+
+.path-item-delete {
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: transform 0.2s ease;
+    min-width: 1em;
+}
+
+.path-item-edit {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    min-width: 1em;
+}
+
+.path-item-delete:hover {
+    transform: scale(1.2);
+}
+
+.path-item-edit:hover {
+    transform: scale(1.2);
+}
+
+.path-item .context-menu {
+    position: absolute;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0 0 0 15%);
+    border-radius: 4px;
+    z-index: 1000;
+    color: var(--text-color);
+}
+
+.path-item .context-menu-item {
+    padding: 8px 16px;
+    background-color: var(--input-background);
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.path-item .context-menu-item:hover {
+    background-color: var(--primary-alt-color-hover);
+    color: var(--text-color);
+}
+
+.path-item .context-menu-item:active {
+    background-color: var(--primary-alt-color);
+}

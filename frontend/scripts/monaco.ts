@@ -1,6 +1,6 @@
-// ensure monaco loader files are present in the public folder (public/vs)
+/* eslint-disable max-statements */
 import crypto from 'crypto';
-import fs from 'fs';
+import fs from 'fs-extra';
 import https from 'https';
 import path from 'path';
 import tar from 'tar-stream';
@@ -14,188 +14,179 @@ const REGISTRY_BASE_URL = 'https://registry.npmjs.org';
 const PACKAGE_NAME = 'monaco-editor';
 const PUBLIC_PATH = path.resolve(__dirname, '..', '..', 'public');
 
-function checkShaSum(file: string, shaSum: string): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash('sha1');
-    const stream = fs.createReadStream(file);
-    stream.on('data', chunk => {
-      hash.update(chunk);
-    });
-    stream.on('end', () => {
-      const fileShaSum = hash.digest('hex');
-      resolve(fileShaSum === shaSum);
-    });
-    stream.on('error', err => {
-      reject(err);
-    });
-  });
+const MONACO_DETAILS_PATH = path.join(PUBLIC_PATH, 'monaco_details.json');
+
+interface IPackageDetails {
+    version: string;
+    url: string;
+    shaSum: string;
+    last_check: string;
 }
 
-function extractTarFile(file: string, dest: string): Promise<void> {
-  console.info('Extracting tar file...');
-  return new Promise((resolve, reject) => {
-    const extract = tar.extract();
-    extract.on('entry', (header, stream, next) => {
-      const filePath = path.join(dest, header.name);
-      if (header.type === 'file') {
-        // make sure the directory exists
-        fs.mkdirSync(path.dirname(filePath), { recursive: true });
-        stream.pipe(fs.createWriteStream(filePath));
-      } else {
-        fs.mkdirSync(filePath, { recursive: true });
-      }
-      stream.on('end', () => {
-        next();
-      });
-      stream.resume();
-    });
-    extract.on('finish', () => {
-      resolve();
-    });
-    extract.on('error', err => {
-      reject(err);
-    });
-    fs.createReadStream(file).pipe(zlib.createGunzip()).pipe(extract);
-  });
-}
-
-function keepOnlyMinVs(dir: string): void {
-  const packageDir = path.join(dir, 'package');
-  const minVsDir = path.join(packageDir, 'min', 'vs');
-  const destDir = path.join(dir, 'vs');
-  if (fs.existsSync(minVsDir)) {
-    if (fs.existsSync(destDir)) {
-      fs.rmSync(destDir, { recursive: true });
+function readMonacoDetails(): IPackageDetails | null {
+    if (!fs.existsSync(MONACO_DETAILS_PATH)) {
+        return null;
     }
-    fs.renameSync(minVsDir, destDir);
-    fs.rmSync(packageDir, { recursive: true });
-  }
-}
 
-function findLatestVersion(): Promise<[string, string, string]> {
-  return new Promise((resolve, reject) => {
-    https
-      .get(`${REGISTRY_BASE_URL}/${PACKAGE_NAME}`, res => {
-        let data = '';
-        res.on('data', chunk => {
-          data += chunk;
-        });
-        res.on('end', () => {
-          const json = JSON.parse(data);
-          const latestVersion = json['dist-tags']['latest'];
-          const latestVersionData = json['versions'][latestVersion];
-          const url = latestVersionData['dist']['tarball'];
-          const shaSum = latestVersionData['dist']['shasum'];
-          resolve([latestVersion, url, shaSum]);
-        });
-      })
-      .on('error', err => {
-        reject(err);
-      });
-  });
-}
-
-function handleDownload(
-  tempDir: string,
-  tempFile: string,
-  publicPath: string,
-  shaSum: string
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    checkShaSum(tempFile, shaSum)
-      .then(isValid => {
-        if (isValid) {
-          extractTarFile(tempFile, publicPath)
-            .then(() => {
-              keepOnlyMinVs(publicPath);
-              fs.unlinkSync(tempFile);
-              fs.rmSync(tempDir, {
-                recursive: true
-              });
-              resolve();
-            })
-            .catch(err => {
-              reject(err);
-            });
-        } else {
-          reject(new Error('Invalid sha sum'));
+    try {
+        const data = JSON.parse(fs.readFileSync(MONACO_DETAILS_PATH, 'utf-8'));
+        const lastCheck = new Date(data.last_check);
+        if (Date.now() - lastCheck.getTime() < 24 * 60 * 60 * 1000) {
+            return data as IPackageDetails;
         }
-      })
-      .catch(err => {
-        reject(err);
-      });
-  });
-}
-
-function downloadMonacoEditor(version: [string, string, string], publicPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const [_, url, shaSum] = version;
-    const tempDir = path.join(publicPath, 'temp');
-    const tempFile = path.join(tempDir, 'monaco-editor.tgz');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
+    } catch (err) {
+        console.error('Error reading Monaco details:', err);
     }
-    const file = fs.createWriteStream(tempFile);
-    https
-      .get(url, res => {
-        res.pipe(file);
-        res.on('end', () => {
-          file.close();
-          handleDownload(tempDir, tempFile, publicPath, shaSum)
-            .then(() => {
-              resolve();
-            })
-            .catch(err => {
-              reject(err);
-            });
-        });
-      })
-      .on('error', err => {
-        reject(err);
-      });
-  });
+    return null;
 }
 
-function ensureMonacoFiles(publicPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    findLatestVersion()
-      .then(versionInfo => {
-        const latestVersion = versionInfo[0];
-        const versionFile = path.join(publicPath, 'monaco_latest_version');
-        let currentVersion = '';
-        if (fs.existsSync(versionFile)) {
-          currentVersion = fs.readFileSync(versionFile, 'utf-8');
-        }
-        const loaderJs = path.join(publicPath, 'vs', 'loader.js');
-        if (currentVersion !== latestVersion || !fs.existsSync(loaderJs)) {
-          console.info('Downloading monaco editor files...');
-          downloadMonacoEditor(versionInfo, publicPath)
-            .then(() => {
-              fs.writeFileSync(versionFile, latestVersion, 'utf-8');
-              resolve();
-            })
-            .catch(err => {
-              reject(err);
-            });
-        } else {
-          resolve();
-        }
-      })
-      .catch(err => {
-        reject(err);
-      });
-  });
-}
+async function fetchPackageDetails(): Promise<IPackageDetails> {
+    return new Promise((resolve, reject) => {
+        const url = `${REGISTRY_BASE_URL}/${PACKAGE_NAME}`;
+        https
+            .get(url, res => {
+                if (res.statusCode !== 200) {
+                    reject(new Error(`Failed to fetch package details: ${res.statusCode}`));
+                    return;
+                }
 
-function main() {
-  ensureMonacoFiles(PUBLIC_PATH)
-    .then(() => {
-      // console.info('Monaco editor files are up-to-date.');
-      process.exit(0);
-    })
-    .catch(err => {
-      throw err;
+                let data = '';
+                res.on('data', chunk => (data += chunk));
+                res.on('end', () => {
+                    try {
+                        const packageData = JSON.parse(data);
+                        const latestVersion = packageData['dist-tags'].latest;
+                        const versionInfo = packageData.versions[latestVersion];
+                        const tarballUrl = versionInfo.dist.tarball;
+                        const shaSum = versionInfo.dist.shasum;
+
+                        if (!latestVersion || !tarballUrl || !shaSum) {
+                            reject(new Error('Incomplete package details.'));
+                            return;
+                        }
+
+                        const details: IPackageDetails = {
+                            version: latestVersion,
+                            url: tarballUrl,
+                            shaSum,
+                            last_check: new Date().toISOString()
+                        };
+
+                        fs.writeFileSync(MONACO_DETAILS_PATH, JSON.stringify(details, null, 2), 'utf-8');
+                        resolve(details);
+                    } catch (err) {
+                        console.error('Error parsing package details:', err);
+                        reject(new Error('Error parsing package details.'));
+                    }
+                });
+            })
+            .on('error', reject);
     });
 }
 
-main();
+async function downloadFile(url: string, dest: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const file = fs.createWriteStream(dest);
+        https
+            .get(url, res => {
+                if (res.statusCode !== 200) {
+                    reject(new Error(`Failed to download file: ${res.statusCode}`));
+                    return;
+                }
+
+                res.pipe(file);
+                file.on('finish', () => file.close(() => resolve()));
+                file.on('error', reject);
+            })
+            .on('error', reject);
+    });
+}
+
+async function ensureMonacoFiles(): Promise<void> {
+    const cachedDetails = readMonacoDetails();
+    const details = cachedDetails || (await fetchPackageDetails());
+    const monacoPath = path.join(PUBLIC_PATH);
+    const tarballPath = path.join(PUBLIC_PATH, 'monaco.tar.gz');
+
+    if (fs.existsSync(path.join(monacoPath, 'vs', 'loader.js'))) {
+        return;
+    }
+
+    console.info('Downloading Monaco Editor tarball...');
+    await downloadFile(details.url, tarballPath);
+
+    const calculatedShaSum = crypto.createHash('sha1').update(fs.readFileSync(tarballPath)).digest('hex');
+
+    if (calculatedShaSum !== details.shaSum) {
+        throw new Error('SHA-1 checksum mismatch.');
+    }
+
+    await extractTarFile(tarballPath, monacoPath);
+
+    const monacoEditorRoot = path.join(monacoPath, 'package');
+    const vsSrc = path.join(monacoEditorRoot, 'min', 'vs');
+    const vsDst = path.join(PUBLIC_PATH, 'vs');
+
+    if (!fs.existsSync(vsSrc)) {
+        throw new Error('Failed to extract Monaco editor files.');
+    }
+
+    fs.rmSync(vsDst, { recursive: true, force: true });
+    fs.renameSync(vsSrc, vsDst);
+
+    const minMapsSrc = path.join(monacoEditorRoot, 'min-maps');
+    if (fs.existsSync(minMapsSrc)) {
+        const minMapsDst = path.join(PUBLIC_PATH, 'min-maps');
+        fs.rmSync(minMapsDst, { recursive: true, force: true });
+        fs.renameSync(minMapsSrc, minMapsDst);
+    }
+    return new Promise((resolve, reject) => {
+        fs.promises
+            .rm(monacoEditorRoot, { recursive: true })
+            .then(() => {
+                console.info('Monaco Editor files are up-to-date.');
+                resolve();
+            })
+            .catch(err => {
+                if (fs.existsSync(MONACO_DETAILS_PATH)) {
+                    fs.rmSync(MONACO_DETAILS_PATH);
+                }
+                reject(err);
+            })
+            .finally(() => {
+                if (fs.existsSync(tarballPath)) {
+                    fs.rmSync(tarballPath);
+                }
+            });
+    });
+}
+
+async function extractTarFile(file: string, dest: string): Promise<void> {
+    console.info('Extracting tar file...');
+    return new Promise((resolve, reject) => {
+        const extract = tar.extract();
+        extract.on('entry', (header, stream, next) => {
+            const filePath = path.join(dest, header.name);
+            if (header.type === 'file') {
+                fs.mkdirSync(path.dirname(filePath), { recursive: true });
+                stream.pipe(fs.createWriteStream(filePath));
+            } else {
+                fs.mkdirSync(filePath, { recursive: true });
+            }
+            stream.on('end', next);
+            stream.resume();
+        });
+        extract.on('finish', resolve);
+        extract.on('error', reject);
+
+        fs.createReadStream(file).pipe(zlib.createGunzip()).pipe(extract);
+    });
+}
+
+(async () => {
+    try {
+        await ensureMonacoFiles();
+    } catch (err) {
+        console.error('Failed to ensure Monaco Editor files:', err);
+    }
+})();

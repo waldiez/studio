@@ -8,6 +8,8 @@ exclude =
     .git,
     .venv,
     node_modules,
+    examples,
+    waldiez_studio/files,
     .local,
     __pycache__,
     setup.py,

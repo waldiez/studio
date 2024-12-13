@@ -12,19 +12,19 @@ def main() -> None:
     os.makedirs("build", exist_ok=True)
     shutil.rmtree("dist", ignore_errors=True)
     shutil.rmtree("build", ignore_errors=True)
-    subprocess.run(
+    subprocess.run(  # nosemgrep # nosec
         [sys.executable, "-m", "pip", "install", "--upgrade", "pip", "wheel"],
         check=True,
     )
-    subprocess.run(
+    subprocess.run(  # nosemgrep # nosec
         [sys.executable, "-m", "pip", "install", "-r", "requirements/main.txt"],
         check=True,
     )
-    subprocess.run(
+    subprocess.run(  # nosemgrep # nosec
         [sys.executable, "-m", "pip", "install", "build", "twine"],
         check=True,
     )
-    subprocess.run(
+    subprocess.run(  # nosemgrep # nosec
         [
             sys.executable,
             "-m",
