@@ -70,6 +70,7 @@
         "venv",
         "Waldiez",
         "watchgod",
+        "webhint",
         "webp",
         "workerinput",
         "xdist",
@@ -84,6 +85,8 @@
         ".vscode",
         ".venv/**"
     ],
-    "files": ["/**"],
+    "files": [
+        "/**"
+    ],
     "useGitignore": true
 }
