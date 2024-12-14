@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { findFileIcon } from '@waldiez/studio/components/PathItem/fileIcon';
+import { findFileIcon } from '@waldiez/studio/components/PathItem/FileIcon';
 import { PathInstance } from '@waldiez/studio/types';
 
 const EXTENSION = '.waldiez';
