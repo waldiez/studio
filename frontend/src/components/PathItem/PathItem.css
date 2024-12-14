@@ -28,6 +28,10 @@
     color: var(--text-color);
 }
 
+.path-item .path-name-input {
+    max-width: 130px;
+}
+
 .path-item .path-name {
     margin-left: 0;
     flex-grow: 1;
