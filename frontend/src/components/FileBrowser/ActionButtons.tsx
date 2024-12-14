@@ -43,6 +43,7 @@ export const ActionButtons: React.FC<{
                 Upload
             </button>
             <input
+                title="Upload File"
                 data-testid="file-input"
                 type="file"
                 ref={fileInputRef}
