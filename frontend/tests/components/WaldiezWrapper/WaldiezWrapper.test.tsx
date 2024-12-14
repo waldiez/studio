@@ -22,10 +22,23 @@ vi.mock('@waldiez/studio/api/waldiezFlowService', () => ({
 }));
 
 describe('FileBrowser Component', () => {
+    const mockMatchMedia = (matches = false) => {
+        vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+            matches,
+            media: query,
+            onchange: null,
+            addListener: vi.fn(), // Deprecated
+            removeListener: vi.fn(), // Deprecated
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn()
+        }));
+    };
     afterEach(() => {
         vi.clearAllMocks();
     });
     beforeEach(() => {
+        mockMatchMedia();
         window.location.hash = '/';
     });
     it('displays fallback UI when no .waldiez file is selected', async () => {
