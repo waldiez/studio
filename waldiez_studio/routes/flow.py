@@ -15,49 +15,14 @@ except ImportError:
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from waldiez.exporter import WaldiezExporter
-from waldiez.models import WaldiezFlow
 
 from waldiez_studio.models import PathItem, SaveFlowRequest
-from waldiez_studio.utils import sync_to_async
+from waldiez_studio.utils.sync import sync_to_async
 
-from .common import check_path, get_root_directory
+from .common import check_flow_path, get_root_directory
 
 api = APIRouter()
 LOG = logging.getLogger(__name__)
-
-
-def check_flow_path(
-    path: str = Query(..., description="The path to the flow."),
-    root_dir: Path = Depends(get_root_directory),
-) -> Path:
-    """Validate the flow path.
-
-    Parameters
-    ----------
-    path : str
-        The path to the flow.
-    root_dir : Path
-        The root directory of the workspace.
-
-    Returns
-    -------
-    Path
-        The validated flow path relative to the root directory.
-    Raises
-    ------
-    HTTPException
-        If the path is invalid, the file does not exist,
-        the file is not a file, or the file type is invalid.
-    """
-    return check_path(
-        path,
-        root_dir,
-        path_type="File",
-        must_exist=True,
-        must_be_file=True,
-        must_be_dir=False,
-        must_have_extension=".waldiez",
-    )
 
 
 def export_flow_sync(
@@ -110,7 +75,7 @@ def export_flow_sync(
 )
 async def get_flow_contents(
     flow_path: Path = Depends(check_flow_path),
-) -> WaldiezFlow | Dict[str, Any]:
+) -> Dict[str, Any]:
     """Get the contents of a flow.
 
     Parameters
@@ -235,7 +200,7 @@ async def export_flow(
     )
 
 
-def get_flow_contents_sync(flow_path: Path) -> WaldiezFlow | Dict[str, Any]:
+def get_flow_contents_sync(flow_path: Path) -> Dict[str, Any]:
     """Get the contents of a flow synchronously.
 
     Parameters

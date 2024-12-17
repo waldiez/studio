@@ -29,7 +29,6 @@ describe('findFileIcon', () => {
     testCases.forEach(({ fileName, expectedTitle }) => {
         it(`should render correct icon for ${fileName} with title "${expectedTitle}"`, () => {
             const { container } = render(findFileIcon(fileName));
-            screen.debug();
             const icon = container.querySelector(`.${className}`);
             expect(icon).toBeTruthy();
             const titleElement = screen.getByTitle(expectedTitle);

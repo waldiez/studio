@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { App } from '@waldiez/studio/App';
@@ -24,7 +24,9 @@ describe('App', () => {
     it('should add "waldiez-dark" if no initial body class and prefers dark mode', async () => {
         mockMatchMedia(true); // Simulate dark mode preference
 
-        render(<App />);
+        await act(async () => {
+            render(<App />);
+        });
 
         await waitFor(() => {
             expect(document.body.classList.contains('waldiez-dark')).toBe(true);
@@ -34,18 +36,22 @@ describe('App', () => {
     it('should add "waldiez-light" if no initial body class and prefers light mode', async () => {
         mockMatchMedia(false); // Simulate light mode preference
 
-        render(<App />);
+        await act(async () => {
+            render(<App />);
+        });
 
         await waitFor(() => {
             expect(document.body.classList.contains('waldiez-light')).toBe(true);
         });
     });
 
-    it('should not overwrite body class if already set', () => {
+    it('should not overwrite body class if already set', async () => {
         mockMatchMedia(false); // Simulate light mode
         document.body.classList.add('waldiez-dark'); // Simulate existing dark mode class
 
-        render(<App />);
+        await act(async () => {
+            render(<App />);
+        });
 
         expect(document.body.classList.contains('waldiez-dark')).toBe(true);
         expect(document.body.classList.contains('waldiez-light')).toBe(false);

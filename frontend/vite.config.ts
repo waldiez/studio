@@ -56,12 +56,21 @@ export default defineConfig(({ command }) => {
         command === 'build'
             ? resolve(__dirname, '..', 'public', 'files')
             : resolve(__dirname, '..', 'public');
+    const apiDewsScheme = apiDevScheme.replace('http', 'ws');
     return {
         publicDir,
         base,
         server: {
             proxy: {
-                '/api': `${apiDevScheme}://${apiDevHost}${apiDevPortStr}`
+                '/api': {
+                    target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}`,
+                    changeOrigin: true
+                },
+                '/ws': {
+                    target: `${apiDewsScheme}://${apiDevHost}${apiDevPortStr}`,
+                    rewriteWsOrigin: true,
+                    ws: true
+                }
             }
         },
         build: {

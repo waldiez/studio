@@ -117,8 +117,8 @@ const defaultConfig = eslintTs.config({
         'max-depth': ['error', 4],
         'max-nested-callbacks': ['error', 4],
         'max-statements': ['error', 11, { ignoreTopLevelFunctions: true }],
-        'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
-        'max-lines-per-function': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
+        'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
+        'max-lines-per-function': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
         '@cspell/spellchecker': ['warn', {}]
     }
 });

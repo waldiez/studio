@@ -7,9 +7,11 @@ type FileBrowserContextType = {
     entries: PathInstance[];
     error: string | null;
     loading: boolean;
+    pathName: string;
     setError: (error: string | null) => void;
     refresh: () => Promise<void>;
     onNavigate: (path: PathInstance) => void;
+    onGoUp: () => void;
     onCreate: (type: PathInstanceType) => Promise<void>;
     onDelete: (path: PathInstance) => Promise<void>;
     onRename: (item: PathInstance, newName: string) => Promise<void>;
