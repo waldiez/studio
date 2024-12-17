@@ -10,7 +10,7 @@
 .file-browser-toggle-icon {
     color: var(--text-color);
     cursor: pointer;
-    font-size: 24px;
+    font-size: larger;
 }
 
 .file-browser-toggle {
@@ -24,11 +24,11 @@
     justify-content: space-between;
     align-items: center;
     min-width: 200px;
+    margin: 4px 0;
 }
 
 .file-browser-toggle h3 {
     margin: 0;
-    font-size: 18px;
 }
 
 .file-browser-content {

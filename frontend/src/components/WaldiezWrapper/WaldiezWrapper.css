@@ -1,28 +1,3 @@
-/*
- <div
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                backgroundColor: 'var(--background-color)',
-                color: 'var(--text-color)'
-            }}
-        >
-            <p>
-                Create a new file or select an existing{' '}
-                <span
-                    style={{
-                        fontStyle: 'italic',
-                        fontWeight: 'bold'
-                    }}
-                >
-                    .txt
-                </span>{' '}
-                file to start
-            </p>
-        </div>
-*/
 .waldiez-wrapper-no-flow {
     display: flex;
     justify-content: center;

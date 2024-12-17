@@ -29,6 +29,7 @@ help:
 	@echo " build-back       Build the python package"
 	@echo " build-front      Build the frontend package"
 	@echo " build            Build the packages"
+	@echo " image            Build the docker/podman image"
 	@echo " all-back         Run format, lint, test and build for the backend"
 	@echo " all-front        Run format, lint, test and build for the frontend"
 	@echo " all              Run format, lint, test and build"
@@ -132,6 +133,10 @@ build-back:
 .PHONY: build
 build: build-front build-back
 
+.PHONY: image
+image:
+	python scripts/image.py
+
 .PHONY: all-back
 all-back: clean-back format-back lint-back test-back build-back
 
@@ -139,7 +144,7 @@ all-back: clean-back format-back lint-back test-back build-back
 all-front: clean-front format-front lint-front test-front build-front
 
 .PHONY: all
-all: clean format lint test build
+all: clean format lint test build image
 
 .PHONY: dev-back
 dev-back:

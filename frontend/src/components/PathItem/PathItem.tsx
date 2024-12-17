@@ -56,8 +56,9 @@ export const PathItem: React.FC<{
         if (isEditing) {
             return (
                 <input
-                    style={{ maxWidth: 130 }}
+                    title="Press Enter to save, Esc to cancel"
                     type="text"
+                    className="path-name-input"
                     data-testid="path-name-input"
                     value={newName}
                     onChange={onNameChange}

@@ -29,7 +29,7 @@ from waldiez_studio.models import (
     PathItemRenameRequest,
     PathItemType,
 )
-from waldiez_studio.utils import sync_to_async
+from waldiez_studio.utils.sync import sync_to_async
 
 from .common import (
     check_path,

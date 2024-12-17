@@ -13,25 +13,25 @@ export const showSnackbar = (
     message: string,
     level: 'info' | 'warning' | 'error' | 'success' = 'info',
     details: string | Error | null = null,
-    duration: number | undefined = undefined
+    duration: number | undefined = undefined,
+    includeCloseButton: boolean = false
 ) => {
     if (isSnackbarLocked(flowId)) {
-        setTimeout(() => showSnackbar(flowId, message, level, details, duration), 200);
+        setTimeout(() => showSnackbar(flowId, message, level, details, duration, includeCloseButton), 200);
         return;
     }
 
     setSnackbarLock(flowId, true);
-    const rootDiv = getFlowRoot(flowId, true)!;
     // if no duration is provided, let's add a close button
     // to manually close the snackbar
-    const includeCloseButton = typeof duration !== 'number';
-    createOrUpdateSnackbar(flowId, message, level, details, rootDiv, includeCloseButton);
+    let includeCloseBtn = typeof duration !== 'number';
+    if (includeCloseButton) {
+        includeCloseBtn = true;
+    }
+    createOrUpdateSnackbar(flowId, message, level, details, includeCloseBtn);
 
-    if (!includeCloseButton) {
-        setTimeout(() => {
-            setSnackbarLock(flowId, false);
-            rootDiv.querySelector(`#${flowId}-snackbar`)?.remove();
-        }, duration);
+    if (!includeCloseBtn) {
+        scheduleSnackbarRemoval(flowId, duration);
     } else {
         setSnackbarLock(flowId, false);
     }
@@ -39,6 +39,17 @@ export const showSnackbar = (
 
 const getFlowRoot = (flowId: string, fallbackToBody = false) => {
     return document.getElementById(`rf-root-${flowId}`) || (fallbackToBody ? document.body : null);
+};
+
+const scheduleSnackbarRemoval = (flowId: string, duration: number | undefined) => {
+    const rootDiv = getFlowRoot(flowId, true);
+    if (!rootDiv || !duration) {
+        return;
+    }
+    setTimeout(() => {
+        setSnackbarLock(flowId, false);
+        rootDiv.querySelector(`#${flowId}-snackbar`)?.remove();
+    }, duration);
 };
 
 const isSnackbarLocked = (flowId: string): boolean =>
@@ -54,9 +65,12 @@ const createOrUpdateSnackbar = (
     message: string,
     level: string,
     details: string | Error | null,
-    rootDiv: HTMLElement,
     includeCloseButton: boolean
 ) => {
+    const rootDiv = getFlowRoot(flowId, true);
+    if (!rootDiv) {
+        return;
+    }
     const snackbar = getOrCreateSnackbarElement(flowId, rootDiv);
     snackbar.className = `show snackbar ${level} ${details ? 'with-details' : ''}`;
 
@@ -65,7 +79,7 @@ const createOrUpdateSnackbar = (
     appendSnackbarDetails(snackbar, details);
 
     if (includeCloseButton) {
-        addSnackbarCloseButton(snackbar, level);
+        addSnackbarCloseButton(snackbar, level, flowId);
     }
 };
 
@@ -119,13 +133,16 @@ const getErrorMessage = (error: any): string => {
     return 'An unexpected error occurred.';
 };
 
-const addSnackbarCloseButton = (snackbar: HTMLElement, level: string) => {
+const addSnackbarCloseButton = (snackbar: HTMLElement, level: string, flowId: string) => {
     const closeButton = document.createElement('div');
     closeButton.className = 'close clickable';
     closeButton.innerHTML = '&times;';
     closeButton.onclick = () => {
         snackbar.className = `hide snackbar ${level}`;
-        setTimeout(() => snackbar.remove(), 300);
+        setTimeout(() => {
+            snackbar.remove();
+            setSnackbarLock(flowId, false);
+        }, 300);
     };
     snackbar.appendChild(closeButton);
 };

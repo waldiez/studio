@@ -7,7 +7,12 @@ import { debounce } from '@waldiez/studio/utils/debounce';
 import { getInitialPath, getParentPath, isFile, normalizePath } from '@waldiez/studio/utils/paths';
 
 export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const getPathName = (path: string) => {
+        const parts = path.split('/');
+        return parts[parts.length - 1] || 'Home';
+    };
     const [currentPath, setCurrentPath] = useState<string>(getInitialPath());
+    const [pathName, setPathName] = useState<string>(getPathName(currentPath));
     const [entries, setEntries] = useState<PathInstance[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -19,6 +24,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
             } else {
                 await fetchEntries(currentPath);
             }
+            setPathName(getPathName(currentPath));
         })();
     }, [currentPath]);
 
@@ -61,6 +67,10 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
         } else {
             await fetchEntriesDebounced(sanitizedPath);
         }
+    };
+    const onGoUp = async () => {
+        const parent = getParentPath(currentPath);
+        await onNavigate({ name: '..', path: parent, type: 'folder' });
     };
     const onCreate = async (type: PathInstanceType) => {
         const parent = isFile(currentPath) ? getParentPath(currentPath) : currentPath;
@@ -149,11 +159,13 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
         <FileBrowserContext.Provider
             value={{
                 currentPath,
+                pathName,
                 entries,
                 error,
                 loading,
                 setError,
                 refresh,
+                onGoUp,
                 onNavigate,
                 onCreate,
                 onDelete,

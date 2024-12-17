@@ -2,10 +2,11 @@
 
 import os
 from shutil import copyfile
-from typing import Generator
+from typing import Generator, List
 
 import pytest
 from filelock import FileLock
+from pytest_asyncio import is_async_test
 
 os.environ["WALDIEZ_STUDIO_TESTING"] = "true"
 
@@ -82,3 +83,17 @@ def backup_and_restore_dot_env(
             else:
                 fn.unlink()
             os.environ.pop("WALDIEZ_STUDIO_TESTING")
+
+
+def pytest_collection_modifyitems(items: List[pytest.Item]) -> None:
+    """Run all async tests in the same event loop.
+
+    Parameters
+    ----------
+    items : List[pytest.Item]
+        List of pytest items
+    """
+    pytest_asyncio_tests = (item for item in items if is_async_test(item))
+    session_scope_marker = pytest.mark.asyncio(scope="session")
+    for async_test in pytest_asyncio_tests:
+        async_test.add_marker(session_scope_marker)

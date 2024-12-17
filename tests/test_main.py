@@ -154,6 +154,13 @@ async def test_docs_url(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_docs_redirect(client: AsyncClient) -> None:
+    """Test the docs redirect."""
+    response = await client.get("/docs/")
+    assert response.status_code == 307
+
+
+@pytest.mark.asyncio
 async def test_catch_all(client: AsyncClient) -> None:
     """Test the catch-all route."""
     response = await client.get("/nonexistent-path")

@@ -15,7 +15,9 @@ from waldiez_studio.routes.flow import api
 
 
 @pytest.fixture(autouse=True, name="client")
-async def get_client(tmp_path: Path) -> AsyncGenerator[AsyncClient, None]:
+async def get_client(
+    tmp_path: Path,
+) -> AsyncGenerator[AsyncClient, None]:
     """Get the FastAPI test client."""
     app = FastAPI()
 

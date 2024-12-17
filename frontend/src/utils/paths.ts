@@ -20,7 +20,11 @@ export const isFile = (path: string) => {
 
 export const getParentPath = (path: string): string => {
     const segments = path.split('/').filter(Boolean);
-    return segments.length > 1 ? `/${segments.slice(0, -1).join('/')}` : '/';
+    const parentPath = segments.length > 1 ? `/${segments.slice(0, -1).join('/')}` : '/';
+    if (parentPath === path) {
+        return '/';
+    }
+    return parentPath;
 };
 
 export const normalizePath = (path: string): string => {

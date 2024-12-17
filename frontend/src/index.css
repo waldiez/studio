@@ -25,6 +25,16 @@ body {
     min-width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
     min-width: var(--app-width);
     -ms-overflow-style: -ms-autohiding-scrollbar;
+
+    --ansi-black: #000;
+    --ansi-red: #d9534f;
+    --ansi-green: #5cb85c;
+    --ansi-yellow: #f0ad4e;
+    --ansi-blue: #0275d8;
+    --ansi-magenta: #d63384;
+    --ansi-cyan: #5bc0de;
+    --ansi-white: #f7f7f7;
+    --ansi-bright-yellow: #b58900;
 }
 
 body.waldiez-light {
@@ -40,6 +50,15 @@ body.waldiez-light {
     --input-background: #f8f8f8;
     --input-color: #141414;
     --input-border: #ccc;
+    --ansi-black: #000;
+    --ansi-red: #d9534f;
+    --ansi-green: #5cb85c;
+    --ansi-yellow: #f0ad4e;
+    --ansi-blue: #0275d8;
+    --ansi-magenta: #d63384;
+    --ansi-cyan: #5bc0de;
+    --ansi-white: #f7f7f7;
+    --ansi-bright-yellow: #b58900;
 }
 
 body.waldiez-dark {
@@ -55,6 +74,14 @@ body.waldiez-dark {
     --input-background: #222;
     --input-color: #f8f8f8;
     --input-border: #444;
+    --ansi-black: #333;
+    --ansi-red: #ff6b6b;
+    --ansi-green: #4caf50;
+    --ansi-yellow: #ffdd57;
+    --ansi-blue: #61afef;
+    --ansi-magenta: #c678dd;
+    --ansi-cyan: #56b6c2;
+    --ansi-white: #fff;
 }
 
 * {

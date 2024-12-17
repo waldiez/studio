@@ -112,10 +112,11 @@ def run(
     logger.debug("Settings: %s", settings.model_dump_json(indent=2))
     settings.to_env()
     this_dir = Path(__file__).parent
+    this_dir_name = this_dir.name
     chdir_to = str(this_dir.parent)
     if os.getcwd() != chdir_to:
         os.chdir(chdir_to)
-    app_module_path = f"{this_dir.name}.main"
+    app_module_path = f"{this_dir_name}.main"
     uvicorn.run(
         f"{app_module_path}:app",
         host=host,
@@ -124,10 +125,17 @@ def run(
         app_dir=chdir_to,
         date_header=False,
         server_header=False,
-        reload_dirs=[str(this_dir)] if reload else None,
-        reload_includes=["*.py"] if reload else None,
+        reload_dirs=[str(this_dir)],
         reload_excludes=(
-            [f"{this_dir.name}/files/*", ".*", ".py[cod]", ".sw.*", "~*"]
+            [
+                "**/waldiez_out/**/*",
+                ".*",
+                ".py[cod]",
+                ".sw.*",
+                "~*",
+                "**/files/**/*",
+                ".venv/*",
+            ]
             if reload
             else None
         ),

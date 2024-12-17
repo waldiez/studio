@@ -33,7 +33,6 @@ function getCompatiblePythonExecutable() {
         try {
             execSync(`${pyCmd} --version`);
             if (isPyGte310lte313(pyCmd)) {
-                console.info(`Found compatible python: ${pyCmd}`);
                 pyThonExec = pyCmd;
                 break;
             }

@@ -4,7 +4,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import APIRouter, FastAPI, Response
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -12,24 +12,20 @@ from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from waldiez_studio._version import __version__
 from waldiez_studio.config.settings import get_settings
 from waldiez_studio.middleware import SecurityHeadersMiddleware
-from waldiez_studio.routes.flow import api as flow_router
-from waldiez_studio.routes.workspace import api as workspace_router
-from waldiez_studio.utils import ensure_extra_static_files, get_static_dir
+from waldiez_studio.routes import api_router, ws_router
+from waldiez_studio.utils.extra_static import ensure_extra_static_files
+from waldiez_studio.utils.paths import get_static_dir
 
 LOG = logging.getLogger(__name__)
 
 settings = get_settings()
-api_router = APIRouter()
-api_router.include_router(workspace_router, tags=["Workspace"])
-api_router.include_router(flow_router, tags=["Flow"])
-
 
 STATIC_DIR = get_static_dir()
 FRONTEND_DIR = STATIC_DIR / "frontend"
@@ -60,7 +56,7 @@ async def lifespan(
     """
     try:
         await ensure_extra_static_files(STATIC_DIR)
-        LOG.info("Monaco editor files are prepared.")
+        LOG.debug("Monaco editor files are ready.")
     except BaseException as e:
         LOG.error("Failed to prepare extra static files.")
         raise RuntimeError("Critical setup step failed.") from e
@@ -132,7 +128,7 @@ async def redirect_docs() -> Response:
     Response
         The redirect to the custom Swagger UI HTML page
     """
-    return Response(status_code=301, headers={"Location": "/docs"})
+    return RedirectResponse(url="/docs")
 
 
 @app.get(swagger_ui_oauth2_redirect_url, include_in_schema=False)
@@ -163,6 +159,7 @@ app.mount(
 
 # include api routes
 app.include_router(api_router, prefix="/api")
+app.include_router(ws_router)
 
 
 # common routes
@@ -192,7 +189,7 @@ async def favicon() -> Response:
 
 
 @app.get("/health")
-@app.get("/healthz", include_in_schema=False)
+@app.get("/healthz")
 async def health_check() -> Response:
     """Health check.
 

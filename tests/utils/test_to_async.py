@@ -1,4 +1,4 @@
-"""Tests for waldiez_studio.utils.to_async."""
+"""Tests for waldiez_studio.utils.sync."""
 
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long
 
@@ -9,23 +9,20 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from waldiez_studio.utils.to_async import sync_to_async
+from waldiez_studio.utils.sync import sync_to_async
 
 
-# A sample synchronous function to test
 def add(a: int, b: int) -> int:
     """Add two numbers."""
     return a + b
 
 
-# A synchronous function that raises an exception
 def raise_exception() -> None:
     """Raise an exception."""
     raise ValueError("An error occurred")
 
 
-# A synchronous function to test blocking operations
-def blocking_function(delay: int) -> str:
+def blocking_function(delay: float) -> str:
     """Block for a specified time."""
     time.sleep(delay)
     return f"Slept for {delay} seconds"
@@ -51,7 +48,7 @@ async def test_sync_to_async_exception() -> None:
 async def test_sync_to_async_blocking_function() -> None:
     """Test running a blocking synchronous function asynchronously."""
     async_blocking_function = sync_to_async(blocking_function)
-    delay = 1
+    delay = 0.5
     start_time = time.time()
     result = await async_blocking_function(delay)
     end_time = time.time()
@@ -127,7 +124,6 @@ async def test_sync_to_async_loop_closure() -> None:
         patch("asyncio.new_event_loop") as mock_new_event_loop,
         patch("asyncio.set_event_loop") as mock_set_event_loop,
     ):
-        # Mock a new loop and configure AsyncMock
         mock_loop = MagicMock()
         mock_loop.run_in_executor = AsyncMock(return_value=43)
         mock_loop.close = (
@@ -135,24 +131,19 @@ async def test_sync_to_async_loop_closure() -> None:
         )  # Ensure `close` is treated as a synchronous method
         mock_new_event_loop.return_value = mock_loop
 
-        # Call the async_test_func
         result = await async_test_func(42)
 
-        # Assertions
-        mock_new_event_loop.assert_called_once()  # Ensure new loop created
-        mock_set_event_loop.assert_any_call(mock_loop)  # Set new loop
-        mock_set_event_loop.assert_any_call(None)  # Reset loop to None
+        mock_new_event_loop.assert_called_once()
+        mock_set_event_loop.assert_any_call(mock_loop)
+        mock_set_event_loop.assert_any_call(None)
 
-        # Verify `run_in_executor` call with `partial` object
         expected_partial = partial(test_func, 42)
         mock_loop.run_in_executor.assert_awaited_once()
-        # Check that the partial object matches the expected function and arguments
         actual_partial = mock_loop.run_in_executor.await_args[0][1]  # type: ignore
         # pylint: disable=no-member
         assert actual_partial.func == expected_partial.func
         assert actual_partial.args == expected_partial.args
 
-        mock_loop.close.assert_called_once()  # Ensure loop closed
+        mock_loop.close.assert_called_once()
 
-        # Validate the result
         assert result == 43
