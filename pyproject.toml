@@ -85,7 +85,7 @@ test = [
     'pytest-cov==6.0.0',
     'pytest-html==4.1.1',
     # mistralai 1.2.5 requires httpx<0.28.0,>=0.27.0, but you have httpx 0.28.1 which is incompatible.
-    'pytest-httpx==0.35.0',
+    'pytest-httpx==0.34.0',
     'pytest-sugar==1.0.0',
     'pytest-timeout==2.3.1',
 ]
