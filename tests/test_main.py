@@ -1,5 +1,6 @@
 """Tests for main.py"""
 
+# flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long, unused-argument
 
 import json

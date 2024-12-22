@@ -1,6 +1,6 @@
 export function debounceSync<T extends (...args: any[]) => void>(
     func: T,
-    delay: number
+    delay: number,
 ): (...args: Parameters<T>) => void {
     let timeoutId: NodeJS.Timeout;
     return (...args: Parameters<T>) => {
@@ -11,7 +11,7 @@ export function debounceSync<T extends (...args: any[]) => void>(
 
 export function debounce<T extends (...args: any[]) => Promise<any>>(
     func: T,
-    delay: number
+    delay: number,
 ): (...args: Parameters<T>) => Promise<ReturnType<T>> {
     let timeoutId: NodeJS.Timeout | null = null;
 

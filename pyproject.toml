@@ -28,15 +28,16 @@ classifiers = [
 ]
 dependencies = [
     'aiofiles==24.1.0',
-    'aiohttp==3.11.10',
+    'aiohttp==3.11.11',
     'fastapi==0.115.6',
     'pydantic-settings==2.7.0',
     'python-multipart==0.0.20',
-    'tenacity==9.0.0',
+    # llama-index-legacy 0.9.48.post4 requires tenacity<9.0.0,>=8.2.0, but you have tenacity 9.0.0 which is incompatible.
+    'tenacity>=8.2.0,<9.0.0',
     # together (ag2-extra) 1.2.0 depends on typer<0.13 and >=0.9
     'typer>=0.9,<0.13',
     'uvicorn[standard]==0.34.0',
-    'waldiez==0.1.19',
+    'waldiez>=0.1.20',
 ]
 
 [project.urls]
@@ -64,12 +65,12 @@ dev = [
     'flake8==7.1.1',
     'hatchling==1.27.0',
     'isort==5.13.2',
-    'mypy==1.13.0',
+    'mypy==1.14.0',
     'pre-commit==4.0.1',
     'pydocstyle==6.3.0',
     'pylint==3.3.2',
     'python-dotenv==1.0.1',
-    'ruff==0.8.3',
+    'ruff==0.8.4',
     'toml; python_version <= "3.10"',
     'types-aiofiles==24.1.0.20240626',
     'types-PyYAML==6.0.12.20240917',
@@ -78,12 +79,12 @@ dev = [
 ]
 test = [
     'asgi-lifespan==2.1.0',
-    'httpx',
-    'httpx_ws',
+    'httpx<0.28.0,>=0.27.0',
     'pytest==8.3.4',
     'pytest-asyncio==0.25.0',
     'pytest-cov==6.0.0',
     'pytest-html==4.1.1',
+    # mistralai 1.2.5 requires httpx<0.28.0,>=0.27.0, but you have httpx 0.28.1 which is incompatible.
     'pytest-httpx==0.35.0',
     'pytest-sugar==1.0.0',
     'pytest-timeout==2.3.1',
@@ -148,7 +149,6 @@ plugins = [
 exclude = [
     '.venv',
     '.local',
-    '.yarn',
     'examples',
     'node_modules',
     'frontend',
@@ -166,6 +166,8 @@ profile ='black'
 skip=[
     '.venv',
     '.local',
+    "build",
+    "dist",
     'examples',
     'node_modules',
     'waldiez_studio/files',
@@ -213,9 +215,10 @@ min-similarity-lines=10
 [tool.pylint.broad_try_clause]
 max-try-statements=3
 [tool.pylint.design]
-max-args=10
-max-attributes=10
-max-positional-arguments=10
+max-args=11
+max-attributes=11
+max-positional-arguments=11
+max-statements=50
 [tool.pylint.string]
 check-quote-consistency = true
 check-str-concat-over-line-jumps = true

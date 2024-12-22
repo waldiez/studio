@@ -1,9 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { debounce, debounceSync } from "@waldiez/studio/utils/debounce";
+import { describe, expect, it, vi } from "vitest";
 
-import { debounce, debounceSync } from '@waldiez/studio/utils/debounce';
-
-describe('debounceSync', () => {
-    it('calls the function after the delay', async () => {
+describe("debounceSync", () => {
+    it("calls the function after the delay", async () => {
         const mockFunc = vi.fn();
         const debounced = debounceSync(mockFunc, 100);
 
@@ -15,7 +14,7 @@ describe('debounceSync', () => {
         expect(mockFunc).toHaveBeenCalledTimes(1);
     });
 
-    it('resets the delay if called again within the delay period', async () => {
+    it("resets the delay if called again within the delay period", async () => {
         const mockFunc = vi.fn();
         const debounced = debounceSync(mockFunc, 100);
 
@@ -30,9 +29,9 @@ describe('debounceSync', () => {
     });
 });
 
-describe('debounce', () => {
-    it('calls the async function after the delay', async () => {
-        const mockFunc = vi.fn().mockResolvedValue('result');
+describe("debounce", () => {
+    it("calls the async function after the delay", async () => {
+        const mockFunc = vi.fn().mockResolvedValue("result");
         const debounced = debounce(mockFunc, 100);
 
         const promise = debounced();
@@ -40,12 +39,12 @@ describe('debounce', () => {
 
         // Advance timers to trigger the debounced function
         vi.advanceTimersByTime(100);
-        await expect(promise).resolves.toBe('result');
+        await expect(promise).resolves.toBe("result");
         expect(mockFunc).toHaveBeenCalledTimes(1);
     });
 
-    it('resets the delay if called again within the delay period', async () => {
-        const mockFunc = vi.fn().mockResolvedValue('result');
+    it("resets the delay if called again within the delay period", async () => {
+        const mockFunc = vi.fn().mockResolvedValue("result");
         const debounced = debounce(mockFunc, 100);
 
         debounced();
@@ -56,18 +55,18 @@ describe('debounce', () => {
         expect(mockFunc).not.toHaveBeenCalled();
 
         vi.advanceTimersByTime(50);
-        await expect(promise2).resolves.toBe('result');
+        await expect(promise2).resolves.toBe("result");
         expect(mockFunc).toHaveBeenCalledTimes(1);
     });
 
-    it('handles async errors correctly', async () => {
-        const mockFunc = vi.fn().mockRejectedValue(new Error('Test error'));
+    it("handles async errors correctly", async () => {
+        const mockFunc = vi.fn().mockRejectedValue(new Error("Test error"));
         const debounced = debounce(mockFunc, 100);
 
         const promise = debounced();
         vi.advanceTimersByTime(100);
 
-        await expect(promise).rejects.toThrow('Test error');
+        await expect(promise).rejects.toThrow("Test error");
         expect(mockFunc).toHaveBeenCalledTimes(1);
     });
 });

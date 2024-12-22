@@ -9,6 +9,15 @@
         "selector-class-pattern": "^([a-z][A-z\\d]*)(-[A-z\\d]+)*$",
         "selector-no-vendor-prefix": null,
         "value-no-vendor-prefix": null,
-        "prettier/prettier": [true, { "singleQuote": true, "tabWidth": 4 }]
+        "prettier/prettier": [
+            true,
+            {
+                "tabWidth": 4,
+                "printWidth": 110,
+                "trailingComma": "all",
+                "arrowParens": "avoid",
+                "endOfLine": "lf"
+            }
+        ]
     }
 }

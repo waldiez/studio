@@ -73,6 +73,8 @@ def merge_lcov(lcov_cmd: List[str]) -> None:
     else:
         branch_coverage = "lcov_branch_coverage=1"
     merged_lcov = ROOT_DIR / "coverage" / "lcov.info"
+    if merged_lcov.is_file():
+        merged_lcov.unlink()
     run_command(
         lcov_cmd
         + [

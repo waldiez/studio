@@ -1,5 +1,6 @@
 """Tests for the workspace routes."""
 
+# flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long
 
 from pathlib import Path

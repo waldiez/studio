@@ -1,4 +1,4 @@
-export type PathInstanceType = 'file' | 'folder';
+export type PathInstanceType = "file" | "folder";
 export type PathInstance = {
     name: string;
     path: string;

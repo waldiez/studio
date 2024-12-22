@@ -1,17 +1,16 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { it, vi } from 'vitest';
+import { act, render, screen, waitFor } from "@testing-library/react";
+import * as fileBrowserService from "@waldiez/studio/api/fileBrowserService";
+import { FileBrowserProvider, useFileBrowser } from "@waldiez/studio/components/FileBrowser";
+import { it, vi } from "vitest";
 
-import * as fileBrowserService from '@waldiez/studio/api/fileBrowserService';
-import { FileBrowserProvider, useFileBrowser } from '@waldiez/studio/components/FileBrowser';
-
-vi.mock('@waldiez/studio/api/fileBrowserService', () => ({
+vi.mock("@waldiez/studio/api/fileBrowserService", () => ({
     fetchFiles: vi.fn().mockResolvedValue({ items: [] }),
     createFolder: vi.fn(),
     createFile: vi.fn(),
     deleteFileOrFolder: vi.fn(),
     renameFileOrFolder: vi.fn(),
     uploadFile: vi.fn(),
-    downloadFileOrFolder: vi.fn()
+    downloadFileOrFolder: vi.fn(),
 }));
 
 const TestComponent = () => {
@@ -19,85 +18,85 @@ const TestComponent = () => {
     return (
         <div>
             <div data-testid="current-path">{currentPath}</div>
-            <div data-testid="loading">{loading ? 'Loading' : 'Not Loading'}</div>
+            <div data-testid="loading">{loading ? "Loading" : "Not Loading"}</div>
             <div data-testid="error">{error}</div>
             <ul data-testid="entries">
                 {entries.map(entry => (
                     <li key={entry.path}>{entry.name}</li>
                 ))}
             </ul>
-            <button onClick={() => setError('Test Error')}>Set Error</button>
+            <button onClick={() => setError("Test Error")}>Set Error</button>
             <button onClick={refresh}>Refresh</button>
         </div>
     );
 };
 
-describe('FileBrowserProvider', () => {
+describe("FileBrowserProvider", () => {
     afterEach(() => {
         vi.clearAllMocks();
     });
 
-    it('provides context to children', async () => {
+    it("provides context to children", async () => {
         render(
             <FileBrowserProvider>
                 <TestComponent />
-            </FileBrowserProvider>
+            </FileBrowserProvider>,
         );
 
-        expect(screen.getByTestId('current-path')).toHaveTextContent('/');
-        await waitFor(() => expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading'));
-        expect(screen.getByTestId('entries').children).toHaveLength(0);
+        expect(screen.getByTestId("current-path")).toHaveTextContent("/");
+        await waitFor(() => expect(screen.getByTestId("loading")).toHaveTextContent("Not Loading"));
+        expect(screen.getByTestId("entries").children).toHaveLength(0);
 
         act(() => {
-            screen.getByText('Set Error').click();
+            screen.getByText("Set Error").click();
         });
 
-        expect(screen.getByTestId('error')).toHaveTextContent('Test Error');
+        expect(screen.getByTestId("error")).toHaveTextContent("Test Error");
     });
 
-    it('throws an error if no provider is found', () => {
+    it("throws an error if no provider is found", () => {
         expect(() => render(<TestComponent />)).toThrow(
-            'useFileBrowser must be used within a FileBrowserProvider'
+            "useFileBrowser must be used within a FileBrowserProvider",
         );
     });
 
-    it('fetches entries on refresh', async () => {
+    it("fetches entries on refresh", async () => {
         const fetchFilesMock = vi.mocked(fileBrowserService.fetchFiles).mockResolvedValue({
-            items: [{ name: 'test.txt', path: '/test.txt', type: 'file' }]
+            items: [{ name: "test.txt", path: "/test.txt", type: "file" }],
         });
 
         render(
             <FileBrowserProvider>
                 <TestComponent />
-            </FileBrowserProvider>
+            </FileBrowserProvider>,
         );
 
         act(() => {
-            screen.getByText('Refresh').click();
+            screen.getByText("Refresh").click();
         });
 
         await waitFor(() => {
-            expect(fetchFilesMock).toHaveBeenCalledWith('/');
-            expect(screen.getByTestId('entries').children).toHaveLength(1);
-            expect(screen.getByText('test.txt')).toBeInTheDocument();
+            expect(fetchFilesMock).toHaveBeenCalledWith("/");
+            expect(screen.getByTestId("entries").children).toHaveLength(1);
+            expect(screen.getByText("test.txt")).toBeInTheDocument();
         });
     });
 
-    it('handles errors when fetching files', async () => {
+    it("handles errors when fetching files", async () => {
         const fetchFilesMock = vi
             .mocked(fileBrowserService.fetchFiles)
-            .mockRejectedValue(new Error('Fetch error'));
+            .mockRejectedValue(new Error("Fetch error"));
         render(
             <FileBrowserProvider>
                 <TestComponent />
-            </FileBrowserProvider>
+            </FileBrowserProvider>,
         );
 
         act(() => {
-            screen.getByText('Refresh').click();
+            screen.getByText("Refresh").click();
         });
 
-        await waitFor(() => expect(screen.getByTestId('error')).toHaveTextContent('Fetch error'));
+        await waitFor(() => expect(screen.getByTestId("error")).toHaveTextContent("Fetch error"));
         expect(fetchFilesMock).toHaveBeenCalled();
     });
 });

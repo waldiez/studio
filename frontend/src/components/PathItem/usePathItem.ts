@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
+import { PathInstance } from "@waldiez/studio/types";
 
-import { findFileIcon } from '@waldiez/studio/components/PathItem/FileIcon';
-import { PathInstance } from '@waldiez/studio/types';
+import { useEffect, useRef, useState } from "react";
 
-const EXTENSION = '.waldiez';
+const EXTENSION = ".waldiez";
 
 type PathItemProps = {
     currentPath: string;
@@ -36,9 +36,9 @@ export const usePathItem = (props: PathItemProps) => {
                 closeContextMenu();
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [contextMenuVisible]);
     const handleDelete = async () => {
@@ -68,14 +68,14 @@ export const usePathItem = (props: PathItemProps) => {
     };
 
     const canNavigate = (): boolean => {
-        if (item.type === 'folder' && item.name === '..') {
+        if (item.type === "folder" && item.name === "..") {
             return true;
         }
         const itemPath = item.path;
-        if (item.type === 'folder' && currentPath !== itemPath) {
+        if (item.type === "folder" && currentPath !== itemPath) {
             return true;
         }
-        if (item.type === 'file' && item.name.endsWith(EXTENSION) && currentPath !== itemPath) {
+        if (item.type === "file" && item.name.endsWith(EXTENSION) && currentPath !== itemPath) {
             return true;
         }
         return false;
@@ -108,6 +108,6 @@ export const usePathItem = (props: PathItemProps) => {
         handleCancel,
         canNavigate,
         handleContextMenu,
-        closeContextMenu
+        closeContextMenu,
     };
 };

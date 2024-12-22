@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { FaPlus, FaUpload } from 'react-icons/fa';
+import React, { useRef } from "react";
+import { FaPlus, FaUpload } from "react-icons/fa";
 
 export const ActionButtons: React.FC<{
     onNewFile: () => Promise<void>;
@@ -19,9 +19,9 @@ export const ActionButtons: React.FC<{
         try {
             await onUpload(file); // Assuming onUpload is an async function that handles the upload logic
         } catch (error) {
-            console.error('Error uploading file:', error);
+            console.error("Error uploading file:", error);
         } finally {
-            event.target.value = ''; // Reset the file input to allow re-uploading the same file
+            event.target.value = ""; // Reset the file input to allow re-uploading the same file
         }
     };
     return (
@@ -47,7 +47,7 @@ export const ActionButtons: React.FC<{
                 data-testid="file-input"
                 type="file"
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 onChange={handleFileUpload}
             />
         </div>

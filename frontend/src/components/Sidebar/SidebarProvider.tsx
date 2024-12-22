@@ -1,10 +1,10 @@
-import React, { ReactNode, useState } from 'react';
+import { SidebarContext } from "@waldiez/studio/components/Sidebar/useSidebar";
 
-import { SidebarContext } from '@waldiez/studio/components/Sidebar/useSidebar';
+import React, { ReactNode, useState } from "react";
 
 export const SidebarProvider: React.FC<{ children: ReactNode; initialVisible?: boolean }> = ({
     children,
-    initialVisible = true
+    initialVisible = true,
 }) => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(initialVisible);
 

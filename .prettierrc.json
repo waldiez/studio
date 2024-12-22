@@ -1,12 +1,11 @@
 {
     "plugins": ["@trivago/prettier-plugin-sort-imports"],
-    "singleQuote": true,
     "tabWidth": 4,
     "printWidth": 110,
-    "trailingComma": "none",
+    "trailingComma": "all",
     "arrowParens": "avoid",
-    "endOfLine": "auto",
+    "endOfLine": "lf",
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
-    "importOrder": ["^react", "^react-dom", "^@waldiez/react", "^@waldiez/studio"]
+    "importOrder": ["^react", "^react-dom", "^@waldiez/react", "^@waldiez/jupyter"]
 }

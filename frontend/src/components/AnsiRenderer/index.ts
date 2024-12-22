@@ -1,1 +1,1 @@
-export { AnsiRenderer } from '@waldiez/studio/components/AnsiRenderer/AnsiRenderer';
+export { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer/AnsiRenderer";

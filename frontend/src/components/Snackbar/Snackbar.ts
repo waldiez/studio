@@ -1,4 +1,4 @@
-import '@waldiez/studio/components/Snackbar/Snackbar.css';
+import "@waldiez/studio/components/Snackbar/Snackbar.css";
 
 /**
  * Shows a snackbar message for a given flow view.
@@ -11,10 +11,10 @@ import '@waldiez/studio/components/Snackbar/Snackbar.css';
 export const showSnackbar = (
     flowId: string,
     message: string,
-    level: 'info' | 'warning' | 'error' | 'success' = 'info',
+    level: "info" | "warning" | "error" | "success" = "info",
     details: string | Error | null = null,
     duration: number | undefined = undefined,
-    includeCloseButton: boolean = false
+    includeCloseButton: boolean = false,
 ) => {
     if (isSnackbarLocked(flowId)) {
         setTimeout(() => showSnackbar(flowId, message, level, details, duration, includeCloseButton), 200);
@@ -24,7 +24,7 @@ export const showSnackbar = (
     setSnackbarLock(flowId, true);
     // if no duration is provided, let's add a close button
     // to manually close the snackbar
-    let includeCloseBtn = typeof duration !== 'number';
+    let includeCloseBtn = typeof duration !== "number";
     if (includeCloseButton) {
         includeCloseBtn = true;
     }
@@ -57,7 +57,7 @@ const isSnackbarLocked = (flowId: string): boolean =>
 
 const setSnackbarLock = (flowId: string, locked: boolean) => {
     locked
-        ? window.localStorage.setItem(`snackbar-${flowId}.lock`, '1')
+        ? window.localStorage.setItem(`snackbar-${flowId}.lock`, "1")
         : window.localStorage.removeItem(`snackbar-${flowId}.lock`);
 };
 const createOrUpdateSnackbar = (
@@ -65,16 +65,16 @@ const createOrUpdateSnackbar = (
     message: string,
     level: string,
     details: string | Error | null,
-    includeCloseButton: boolean
+    includeCloseButton: boolean,
 ) => {
     const rootDiv = getFlowRoot(flowId, true);
     if (!rootDiv) {
         return;
     }
     const snackbar = getOrCreateSnackbarElement(flowId, rootDiv);
-    snackbar.className = `show snackbar ${level} ${details ? 'with-details' : ''}`;
+    snackbar.className = `show snackbar ${level} ${details ? "with-details" : ""}`;
 
-    snackbar.textContent = '';
+    snackbar.textContent = "";
     appendSnackbarMessage(snackbar, message);
     appendSnackbarDetails(snackbar, details);
 
@@ -86,7 +86,7 @@ const createOrUpdateSnackbar = (
 const getOrCreateSnackbarElement = (flowId: string, rootDiv: HTMLElement): HTMLElement => {
     let snackbar = rootDiv.querySelector(`#${flowId}-snackbar`) as HTMLElement;
     if (!snackbar) {
-        snackbar = document.createElement('div');
+        snackbar = document.createElement("div");
         snackbar.id = `${flowId}-snackbar`;
         rootDiv.appendChild(snackbar);
     }
@@ -94,8 +94,8 @@ const getOrCreateSnackbarElement = (flowId: string, rootDiv: HTMLElement): HTMLE
 };
 
 const appendSnackbarMessage = (snackbar: HTMLElement, message: string) => {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "message";
     messageDiv.textContent = message;
     snackbar.appendChild(messageDiv);
 };
@@ -105,20 +105,20 @@ const appendSnackbarDetails = (snackbar: HTMLElement, details: string | Error | 
         return;
     }
 
-    const detailsElement = document.createElement('details');
-    const summaryElement = document.createElement('summary');
-    summaryElement.textContent = 'Details';
+    const detailsElement = document.createElement("details");
+    const summaryElement = document.createElement("summary");
+    summaryElement.textContent = "Details";
     detailsElement.appendChild(summaryElement);
 
-    const detailsContent = document.createElement('div');
-    detailsContent.textContent = typeof details === 'string' ? details : getErrorMessage(details);
+    const detailsContent = document.createElement("div");
+    detailsContent.textContent = typeof details === "string" ? details : getErrorMessage(details);
     detailsElement.appendChild(detailsContent);
 
     snackbar.appendChild(detailsElement);
 };
 
 const getErrorMessage = (error: any): string => {
-    if (typeof error === 'string') {
+    if (typeof error === "string") {
         return error;
     }
     if (error.detail) {
@@ -130,13 +130,13 @@ const getErrorMessage = (error: any): string => {
     if (error.statusText) {
         return `Error: ${error.statusText}`;
     }
-    return 'An unexpected error occurred.';
+    return "An unexpected error occurred.";
 };
 
 const addSnackbarCloseButton = (snackbar: HTMLElement, level: string, flowId: string) => {
-    const closeButton = document.createElement('div');
-    closeButton.className = 'close clickable';
-    closeButton.innerHTML = '&times;';
+    const closeButton = document.createElement("div");
+    closeButton.className = "close clickable";
+    closeButton.innerHTML = "&times;";
     closeButton.onclick = () => {
         snackbar.className = `hide snackbar ${level}`;
         setTimeout(() => {

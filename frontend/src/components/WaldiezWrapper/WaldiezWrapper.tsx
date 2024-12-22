@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
+import { FlowModal } from "@waldiez/studio/components/FlowModal";
+import "@waldiez/studio/components/WaldiezWrapper/WaldiezWrapper.css";
+import { useWaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper/useWaldiezWrapper";
 
-import { Waldiez } from '@waldiez/react';
+import { useEffect } from "react";
 
-import { FlowModal } from '@waldiez/studio/components/FlowModal';
-import '@waldiez/studio/components/WaldiezWrapper/WaldiezWrapper.css';
-import { useWaldiezWrapper } from '@waldiez/studio/components/WaldiezWrapper/useWaldiezWrapper';
+import { Waldiez } from "@waldiez/react";
 
-const vsPath = 'monaco/vs';
+const vsPath = "monaco/vs";
 const onChange = null;
 const inputPrompt = null;
 const onUserInput = null;
@@ -26,14 +26,14 @@ export const WaldiezWrapper = () => {
         onCovert,
         onSave,
         setModalOpen,
-        onUpload
+        onUpload,
     } = useWaldiezWrapper();
     const handleRun = (flowString: string) => {
         onRun(flowString);
     };
     const onSubmit = (input: string) => {
         resetPrompt();
-        sendMessage({ action: 'input', payload: input });
+        sendMessage({ action: "input", payload: input });
     };
     const closeModal = () => {
         setModalOpen(false);

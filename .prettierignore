@@ -5,8 +5,11 @@ coverage
 **/lib
 .venv/
 **/dist/
+**/*cache/
 **/.local/
 **/package.json
 !/package.json
 **/vs/
-!/docs/
+**/min-maps/
+**/*cache/
+**/static/**/assets/

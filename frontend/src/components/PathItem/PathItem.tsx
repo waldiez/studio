@@ -1,10 +1,10 @@
-import React from 'react';
-import { FaEdit, FaFolder, FaTrashAlt } from 'react-icons/fa';
-import { MdCancel, MdDone } from 'react-icons/md';
+import "@waldiez/studio/components/PathItem/PathItem.css";
+import { usePathItem } from "@waldiez/studio/components/PathItem/usePathItem";
+import { PathInstance } from "@waldiez/studio/types";
 
-import '@waldiez/studio/components/PathItem/PathItem.css';
-import { usePathItem } from '@waldiez/studio/components/PathItem/usePathItem';
-import { PathInstance } from '@waldiez/studio/types';
+import React from "react";
+import { FaEdit, FaFolder, FaTrashAlt } from "react-icons/fa";
+import { MdCancel, MdDone } from "react-icons/md";
 
 export const PathItem: React.FC<{
     currentPath: string;
@@ -20,7 +20,7 @@ export const PathItem: React.FC<{
     onRename = undefined,
     onDelete = undefined,
     onNavigate = undefined,
-    onDownload = undefined
+    onDownload = undefined,
 }) => {
     const {
         isEditing,
@@ -37,18 +37,18 @@ export const PathItem: React.FC<{
         onNameChange,
         handleCancel,
         handleContextMenu,
-        closeContextMenu
+        closeContextMenu,
     } = usePathItem({ currentPath, item, onRename, onDelete, onNavigate, onDownload });
     const renderIcon = () => {
         if (isEditing) {
             return <MdCancel className="path-item-edit" onClick={handleCancel} />;
         }
-        return item.type === 'folder' ? <FaFolder className="path-item-icon" /> : fileIcon;
+        return item.type === "folder" ? <FaFolder className="path-item-icon" /> : fileIcon;
     };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
+        if (event.key === "Enter") {
             handleRename();
-        } else if (event.key === 'Escape') {
+        } else if (event.key === "Escape") {
             handleCancel();
         }
     };
@@ -80,7 +80,7 @@ export const PathItem: React.FC<{
         return <div className="path-name">{item.name}</div>;
     };
     const renderRenameAction = () => {
-        if (item.name === '..' || !onRename) {
+        if (item.name === ".." || !onRename) {
             return null;
         }
         return isEditing ? (
@@ -91,7 +91,7 @@ export const PathItem: React.FC<{
     };
 
     const renderDeleteAction = () => {
-        if (item.name === '..' || !onDelete) {
+        if (item.name === ".." || !onDelete) {
             return null;
         }
         return <FaTrashAlt className="path-item-delete" data-testid="delete-button" onClick={handleDelete} />;
@@ -99,15 +99,15 @@ export const PathItem: React.FC<{
     return (
         <div
             data-testid="path-item"
-            className={`path-item ${canClick ? '' : 'read-only'} ${item.name === '..' ? 'up' : ''}`}
+            className={`path-item ${canClick ? "" : "read-only"} ${item.name === ".." ? "up" : ""}`}
             onContextMenu={handleContextMenu}
         >
-            {contextMenuVisible && contextMenuPosition && item.name !== '..' && (
+            {contextMenuVisible && contextMenuPosition && item.name !== ".." && (
                 <div
                     ref={contextMenuRef}
                     style={{
                         top: contextMenuPosition.y,
-                        left: contextMenuPosition.x
+                        left: contextMenuPosition.x,
                     }}
                     className="context-menu"
                 >

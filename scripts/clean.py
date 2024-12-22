@@ -1,13 +1,9 @@
-"""Cleanup."""
+"""Clean the project."""
 
-# pylint: disable=duplicate-code,broad-except
 import glob
 import os
 import shutil
 import sys
-from pathlib import Path
-
-ROOT_DIR = Path(__file__).parent.parent
 
 DIR_PATTERNS = [
     "__pycache__",
@@ -16,8 +12,11 @@ DIR_PATTERNS = [
     ".mypy_cache",
     ".ruff_cache",
     "*.egg-info",
-    "htmlcov",
+    "coverage",
+    "build",
+    "site",
 ]
+
 
 FILE_PATTERNS = [
     "*.pyc",
@@ -32,49 +31,44 @@ FILE_PATTERNS = [
     ".coverage*",
 ]
 
-ROOT_LEVEL_DIRS = [
-    "coding",
-    "reports",
-]
+SKIP_DIRS = [".venv"]
 
 
 def _remove_dirs() -> None:
     for pattern in DIR_PATTERNS:
         for dirpath in glob.glob(f"./**/{pattern}", recursive=True):
-            if "node_modules" in dirpath:
+            if any(
+                f"{os.path.sep}{skip_dir}{os.path.sep}" in dirpath
+                for skip_dir in SKIP_DIRS
+            ):
                 continue
-            sys.stdout.write(f"removing {dirpath}\n")
+            print(f"removing dir: {dirpath}")
             try:
                 shutil.rmtree(dirpath)
-            except BaseException:
-                pass
-    for dirname in ROOT_LEVEL_DIRS:
-        directory = os.path.join(ROOT_DIR, dirname)
-        if os.path.isdir(directory):
-            sys.stdout.write(f"removing {dirname}\n")
-            try:
-                shutil.rmtree(directory)
-            except BaseException:
-                pass
+            except BaseException:  # pylint: disable=broad-except
+                print(f"failed to remove dir: {dirpath}", file=sys.stderr)
 
 
 def _remove_files() -> None:
     for pattern in FILE_PATTERNS:
         for filepath in glob.glob(f"./**/{pattern}", recursive=True):
-            if "node_modules" in filepath:
+            if any(
+                f"{os.path.sep}{skip_dir}{os.path.sep}" in filepath
+                for skip_dir in SKIP_DIRS
+            ):
                 continue
-            sys.stdout.write(f"removing {filepath}\n")
-            os.remove(filepath)
+            print(f"removing file: {filepath}")
+            try:
+                os.remove(filepath)
+            except BaseException:  # pylint: disable=broad-except
+                print(f"failed to remove file: {filepath}", file=sys.stderr)
 
 
 def main() -> None:
-    """Cleanup unnecessary files and directories."""
-    _cwd = os.getcwd()
-    os.chdir(ROOT_DIR)
+    """Clean the project."""
     _remove_dirs()
     _remove_files()
-    if os.getcwd() != _cwd:
-        os.chdir(_cwd)
+    print("Clean Done [waldiez_studio].")
 
 
 if __name__ == "__main__":

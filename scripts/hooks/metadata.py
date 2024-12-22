@@ -61,5 +61,10 @@ See ../scripts/hook.py for more information.
 
 __version__ = "{version}"
 '''
-    with open(version_path, "w", encoding="utf-8") as f_write:
+    with open(
+        version_path,
+        "w",
+        encoding="utf-8",
+        newline="\n",
+    ) as f_write:
         f_write.write(version_string)

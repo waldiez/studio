@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaCircleXmark } from 'react-icons/fa6';
-import { FiSend } from 'react-icons/fi';
+import { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer";
+import "@waldiez/studio/components/FlowModal/FlowModal.css";
 
-import { AnsiRenderer } from '@waldiez/studio/components/AnsiRenderer';
-import '@waldiez/studio/components/FlowModal/FlowModal.css';
+import React, { useEffect, useRef, useState } from "react";
+import { FaCircleXmark } from "react-icons/fa6";
+import { FiSend } from "react-icons/fi";
 
 type FlowModalProps = {
     isOpen: boolean;
@@ -20,9 +20,9 @@ export const FlowModal: React.FC<FlowModalProps> = ({
     messages,
     prompt,
     onClose,
-    onSubmit
+    onSubmit,
 }) => {
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,12 +33,12 @@ export const FlowModal: React.FC<FlowModalProps> = ({
         e.preventDefault();
         if (prompt) {
             onSubmit(inputValue);
-            setInputValue('');
+            setInputValue("");
         }
     };
 
     const handleKetDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
             handleSubmit(e);
         }
     };
@@ -47,7 +47,7 @@ export const FlowModal: React.FC<FlowModalProps> = ({
     };
     useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
     if (!isOpen || messages.length === 0) {

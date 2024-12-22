@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import * as fileBrowserService from "@waldiez/studio/api/fileBrowserService";
+import { FileBrowserContext } from "@waldiez/studio/components/FileBrowser/useFileBrowser";
+import { PathInstance, PathInstanceType } from "@waldiez/studio/types";
+import { debounce } from "@waldiez/studio/utils/debounce";
+import { getInitialPath, getParentPath, isFile, normalizePath } from "@waldiez/studio/utils/paths";
 
-import * as fileBrowserService from '@waldiez/studio/api/fileBrowserService';
-import { FileBrowserContext } from '@waldiez/studio/components/FileBrowser/useFileBrowser';
-import { PathInstance, PathInstanceType } from '@waldiez/studio/types';
-import { debounce } from '@waldiez/studio/utils/debounce';
-import { getInitialPath, getParentPath, isFile, normalizePath } from '@waldiez/studio/utils/paths';
+import React, { useEffect, useState } from "react";
 
 export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const getPathName = (path: string) => {
-        const parts = path.split('/');
-        return parts[parts.length - 1] || 'Home';
+        const parts = path.split("/");
+        return parts[parts.length - 1] || "Home";
     };
     const [currentPath, setCurrentPath] = useState<string>(getInitialPath());
     const [pathName, setPathName] = useState<string>(getPathName(currentPath));
@@ -34,12 +34,12 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
         try {
             const response = await fileBrowserService.fetchFiles(path);
             const parentEntry =
-                path !== '/'
-                    ? [{ name: '..', path: getParentPath(path), type: 'folder' as PathInstanceType }]
+                path !== "/"
+                    ? [{ name: "..", path: getParentPath(path), type: "folder" as PathInstanceType }]
                     : [];
             setEntries([...parentEntry, ...response.items]);
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+            setError(err instanceof Error ? err.message : "An unexpected error occurred.");
         } finally {
             setLoading(false);
         }
@@ -59,7 +59,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
             return;
         }
         const sanitizedPath = setPath(item.path);
-        if (item.type === 'file') {
+        if (item.type === "file") {
             return;
         }
         if (noDebounce) {
@@ -70,14 +70,14 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     const onGoUp = async () => {
         const parent = getParentPath(currentPath);
-        await onNavigate({ name: '..', path: parent, type: 'folder' });
+        await onNavigate({ name: "..", path: parent, type: "folder" });
     };
     const onCreate = async (type: PathInstanceType) => {
         const parent = isFile(currentPath) ? getParentPath(currentPath) : currentPath;
         try {
-            if (type === 'folder') {
+            if (type === "folder") {
                 await fileBrowserService.createFolder(parent);
-            } else if (type === 'file') {
+            } else if (type === "file") {
                 await fileBrowserService.createFile(parent);
             }
         } catch (err: any) {
@@ -171,7 +171,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 onDelete,
                 onRename,
                 onUpload,
-                onDownload
+                onDownload,
             }}
         >
             {children}

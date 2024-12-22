@@ -8,15 +8,14 @@ RUN apt update && \
     apt install -y curl unzip git ca-certificates python3-dev python3-pip && \
     curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
-    apt install -y nodejs && \
+    apt install -y nodejs curl && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apt/archives/*
 
-# install yarn
-RUN npm install -g corepack && \
-    corepack enable && \
-    yarn set version stable
+# install bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH=/root/.bun/bin:${PATH}
 
 WORKDIR /tmp/package
 
@@ -31,7 +30,7 @@ COPY . /tmp/package
 
 # build the frontend
 ENV WALDIEZ_STUDIO_BASE_URL=/frontend/
-RUN yarn install && yarn build:front
+RUN bun install && bun run build
 # build the backend
 RUN python3 -m build --sdist --wheel --outdir dist/
 
@@ -110,5 +109,7 @@ ENV WALDIEZ_STUDIO_HOST=0.0.0.0
 ENV WALDIEZ_STUDIO_TRUSTED_HOSTS=0.0.0.0,localhost
 ENV TINI_SUBREAPER=true
 ENTRYPOINT ["/usr/bin/tini", "--"]
+
+WORKDIR /home/user
 
 CMD ["waldiez-studio"]

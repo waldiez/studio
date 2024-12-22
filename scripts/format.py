@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 # pylint: disable=duplicate-code  # also in ./lint.py
-ROOT_DIR = Path(__file__).resolve().parents[1]
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 
 def run_command(args: List[str]) -> None:
@@ -26,6 +26,21 @@ def run_command(args: List[str]) -> None:
         stdout=sys.stdout,
         stderr=subprocess.STDOUT,
         check=True,
+    )
+
+
+def ensure_dev_requirements() -> None:
+    """Ensure the development requirements are installed."""
+    requirements_file = ROOT_DIR / "requirements" / "dev.txt"
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "-r",
+            str(requirements_file),
+        ]
     )
 
 
@@ -67,7 +82,14 @@ def run_black() -> None:
     """Run black."""
     ensure_command_exists("black")
     run_command(
-        [sys.executable, "-m", "black", "--config", "pyproject.toml", "."]
+        [
+            sys.executable,
+            "-m",
+            "black",
+            "--config",
+            "pyproject.toml",
+            ".",
+        ]
     )
 
 
@@ -89,6 +111,7 @@ def run_ruff() -> None:
 
 def main() -> None:
     """Run python formatters."""
+    ensure_dev_requirements()
     run_isort()
     run_autoflake()
     run_black()

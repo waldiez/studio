@@ -3,6 +3,7 @@
 .TESTS_DIR := tests
 .REPORTS_DIR := coverage
 .PACKAGE_NAME := waldiez_studio
+.PACKAGE_MANaGER := bun
 
 .PHONY: help
 help:
@@ -19,7 +20,7 @@ help:
 	@echo " lint-front       Lint the frontend code"
 	@echo " lint             Lint the code"
 	@echo " forlint          Alias for 'make format && make lint'"
-	@echo " requirements	 Generate requirements/*.txt files"
+	@echo " requirements     Generate requirements/*.txt files"
 	@echo " test-back        Run the tests for the backend"
 	@echo " test-front       Run the tests for the frontend"
 	@echo " test             Run the tests"
@@ -29,13 +30,13 @@ help:
 	@echo " build-back       Build the python package"
 	@echo " build-front      Build the frontend package"
 	@echo " build            Build the packages"
-	@echo " image            Build the docker/podman image"
+	@echo " image            Build the podman/docker image"
 	@echo " all-back         Run format, lint, test and build for the backend"
 	@echo " all-front        Run format, lint, test and build for the frontend"
 	@echo " all              Run format, lint, test and build"
 	@echo " dev-back         Run the development server"
 	@echo " dev-front        Run the development server for the frontend"
-	@echo " dev          	 Run the development server for the backend and frontend"
+	@echo " dev              Run the development server for the backend and frontend"
 	@echo ""
 
 .PHONY: format-back
@@ -47,7 +48,7 @@ format-back:
 
 .PHONY: format-front
 format-front:
-	yarn format:front
+	${.PACKAGE_MANaGER} run format
 
 .PHONY: format
 format: format-back format-front
@@ -66,7 +67,7 @@ lint-back:
 
 .PHONY: lint-front
 lint-front:
-	yarn lint:front
+	${.PACKAGE_MANaGER} run lint
 
 .PHONY: lint
 lint: lint-back lint-front
@@ -80,7 +81,7 @@ clean-back:
 
 .PHONY: clean-front
 clean-front:
-	yarn clean:front
+	${.PACKAGE_MANaGER} run clean
 
 .PHONY: clean
 clean: clean-back clean-front
@@ -91,7 +92,7 @@ requirements-back:
 
 .PHONY: requirements-front
 requirements-front:
-	yarn requirements:front
+	${.PACKAGE_MANaGER} run requirements
 
 .PHONY: .before_test
 .before_test:
@@ -116,26 +117,25 @@ test-back: .before_test
 
 .PHONY: test-front
 test-front:
-	yarn test:front
+	${.PACKAGE_MANaGER} run test
 
 .PHONY: test
 test: test-front test-back
-	yarn lcov:merge
 
 .PHONY: build-front
 build-front:
-	yarn build:front
+	${.PACKAGE_MANaGER} run build
 
 .PHONY: build-back
 build-back:
 	python scripts/build.py
 
-.PHONY: build
-build: build-front build-back
-
 .PHONY: image
 image:
 	python scripts/image.py
+
+.PHONY: build
+build: build-front build-back
 
 .PHONY: all-back
 all-back: clean-back format-back lint-back test-back build-back
@@ -144,7 +144,7 @@ all-back: clean-back format-back lint-back test-back build-back
 all-front: clean-front format-front lint-front test-front build-front
 
 .PHONY: all
-all: clean format lint test build image
+all: all-front all-back
 
 .PHONY: dev-back
 dev-back:
@@ -152,8 +152,8 @@ dev-back:
 
 .PHONY: dev-front
 dev-front:
-	yarn dev:front
+	${.PACKAGE_MANaGER} run dev:front
 
 .PHONY: dev
 dev:
-	yarn dev
+	${.PACKAGE_MANaGER} run dev

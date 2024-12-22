@@ -3,7 +3,6 @@ aiohttp==3.11.10
 fastapi==0.115.6
 pydantic-settings==2.7.0
 python-multipart==0.0.20
-tenacity==9.0.0
+tenacity>=8.2.0,<9.0.0
 typer>=0.9,<0.13
 uvicorn[standard]==0.34.0
-waldiez==0.1.19

@@ -2,7 +2,7 @@
     --app-height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
     --app-width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
 
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color-scheme: light dark;
     font-synthesis: none;
     text-rendering: optimizelegibility;
@@ -103,17 +103,17 @@ body.waldiez-dark {
     flex: 1;
 }
 
-input[type='text'],
-input[type='password'],
-input[type='email'],
-input[type='number'],
-input[type='search'] {
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"] {
     background: var(--input-background) !important;
     color: var(--input-color) !important;
     border: 1px solid var(--input-border) !important;
 }
 
-.select input[type='text'] {
+.select input[type="text"] {
     border: none !important;
     background: transparent !important;
 }

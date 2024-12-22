@@ -1,7 +1,7 @@
-import axiosInstance from '@waldiez/studio/api/axiosInstance';
-import type { MessageResponse, PathInstance, PathInstancesResponse } from '@waldiez/studio/types';
+import axiosInstance from "@waldiez/studio/api/axiosInstance";
+import type { MessageResponse, PathInstance, PathInstancesResponse } from "@waldiez/studio/types";
 
-const WORKSPACE_PREFIX = '/workspace';
+const WORKSPACE_PREFIX = "/workspace";
 
 // API Functions
 /**
@@ -10,9 +10,9 @@ const WORKSPACE_PREFIX = '/workspace';
  * @param parent - The directory path to fetch. Defaults to '/'.
  * @returns A promise resolving to a list of files and folders.
  */
-export const fetchFiles = async (parent: string = '/'): Promise<PathInstancesResponse> => {
+export const fetchFiles = async (parent: string = "/"): Promise<PathInstancesResponse> => {
     const response = await axiosInstance.get<PathInstancesResponse>(WORKSPACE_PREFIX, {
-        params: ['', '/'].includes(parent) ? {} : { parent }
+        params: ["", "/"].includes(parent) ? {} : { parent },
     });
     return response.data;
 };
@@ -23,10 +23,10 @@ export const fetchFiles = async (parent: string = '/'): Promise<PathInstancesRes
  * @param parent - The parent directory path. Defaults to '/'.
  * @returns A promise resolving to the newly created folder.
  */
-export const createFolder = async (parent: string = '/'): Promise<PathInstance> => {
+export const createFolder = async (parent: string = "/"): Promise<PathInstance> => {
     const response = await axiosInstance.post<PathInstance>(WORKSPACE_PREFIX, {
-        type: 'folder',
-        parent
+        type: "folder",
+        parent,
     });
     return response.data;
 };
@@ -37,10 +37,10 @@ export const createFolder = async (parent: string = '/'): Promise<PathInstance> 
  * @param parent - The parent directory path. Defaults to '/'.
  * @returns A promise resolving to the newly created file.
  */
-export const createFile = async (parent: string = '/'): Promise<PathInstance> => {
+export const createFile = async (parent: string = "/"): Promise<PathInstance> => {
     const response = await axiosInstance.post<PathInstance>(WORKSPACE_PREFIX, {
-        type: 'file',
-        parent
+        type: "file",
+        parent,
     });
     return response.data;
 };
@@ -52,13 +52,13 @@ export const createFile = async (parent: string = '/'): Promise<PathInstance> =>
  * @param file - The file to upload.
  * @returns A promise resolving to the uploaded file information.
  */
-export const uploadFile = async (path: string = '/', file: File): Promise<PathInstance> => {
+export const uploadFile = async (path: string = "/", file: File): Promise<PathInstance> => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('path', path);
+    formData.append("file", file);
+    formData.append("path", path);
 
     const response = await axiosInstance.post<PathInstance>(`${WORKSPACE_PREFIX}/upload`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
 };
@@ -69,8 +69,8 @@ export const uploadFile = async (path: string = '/', file: File): Promise<PathIn
  * @param path - The path to the file or folder to delete. Defaults to '/'.
  * @returns A promise resolving to a success message.
  */
-export const deleteFileOrFolder = async (path: string = '/'): Promise<MessageResponse> => {
-    const pathParam = ['', '/'].includes(path) ? '' : `?path=${encodeURIComponent(path)}`;
+export const deleteFileOrFolder = async (path: string = "/"): Promise<MessageResponse> => {
+    const pathParam = ["", "/"].includes(path) ? "" : `?path=${encodeURIComponent(path)}`;
     const response = await axiosInstance.delete<MessageResponse>(`${WORKSPACE_PREFIX}${pathParam}`);
     return response.data;
 };
@@ -87,30 +87,30 @@ export const renameFileOrFolder = async (oldPath: string, newPath: string): Prom
         `${WORKSPACE_PREFIX}/rename`,
         {
             old_path: oldPath,
-            new_path: newPath
+            new_path: newPath,
         },
         {
-            headers: { 'Content-Type': 'application/json' }
-        }
+            headers: { "Content-Type": "application/json" },
+        },
     );
     return response.data;
 };
 
-export const downloadFileOrFolder = async (path: string, type: 'file' | 'folder'): Promise<void> => {
+export const downloadFileOrFolder = async (path: string, type: "file" | "folder"): Promise<void> => {
     const response = await axiosInstance.get(
         `${WORKSPACE_PREFIX}/download?path=${encodeURIComponent(path)}`,
         {
-            responseType: 'blob'
-        }
+            responseType: "blob",
+        },
     );
     const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
 
-    const pathParts = path.split('/');
+    const pathParts = path.split("/");
     let fileName = pathParts[pathParts.length - 1];
-    if (type === 'folder') {
-        fileName += '.zip';
+    if (type === "folder") {
+        fileName += ".zip";
     }
     link.download = fileName;
     link.click();

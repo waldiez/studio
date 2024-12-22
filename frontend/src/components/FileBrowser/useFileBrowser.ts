@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
+import { PathInstance, PathInstanceType } from "@waldiez/studio/types";
 
-import { PathInstance, PathInstanceType } from '@waldiez/studio/types';
+import { createContext, useContext } from "react";
 
 type FileBrowserContextType = {
     currentPath: string;
@@ -24,7 +24,7 @@ export const FileBrowserContext = createContext<FileBrowserContextType | undefin
 export const useFileBrowser = () => {
     const context = useContext(FileBrowserContext);
     if (!context) {
-        throw new Error('useFileBrowser must be used within a FileBrowserProvider');
+        throw new Error("useFileBrowser must be used within a FileBrowserProvider");
     }
     return context;
 };

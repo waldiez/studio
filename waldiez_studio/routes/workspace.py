@@ -382,7 +382,7 @@ async def delete_file_or_folder(
             rmtree = sync_to_async(shutil.rmtree)
             # pylint: disable=line-too-long
             # fmt: off
-            await rmtree(target_path, ignore_errors=True)  # type: ignore[unused-ignore,call-arg]
+            await rmtree(target_path, ignore_errors=True)  # type: ignore[unused-ignore,call-arg]  # noqa: E501
             # fmt: on
         else:
             await aiofiles.os.remove(target_path)

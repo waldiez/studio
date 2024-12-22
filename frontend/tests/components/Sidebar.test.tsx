@@ -1,15 +1,14 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen } from "@testing-library/react";
+import { SidebarContext, SidebarProvider, useSidebar } from "@waldiez/studio/components/Sidebar";
 
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
-import { SidebarContext, SidebarProvider, useSidebar } from '@waldiez/studio/components/Sidebar';
-
-describe('SidebarContext and SidebarProvider', () => {
+describe("SidebarContext and SidebarProvider", () => {
     const TestComponent: React.FC = () => {
         const { isSidebarVisible, toggleSidebar } = useSidebar();
         return (
             <div>
-                <span data-testid="sidebar-status">{isSidebarVisible ? 'Visible' : 'Hidden'}</span>
+                <span data-testid="sidebar-status">{isSidebarVisible ? "Visible" : "Hidden"}</span>
                 <button data-testid="toggle-button" onClick={toggleSidebar}>
                     Toggle Sidebar
                 </button>
@@ -17,57 +16,57 @@ describe('SidebarContext and SidebarProvider', () => {
         );
     };
 
-    it('throws an error if useSidebar is used outside SidebarProvider', () => {
-        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {}); // Suppress error logs
+    it("throws an error if useSidebar is used outside SidebarProvider", () => {
+        const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {}); // Suppress error logs
 
-        expect(() => render(<TestComponent />)).toThrow('useSidebar must be used within a SidebarProvider');
+        expect(() => render(<TestComponent />)).toThrow("useSidebar must be used within a SidebarProvider");
 
         errorSpy.mockRestore();
     });
 
-    it('provides initial sidebar visibility as true', () => {
+    it("provides initial sidebar visibility as true", () => {
         render(
             <SidebarProvider>
                 <TestComponent />
-            </SidebarProvider>
+            </SidebarProvider>,
         );
 
-        const status = screen.getByTestId('sidebar-status');
-        expect(status).toHaveTextContent('Visible');
+        const status = screen.getByTestId("sidebar-status");
+        expect(status).toHaveTextContent("Visible");
     });
 
-    it('toggles sidebar visibility', () => {
+    it("toggles sidebar visibility", () => {
         render(
             <SidebarProvider>
                 <TestComponent />
-            </SidebarProvider>
+            </SidebarProvider>,
         );
 
-        const status = screen.getByTestId('sidebar-status');
-        const toggleButton = screen.getByTestId('toggle-button');
+        const status = screen.getByTestId("sidebar-status");
+        const toggleButton = screen.getByTestId("toggle-button");
 
         // Sidebar initially visible
-        expect(status).toHaveTextContent('Visible');
+        expect(status).toHaveTextContent("Visible");
 
         // Toggle visibility
         act(() => {
             toggleButton.click();
         });
-        expect(status).toHaveTextContent('Hidden');
+        expect(status).toHaveTextContent("Hidden");
 
         // Toggle back to visible
         act(() => {
             toggleButton.click();
         });
-        expect(status).toHaveTextContent('Visible');
+        expect(status).toHaveTextContent("Visible");
     });
 
-    it('allows custom initial state via mock provider', () => {
+    it("allows custom initial state via mock provider", () => {
         const MockProvider: React.FC<{ children: ReactNode }> = ({ children }) => (
             <SidebarContext.Provider
                 value={{
                     isSidebarVisible: false,
-                    toggleSidebar: vi.fn()
+                    toggleSidebar: vi.fn(),
                 }}
             >
                 {children}
@@ -77,10 +76,10 @@ describe('SidebarContext and SidebarProvider', () => {
         render(
             <MockProvider>
                 <TestComponent />
-            </MockProvider>
+            </MockProvider>,
         );
 
-        const status = screen.getByTestId('sidebar-status');
-        expect(status).toHaveTextContent('Hidden');
+        const status = screen.getByTestId("sidebar-status");
+        expect(status).toHaveTextContent("Hidden");
     });
 });

@@ -1,5 +1,5 @@
-import React from 'react';
-import { FaBars, FaSpinner, FaSyncAlt } from 'react-icons/fa';
+import React from "react";
+import { FaBars, FaSpinner, FaSyncAlt } from "react-icons/fa";
 
 export const Header: React.FC<{
     isSidebarVisible: boolean;
@@ -10,7 +10,7 @@ export const Header: React.FC<{
     <div
         className="file-browser-toggle"
         style={{
-            justifyContent: isSidebarVisible ? 'space-between' : 'center'
+            justifyContent: isSidebarVisible ? "space-between" : "center",
         }}
     >
         {isSidebarVisible && (
@@ -24,8 +24,8 @@ export const Header: React.FC<{
                     aria-label="Refresh"
                     className="file-browser-refresh"
                     style={{
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        opacity: loading ? 0.7 : 1
+                        cursor: loading ? "not-allowed" : "pointer",
+                        opacity: loading ? 0.7 : 1,
                     }}
                 >
                     {loading ? (

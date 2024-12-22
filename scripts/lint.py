@@ -1,4 +1,4 @@
-"""Run python linters."""
+"""Lint Python source code in the my_package and tests directories."""
 
 import shutil
 import subprocess  # nosemgrep # nosec
@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 from typing import List
 
-# pylint: disable=duplicate-code  # also in ./format.py
-ROOT_DIR = Path(__file__).resolve().parents[1]
+# pylint: disable=duplicate-code  # also in ./lint.py
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 
 def run_command(args: List[str]) -> None:
@@ -26,6 +26,21 @@ def run_command(args: List[str]) -> None:
         stdout=sys.stdout,
         stderr=subprocess.STDOUT,
         check=True,
+    )
+
+
+def ensure_dev_requirements() -> None:
+    """Ensure the development requirements are installed."""
+    requirements_file = ROOT_DIR / "requirements" / "dev.txt"
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "-r",
+            str(requirements_file),
+        ]
     )
 
 
@@ -67,7 +82,14 @@ def run_mypy() -> None:
     """Run mypy."""
     ensure_command_exists("mypy")
     run_command(
-        [sys.executable, "-m", "mypy", "--config", "pyproject.toml", "."]
+        [
+            sys.executable,
+            "-m",
+            "mypy",
+            "--config",
+            "pyproject.toml",
+            ".",
+        ]
     )
 
 
@@ -81,7 +103,14 @@ def run_pydocstyle() -> None:
     """Run pydocstyle."""
     ensure_command_exists("pydocstyle")
     run_command(
-        [sys.executable, "-m", "pydocstyle", "--config", "pyproject.toml", "."]
+        [
+            sys.executable,
+            "-m",
+            "pydocstyle",
+            "--config",
+            "pyproject.toml",
+            ".",
+        ]
     )
 
 
@@ -89,14 +118,31 @@ def run_bandit() -> None:
     """Run bandit."""
     ensure_command_exists("bandit")
     run_command(
-        [sys.executable, "-m", "bandit", "-r", "-c", "pyproject.toml", "."]
+        [
+            sys.executable,
+            "-m",
+            "bandit",
+            "-r",
+            "-c",
+            "pyproject.toml",
+            ".",
+        ]
     )
 
 
 def run_yamllint() -> None:
     """Run yamllint."""
     ensure_command_exists("yamllint")
-    run_command([sys.executable, "-m", "yamllint", "-c", ".yamllint.yaml", "."])
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "yamllint",
+            "-c",
+            ".yamllint.yaml",
+            ".",
+        ]
+    )
 
 
 def run_ruff() -> None:
@@ -125,6 +171,7 @@ def run_pylint() -> None:
 
 def main() -> None:
     """Run linters."""
+    ensure_dev_requirements()
     run_isort()
     run_black()
     run_mypy()

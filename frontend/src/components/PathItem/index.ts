@@ -1,1 +1,1 @@
-export { PathItem } from '@waldiez/studio/components/PathItem/PathItem';
+export { PathItem } from "@waldiez/studio/components/PathItem/PathItem";

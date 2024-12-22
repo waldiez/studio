@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { uploadFile } from "@waldiez/studio/api/fileBrowserService";
+import { convertFlow, getFlowContents, saveFlow } from "@waldiez/studio/api/waldiezFlowService";
+import { useFileBrowser } from "@waldiez/studio/components/FileBrowser";
+import { showSnackbar } from "@waldiez/studio/components/Snackbar";
+import { hashPath } from "@waldiez/studio/utils/hashPath";
 
-import { WaldiezProps, importFlow } from '@waldiez/react';
+import { useEffect, useRef, useState } from "react";
+import useWebSocket from "react-use-websocket";
 
-import { uploadFile } from '@waldiez/studio/api/fileBrowserService';
-import { convertFlow, getFlowContents, saveFlow } from '@waldiez/studio/api/waldiezFlowService';
-import { useFileBrowser } from '@waldiez/studio/components/FileBrowser';
-import { showSnackbar } from '@waldiez/studio/components/Snackbar';
-import { hashPath } from '@waldiez/studio/utils/hashPath';
+import { WaldiezProps, importFlow } from "@waldiez/react";
 
 type UseWaldiezWrapperType = {
     flowId: string;
@@ -21,7 +21,7 @@ type UseWaldiezWrapperType = {
     setModalOpen: (isOpen: boolean) => void;
     resetPrompt: () => void;
     onRun: (flowString: string) => Promise<void>;
-    onCovert: (flowString: string, to: 'py' | 'ipynb') => void;
+    onCovert: (flowString: string, to: "py" | "ipynb") => void;
     onSave: (flowString: string) => void;
     onUpload: (files: File[]) => Promise<string[]>;
     sendMessage: (message: any) => void;
@@ -34,7 +34,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
     const promptRef = useRef<string | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [flowMessages, setFlowMessages] = useState<string[]>([]);
-    const [isWaldiez, setIsWaldiez] = useState(currentPath.endsWith('.waldiez'));
+    const [isWaldiez, setIsWaldiez] = useState(currentPath.endsWith(".waldiez"));
     const [waldiezProps, setWaldiezProps] = useState<Partial<WaldiezProps> | null>(null);
     const currentPathRef = useRef(currentPath);
     const currentPathNameRef = useRef(pathName);
@@ -47,7 +47,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                 setWaldiezProps(flowProps);
             } catch (error: any) {
                 if (error?.status === 404) {
-                    showSnackbar(flowId, 'Failed to load the flow', 'error', error.message);
+                    showSnackbar(flowId, "Failed to load the flow", "error", error.message);
                     onGoUp();
                 }
             }
@@ -64,7 +64,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         const currentFlowId = hashPath(currentPath);
         setFlowId(currentFlowId);
         window.localStorage.removeItem(`snackbar-${currentFlowId}.lock`);
-        const isWaldiezFile = currentPath.endsWith('.waldiez');
+        const isWaldiezFile = currentPath.endsWith(".waldiez");
         setIsWaldiez(isWaldiezFile);
         getWaldiezProps(isWaldiezFile);
     }, [currentPath]);
@@ -72,43 +72,43 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         setFlowMessages(prevMessages => [...prevMessages, data]);
         try {
             const parsedData = JSON.parse(data);
-            if (parsedData.type === 'error') {
+            if (parsedData.type === "error") {
                 const details = parsedData.data?.details ?? undefined;
-                const message = parsedData.data?.message ?? 'Error running task';
-                showSnackbar(flowId, message, 'error', details);
+                const message = parsedData.data?.message ?? "Error running task";
+                showSnackbar(flowId, message, "error", details);
             }
         } catch (_) {
             // do nothing
         }
     };
     const onInput = (data: any) => {
-        if (typeof data === 'string') {
+        if (typeof data === "string") {
             promptRef.current = data;
         }
     };
     const onResults = (data: any) => {
         refresh()
             .then(() => {
-                showSnackbar(flowId, 'Flow execution completed', 'success');
+                showSnackbar(flowId, "Flow execution completed", "success");
             })
             .catch((error: any) => {
-                showSnackbar(flowId, 'Failed to refresh the file browser', 'error', error.message);
+                showSnackbar(flowId, "Failed to refresh the file browser", "error", error.message);
             })
             .finally(() => {
                 onStatus(null);
                 const dataString =
-                    typeof data === 'string' ? data : JSON.stringify({ results: data }, null, 2);
+                    typeof data === "string" ? data : JSON.stringify({ results: data }, null, 2);
                 setFlowMessages(prevMessages => [...prevMessages, dataString]);
             });
     };
     const onStatus = (data: any) => {
-        if (typeof data === 'string' || data === null) {
+        if (typeof data === "string" || data === null) {
             statusRef.current = data;
         }
     };
-    const triggerSnackbar = (type: 'info' | 'success' | 'warning' | 'error', data: any) => {
-        if (type === 'error') {
-            showSnackbar(flowId, 'Flow execution failed', 'error', data.message);
+    const triggerSnackbar = (type: "info" | "success" | "warning" | "error", data: any) => {
+        if (type === "error") {
+            showSnackbar(flowId, "Flow execution failed", "error", data.message);
         } else {
             showSnackbar(flowId, data, type, null, 5000, true);
         }
@@ -120,24 +120,24 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         } catch (_) {
             return;
         }
-        if ('type' in massageObject && 'data' in massageObject) {
+        if ("type" in massageObject && "data" in massageObject) {
             const { type, data } = massageObject;
             switch (type) {
-                case 'print':
+                case "print":
                     onPrint(data);
                     break;
-                case 'input':
+                case "input":
                     onInput(data);
                     break;
-                case 'error':
-                case 'info':
-                case 'warning':
+                case "error":
+                case "info":
+                case "warning":
                     triggerSnackbar(type, data);
                     break;
-                case 'results':
+                case "results":
                     onResults(data);
                     break;
-                case 'status':
+                case "status":
                     onStatus(data);
                     break;
                 default:
@@ -146,7 +146,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         }
     };
     const onWsError = () => {
-        showSnackbar(flowId, 'WebSocket error', 'error', undefined, 3000);
+        showSnackbar(flowId, "WebSocket error", "error", undefined, 3000);
     };
     const onWsClose = (event: CloseEvent) => {
         const acceptableCodes = [1000, 1001, 1005, 1006];
@@ -156,13 +156,13 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                 errorMsg = JSON.stringify({
                     code: event.code,
                     wasClean: event.wasClean,
-                    reason: event.reason
+                    reason: event.reason,
                 });
             }
-            showSnackbar(flowId, 'WebSocket closed', 'error', errorMsg, 3000);
+            showSnackbar(flowId, "WebSocket closed", "error", errorMsg, 3000);
         }
     };
-    const wsUrl = isWaldiez ? window.location.origin.replace('http', 'ws') + `/ws?path=${currentPath}` : null;
+    const wsUrl = isWaldiez ? window.location.origin.replace("http", "ws") + `/ws?path=${currentPath}` : null;
     const { sendJsonMessage } = useWebSocket(wsUrl, {
         reconnectInterval: 3000,
         reconnectAttempts: 10,
@@ -170,16 +170,16 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         onError: onWsError,
         onClose: onWsClose,
         onMessage,
-        shouldReconnect: () => isWaldiez
+        shouldReconnect: () => isWaldiez,
     });
     const checkStatus = () => {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
-                reject(new Error('Timeout while waiting for status'));
+                reject(new Error("Timeout while waiting for status"));
             }, 5000);
             const currentStatus = statusRef.current;
             const interval = setInterval(() => {
-                if (currentStatus !== statusRef.current || statusRef.current === 'COMPLETED') {
+                if (currentStatus !== statusRef.current || statusRef.current === "COMPLETED") {
                     clearInterval(interval);
                     clearTimeout(timeout);
                     resolve(statusRef.current);
@@ -189,28 +189,28 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
     };
     const onRun = async (flowString: string) => {
         statusRef.current = null;
-        sendJsonMessage({ action: 'status' });
+        sendJsonMessage({ action: "status" });
         try {
             const currentStatus = await checkStatus();
-            if (currentStatus === 'NOT_STARTED' || currentStatus === 'COMPLETED') {
+            if (currentStatus === "NOT_STARTED" || currentStatus === "COMPLETED") {
                 await onSave(flowString);
-                setFlowMessages(['Starting the flow...']);
+                setFlowMessages(["Starting the flow..."]);
                 setModalOpen(true);
-                sendJsonMessage({ action: 'start' });
+                sendJsonMessage({ action: "start" });
             } else {
-                showSnackbar(flowId, 'Flow is already running', 'info');
+                showSnackbar(flowId, "Flow is already running", "info");
             }
         } catch (error: any) {
-            showSnackbar(flowId, 'Failed to start the flow', 'error', error.message);
+            showSnackbar(flowId, "Failed to start the flow", "error", error.message);
         }
     };
-    const onCovert = async (flow: string, to: 'py' | 'ipynb') => {
+    const onCovert = async (flow: string, to: "py" | "ipynb") => {
         try {
             await convertFlow(currentPathRef.current, flow, to);
             await refresh();
         } catch (error: any) {
             console.error(error);
-            showSnackbar(flowId, 'Flow conversion failed', 'error', error.message);
+            showSnackbar(flowId, "Flow conversion failed", "error", error.message);
         }
     };
     const onSave = async (flowString: string) => {
@@ -219,15 +219,27 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
             await refresh();
         } catch (error: any) {
             console.error(error);
-            showSnackbar(flowId, 'Failed to save the flow', 'error', error.message);
+            showSnackbar(flowId, "Failed to save the flow", "error", error.message);
         }
     };
     const onUpload = (files: File[]) => {
         return new Promise<string[]>(resolve => {
             const uploadedFiles: string[] = [];
-            const promises = files.map(async file => {
-                const response = await uploadFile(currentPathRef.current, file);
-                uploadedFiles.push(response.path);
+            const promises: Promise<void>[] = files.map(async file => {
+                let dirToUpload = `${currentPathRef.current}`;
+                if (isWaldiez) {
+                    const pathParts = currentPathRef.current.split("/");
+                    pathParts.pop();
+                    dirToUpload = pathParts.join("/");
+                }
+                try {
+                    const response = await uploadFile(dirToUpload, file);
+                    uploadedFiles.push(response.path);
+                } catch (error: any) {
+                    showSnackbar(flowId, "Failed to upload the file", "error", error.message);
+                } finally {
+                    await refresh();
+                }
             });
             Promise.all(promises).then(() => {
                 resolve(uploadedFiles);
@@ -252,6 +264,6 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         onCovert,
         onSave,
         onUpload,
-        sendMessage: sendJsonMessage
+        sendMessage: sendJsonMessage,
     };
 };

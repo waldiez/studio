@@ -1,1 +1,1 @@
-export { FlowModal } from '@waldiez/studio/components/FlowModal/FlowModal';
+export { FlowModal } from "@waldiez/studio/components/FlowModal/FlowModal";

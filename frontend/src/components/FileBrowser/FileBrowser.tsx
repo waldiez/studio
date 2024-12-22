@@ -1,11 +1,11 @@
-import React from 'react';
+import { useFileBrowser } from "@waldiez/studio/components/FileBrowser";
+import { ActionButtons } from "@waldiez/studio/components/FileBrowser/ActionButtons";
+import "@waldiez/studio/components/FileBrowser/FileBrowser.css";
+import { Header } from "@waldiez/studio/components/FileBrowser/Header";
+import { PathItem } from "@waldiez/studio/components/PathItem";
+import { useSidebar } from "@waldiez/studio/components/Sidebar";
 
-import { useFileBrowser } from '@waldiez/studio/components/FileBrowser';
-import { ActionButtons } from '@waldiez/studio/components/FileBrowser/ActionButtons';
-import '@waldiez/studio/components/FileBrowser/FileBrowser.css';
-import { Header } from '@waldiez/studio/components/FileBrowser/Header';
-import { PathItem } from '@waldiez/studio/components/PathItem';
-import { useSidebar } from '@waldiez/studio/components/Sidebar';
+import React from "react";
 
 export const FileBrowser: React.FC = () => {
     const {
@@ -19,20 +19,20 @@ export const FileBrowser: React.FC = () => {
         onUpload,
         onDownload,
         currentPath,
-        error
+        error,
     } = useFileBrowser();
     const { isSidebarVisible, toggleSidebar } = useSidebar();
     const onNewFile = async () => {
-        await onCreate('file');
+        await onCreate("file");
     };
     const onNewFolder = async () => {
-        await onCreate('folder');
+        await onCreate("folder");
     };
     return (
         <div
             className="file-browser"
             style={{
-                width: isSidebarVisible ? '250px' : '60px'
+                width: isSidebarVisible ? "250px" : "60px",
             }}
         >
             <Header

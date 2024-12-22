@@ -6,4 +6,4 @@ The version will be updated automatically by Hatchling.
 See ../scripts/hook.py for more information.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

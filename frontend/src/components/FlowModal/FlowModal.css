@@ -69,7 +69,7 @@
     background: var(--primary-alt-color);
     border-bottom: 1px solid var(--border-color);
     overflow-y: auto;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
     font-size: 14px;
     color: var(--text-color);
     max-height: 480px;
@@ -109,7 +109,7 @@
     border-top: 1px solid var(--border-color);
 }
 
-.waldiez-studio-flow-input-container input[type='text'] {
+.waldiez-studio-flow-input-container input[type="text"] {
     flex: 1;
     padding: 8px 12px;
     border: 1px solid var(--input-border);
@@ -120,7 +120,7 @@
     font-family: Arial, sans-serif;
 }
 
-.waldiez-studio-flow-input-container input[type='text']:disabled {
+.waldiez-studio-flow-input-container input[type="text"]:disabled {
     background: var(--primary-alt-color-hover);
     color: var(--border-color);
     cursor: not-allowed;
@@ -150,7 +150,7 @@
 }
 
 .waldiez-studio-flow-input-container button svg {
-    fill: 'currentColor';
+    fill: "currentColor";
 }
 
 body.waldiez-light .waldiez-studio-flow-input-container button svg {

@@ -129,6 +129,7 @@ async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
                     indent=2,
                 ),
                 encoding="utf-8",
+                newline="\n",
             )
             return latest_version, tarball_url, sha_sum
     except BaseException as e:
@@ -252,7 +253,9 @@ async def download_swagger_assets(static_root: Path) -> None:
                         f"Failed to download {asset}: {response.status_code}"
                     )
 
-                asset_path.write_text(response.text, encoding="utf-8")
+                asset_path.write_text(
+                    response.text, encoding="utf-8", newline="\n"
+                )
     except BaseException as e:
         LOG.error("Failed to download Swagger UI assets: %s", e)
         raise DownloadError("Failed to download Swagger UI assets.") from e

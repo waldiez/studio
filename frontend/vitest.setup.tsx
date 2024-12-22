@@ -1,9 +1,9 @@
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
-import { afterEach, beforeAll, beforeEach, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, beforeEach, vi } from "vitest";
 
-vi.mock('axios', async importOriginal => {
-    const actualAxios = await importOriginal<typeof import('axios')>();
+vi.mock("axios", async importOriginal => {
+    const actualAxios = await importOriginal<typeof import("axios")>();
     const mockedAxios = {
         ...actualAxios,
         create: vi.fn(() => {
@@ -19,18 +19,18 @@ vi.mock('axios', async importOriginal => {
                         use: vi.fn((_onFulfilled, onRejected) => {
                             instance._onRejected = onRejected; // Capture the rejection handler for testing.
                         }),
-                        eject: vi.fn()
-                    }
+                        eject: vi.fn(),
+                    },
                 },
                 defaults: { headers: {} },
-                _onRejected: null // Placeholder for the rejection handler.
+                _onRejected: null, // Placeholder for the rejection handler.
             };
             return instance;
-        })
+        }),
     };
     return {
         ...mockedAxios,
-        default: { ...mockedAxios }
+        default: { ...mockedAxios },
     };
 });
 
@@ -76,20 +76,20 @@ export const mockReactFlow = () => {
         offsetHeight: {
             get() {
                 return parseFloat(this.style.height) || 1;
-            }
+            },
         },
         offsetWidth: {
             get() {
                 return parseFloat(this.style.width) || 1;
-            }
-        }
+            },
+        },
     });
 
     (global.SVGElement as any).prototype.getBBox = () => ({
         x: 10,
         y: 10,
         width: 30,
-        height: 30
+        height: 30,
     });
 };
 
