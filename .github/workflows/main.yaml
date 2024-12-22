@@ -39,8 +39,10 @@ jobs:
       run: bun run lint
     - name: Prepare Playwright
       run: npx playwright install --with-deps chromium
-    - name: Run tests
+    - name: Run frontend tests
       run: bun run test
+    - name: Run backend tests
+      run: python scripts/test.py
     - name: Report to Coveralls
       if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
       uses: coverallsapp/github-action@v2
