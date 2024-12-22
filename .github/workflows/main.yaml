@@ -9,7 +9,7 @@ on:
       - dev
 
 jobs:
-  all:
+  lint_and_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
