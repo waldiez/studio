@@ -31,7 +31,8 @@ def run_command(args: List[str]) -> None:
 
 def ensure_dev_requirements() -> None:
     """Ensure the development requirements are installed."""
-    requirements_file = ROOT_DIR / "requirements" / "dev.txt"
+    dev_requirements = ROOT_DIR / "requirements" / "dev.txt"
+    test_requirements = ROOT_DIR / "requirements" / "test.txt"
     run_command(
         [
             sys.executable,
@@ -39,7 +40,9 @@ def ensure_dev_requirements() -> None:
             "pip",
             "install",
             "-r",
-            str(requirements_file),
+            str(dev_requirements),
+            "-r",
+            str(test_requirements),
         ]
     )
 
