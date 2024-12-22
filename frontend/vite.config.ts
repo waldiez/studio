@@ -11,7 +11,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const coverageInclude = relative(process.cwd(), resolve(__dirname, "src")).replace(/\\/g, "/");
-const coverageDir = relative(process.cwd(), resolve(__dirname, "coverage")).replace(/\\/g, "/");
+const coverageDir = relative(process.cwd(), resolve(__dirname, "..", "coverage", "frontend")).replace(
+    /\\/g,
+    "/",
+);
 const isBrowserTest = process.argv.includes("--browser.enabled");
 //  isBrowserTest ? "e2e/**/*.spec.{ts,tsx}" : "tests/**/*.test.{ts,tsx}"
 let relativePath = relative(process.cwd(), resolve(__dirname)).replace(/\\/g, "/");

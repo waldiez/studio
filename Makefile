@@ -104,20 +104,11 @@ requirements-front:
 
 .PHONY: test-back
 test-back: .before_test
-	python -m pytest \
-		-c pyproject.toml \
-		--cov=${.PACKAGE_NAME} \
-		--cov-branch \
-		--cov-report=term-missing:skip-covered \
-		--cov-report html:${.REPORTS_DIR}/backend/html \
-		--cov-report xml:${.REPORTS_DIR}/backend/coverage.xml \
-		--cov-report lcov:${.REPORTS_DIR}/backend/lcov.info \
-		--junitxml=${.REPORTS_DIR}/backend/xunit.xml \
-		${.TESTS_DIR}/
+	python scripts/test.py
 
 .PHONY: test-front
 test-front:
-	${.PACKAGE_MANaGER} run test
+	${.PACKAGE_MANaGER} run test:front
 
 .PHONY: test
 test: test-front test-back
