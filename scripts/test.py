@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent.parent
+os.environ["PYTHONUNBUFFERED"] = "1"
 
 
 def ensure_test_requirements() -> None:
