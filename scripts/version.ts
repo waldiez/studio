@@ -4,7 +4,6 @@ if `--get` is passed, return the current version (x.y.z format)
 if `--set` is passed, set the version to the value of the next argument
 if `--set` validate that it is a valid version(x.y.z format)
 */
-import { execSync } from "child_process";
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 import url from "url";
