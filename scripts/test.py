@@ -62,6 +62,12 @@ def run_pytest() -> None:
     # else, make a copy of /coverage/backend/lcov.info to /coverage/lcov.info
     # this depends on the order that the tests are run
     frontend_lcov = ROOT_DIR / "coverage" / "frontend" / "lcov.info"
+    (ROOT_DIR / "coverage").mkdir(parents=True, exist_ok=True)
+    # in case lcov command does not exist
+    shutil.copyfile(
+        coverage_dir / "lcov.info",
+        ROOT_DIR / "coverage" / "lcov.info",
+    )
     if frontend_lcov.exists():
         subprocess.run(  # nosemgrep # nosec
             [
@@ -70,12 +76,6 @@ def run_pytest() -> None:
             ],
             check=True,
             cwd=ROOT_DIR,
-        )
-    else:
-        (ROOT_DIR / "coverage" / "frontend").mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(
-            coverage_dir / "lcov.info",
-            ROOT_DIR / "coverage" / "lcov.info",
         )
 
 
