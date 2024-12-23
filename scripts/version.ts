@@ -66,7 +66,8 @@ function setVersion(version: string): void {
         process.exit(1);
     }
     writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`, { encoding: "utf8" });
-    execSync("bun install", { stdio: "inherit", cwd: path.join(__dirname, "..") });
+    // the new version might not be available in the registry yet
+    // execSync("bun install", { stdio: "inherit", cwd: path.join(__dirname, "..") });
 }
 
 function main(): void {
