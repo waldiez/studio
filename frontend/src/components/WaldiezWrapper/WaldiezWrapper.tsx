@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { Waldiez } from "@waldiez/react";
 
 const vsPath = "monaco/vs";
-const onChange = null;
 const inputPrompt = null;
 const onUserInput = null;
 
@@ -24,6 +23,7 @@ export const WaldiezWrapper = () => {
         resetPrompt,
         onRun,
         onCovert,
+        onChange,
         onSave,
         setModalOpen,
         onUpload,

@@ -2,6 +2,7 @@ import { uploadFile } from "@waldiez/studio/api/fileBrowserService";
 import { convertFlow, getFlowContents, saveFlow } from "@waldiez/studio/api/waldiezFlowService";
 import { useFileBrowser } from "@waldiez/studio/components/FileBrowser";
 import { showSnackbar } from "@waldiez/studio/components/Snackbar";
+import { debounce } from "@waldiez/studio/utils/debounce";
 import { hashPath } from "@waldiez/studio/utils/hashPath";
 
 import { useEffect, useRef, useState } from "react";
@@ -23,6 +24,7 @@ type UseWaldiezWrapperType = {
     onRun: (flowString: string) => Promise<void>;
     onCovert: (flowString: string, to: "py" | "ipynb") => void;
     onSave: (flowString: string) => void;
+    onChange: (flowString: string) => void;
     onUpload: (files: File[]) => Promise<string[]>;
     sendMessage: (message: any) => void;
 };
@@ -222,6 +224,11 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
             showSnackbar(flowId, "Failed to save the flow", "error", error.message);
         }
     };
+    const onChange = (flowString: string) => {
+        debounce(() => {
+            return saveFlow(currentPathRef.current, flowString).catch(() => {});
+        }, 200)();
+    };
     const onUpload = (files: File[]) => {
         return new Promise<string[]>(resolve => {
             const uploadedFiles: string[] = [];
@@ -263,6 +270,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         onRun,
         onCovert,
         onSave,
+        onChange,
         onUpload,
         sendMessage: sendJsonMessage,
     };

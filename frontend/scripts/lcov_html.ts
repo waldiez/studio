@@ -14,14 +14,15 @@ const __rootDir = path.resolve(__dirname, "..", "..");
 
 function getPackageManager() {
     const ifNotFound = "yarn";
-    return packageJson.packageManager || ifNotFound;
+    const packageManager = packageJson.packageManager || ifNotFound;
+    return packageManager.split("@")[0];
 }
 
 const main = () => {
     const lcovPath = path.resolve(__dirname, "..", "..", "coverage", "lcov.info");
     if (!fs.existsSync(lcovPath)) {
         console.info("No lcov.info found. Skipping HTML report generation");
-        process.exit(0);
+        return;
     }
     execSync(`${getPackageManager()} run lcov:html`, { stdio: "inherit", cwd: __rootDir });
 };
