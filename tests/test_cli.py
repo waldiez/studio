@@ -83,7 +83,7 @@ def test_run_command_defaults(
     mock_settings: MagicMock,
 ) -> None:
     """Test the `run` command with default options."""
-    result = runner.invoke(app, ["run"])
+    result = runner.invoke(app)
     assert result.exit_code == 0
     mock_uvicorn_run.assert_called_once()
     assert mock_uvicorn_run.call_args[1]["host"] == "localhost"  # Default host
@@ -99,7 +99,6 @@ def test_run_command_custom_options(
     result = runner.invoke(
         app,
         [
-            "run",
             "--host",
             "0.0.0.0",
             "--port",
@@ -124,7 +123,7 @@ def test_run_invalid_log_level(
     mock_settings: MagicMock,
 ) -> None:
     """Test the `run` command with an invalid log level."""
-    result = runner.invoke(app, ["run", "--log-level", "INVALID"])
+    result = runner.invoke(app, ["--log-level", "INVALID"])
     assert result.exit_code != 0
     assert "Error" in result.output
 
@@ -135,6 +134,6 @@ def test_debug_flag(
     mock_settings: MagicMock,
 ) -> None:
     """Test the --debug flag."""
-    result = runner.invoke(app, ["run", "--log-level", "DEBUG"])
+    result = runner.invoke(app, ["--log-level", "DEBUG"])
     assert result.exit_code == 0
     assert mock_uvicorn_run.call_args[1]["log_level"] == "debug"

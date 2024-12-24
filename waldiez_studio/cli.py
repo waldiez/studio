@@ -59,7 +59,7 @@ app = typer.Typer(
         "ignore_unknown_options": True,
     },
     add_completion=False,
-    no_args_is_help=True,
+    no_args_is_help=False,
     invoke_without_command=True,
     add_help_option=True,
     pretty_exceptions_short=False,
