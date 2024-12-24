@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AI Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.1.21",
+        "@waldiez/react": "^0.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
@@ -115,6 +115,8 @@
         "requirements:back": "bun python -m pip install -r requirements/all.txt",
         "requirements:front": "bun install",
         "requirements": "bun run requirements:front && bun run requirements:back",
+        "version:get": "bun scripts/version.ts --get",
+        "version:set": "bun scripts/version.ts --set",
         "all:front": "bun run requirements:front && bun run clean:front && bun run format:front && bun run lint:front && bun run test:front && bun run build:front",
         "all:back": "bun requirements:back && bun clean:back && bun format:back && bun lint:back && bun test:back && bun build:back",
         "all": "bun requirements && bun clean && bun run format && bun run lint && bun run test && bun run build && bun run image"
