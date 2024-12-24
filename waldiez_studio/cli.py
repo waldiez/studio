@@ -54,7 +54,10 @@ if DEFAULT_LOG_LEVEL not in LOG_LEVELS:
 app = typer.Typer(
     name="waldiez-studio",
     help="Waldiez Studio",
-    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+    context_settings={
+        "allow_extra_args": True,
+        "ignore_unknown_options": True,
+    },
     add_completion=False,
     no_args_is_help=True,
     invoke_without_command=True,

@@ -1,6 +1,7 @@
+import { describe, expect, it, vi } from "vitest";
+
 import axiosInstance from "@waldiez/studio/api/axiosInstance";
 import * as fileBrowserService from "@waldiez/studio/api/fileBrowserService";
-import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@waldiez/studio/api/axiosInstance", () => ({
     default: {

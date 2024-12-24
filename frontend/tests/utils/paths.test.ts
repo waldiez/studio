@@ -1,5 +1,6 @@
-import { getInitialPath, getParentPath, isFile, normalizePath } from "@waldiez/studio/utils/paths";
 import { describe, expect, it } from "vitest";
+
+import { getInitialPath, getParentPath, isFile, normalizePath } from "@waldiez/studio/utils/paths";
 
 describe("paths utility functions", () => {
     describe("getInitialPath", () => {

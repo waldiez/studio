@@ -29,7 +29,7 @@ def run_command(args: List[str]) -> None:
     )
 
 
-def ensure_dev_requirements() -> None:
+def ensure_requirements() -> None:
     """Ensure the development requirements are installed."""
     dev_requirements = ROOT_DIR / "requirements" / "dev.txt"
     test_requirements = ROOT_DIR / "requirements" / "test.txt"
@@ -174,7 +174,7 @@ def run_pylint() -> None:
 
 def main() -> None:
     """Run linters."""
-    ensure_dev_requirements()
+    ensure_requirements()
     run_isort()
     run_black()
     run_mypy()

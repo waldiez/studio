@@ -1,9 +1,10 @@
 import { FileBrowserProvider } from "./components/FileBrowser/FileBrowserProvider";
+
+import { useEffect } from "react";
+
 import { FileBrowser } from "@waldiez/studio/components/FileBrowser";
 import { SidebarProvider } from "@waldiez/studio/components/Sidebar";
 import { WaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper";
-
-import { useEffect } from "react";
 
 export const App = () => {
     useEffect(() => {

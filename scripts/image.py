@@ -22,6 +22,9 @@ _DEFAULT_IMAGE = os.environ.get("IMAGE_NAME", "waldiez/studio")
 _FALLBACK_TAG = "dev" if "--dev" in sys.argv else "latest"
 _DEFAULT_TAG = os.environ.get("IMAGE_TAG", _FALLBACK_TAG)
 _DEFAULT_PLATFORM = os.environ.get("PLATFORM", "linux/amd64")
+_DEFAULT_CONTAINER_FILE = "Containerfile"
+if "--dev" in sys.argv:
+    _DEFAULT_CONTAINER_FILE = "Containerfile.dev"
 
 
 def cli() -> argparse.ArgumentParser:
@@ -73,6 +76,16 @@ def cli() -> argparse.ArgumentParser:
         "--push",
         action="store_true",
         help="Push the image.",
+    )
+    parser.add_argument(
+        "--container-file",
+        default=_DEFAULT_CONTAINER_FILE,
+        help="The container file to use.",
+    )
+    parser.add_argument(
+        "--dev",
+        action="store_true",
+        help="Use the development container file.",
     )
     return parser
 
@@ -283,13 +296,12 @@ def main() -> None:
     """
     args, _ = cli().parse_known_args()
     build_args = args.build_args or []
-    container_file = "Containerfile"
     platform_arg = args.platform
     container_command = args.container_command
     allow_error = check_other_platform(container_command, platform_arg)
     try:
         build_image(
-            container_file=container_file,
+            container_file=args.container_file,
             image_name=args.image_name,
             image_tag=args.image_tag,
             image_platform=platform_arg,

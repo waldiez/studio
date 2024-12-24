@@ -1,7 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
-import { SidebarContext, SidebarProvider, useSidebar } from "@waldiez/studio/components/Sidebar";
 
 import { ReactNode } from "react";
+
+import { SidebarContext, SidebarProvider, useSidebar } from "@waldiez/studio/components/Sidebar";
 
 describe("SidebarContext and SidebarProvider", () => {
     const TestComponent: React.FC = () => {

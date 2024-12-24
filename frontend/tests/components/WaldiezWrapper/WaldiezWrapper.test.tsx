@@ -1,8 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, it, vi } from "vitest";
+
 import { FileBrowser, FileBrowserProvider } from "@waldiez/studio/components/FileBrowser";
 import { SidebarProvider } from "@waldiez/studio/components/Sidebar";
 import { WaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper";
-import { afterEach, beforeEach, it, vi } from "vitest";
 
 vi.mock("@waldiez/studio/api/fileBrowserService", () => ({
     fetchFiles: vi.fn().mockResolvedValue({

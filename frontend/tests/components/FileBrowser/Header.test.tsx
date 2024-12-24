@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Header } from "@waldiez/studio/components/FileBrowser/Header";
 import { it, vi } from "vitest";
+
+import { Header } from "@waldiez/studio/components/FileBrowser/Header";
 
 describe("Header Component", () => {
     it("renders correctly when sidebar is visible", () => {

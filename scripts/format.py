@@ -29,9 +29,10 @@ def run_command(args: List[str]) -> None:
     )
 
 
-def ensure_dev_requirements() -> None:
+def ensure_requirements() -> None:
     """Ensure the development requirements are installed."""
-    requirements_file = ROOT_DIR / "requirements" / "dev.txt"
+    requirements_file_dev = ROOT_DIR / "requirements" / "dev.txt"
+    requirements_file_test = ROOT_DIR / "requirements" / "test.txt"
     run_command(
         [
             sys.executable,
@@ -39,7 +40,9 @@ def ensure_dev_requirements() -> None:
             "pip",
             "install",
             "-r",
-            str(requirements_file),
+            str(requirements_file_dev),
+            "-r",
+            str(requirements_file_test),
         ]
     )
 
@@ -111,7 +114,7 @@ def run_ruff() -> None:
 
 def main() -> None:
     """Run python formatters."""
-    ensure_dev_requirements()
+    ensure_requirements()
     run_isort()
     run_autoflake()
     run_black()

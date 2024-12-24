@@ -1,5 +1,3 @@
-import logo from "@waldiez/studio/logo.svg";
-
 import { DiMarkdown } from "react-icons/di";
 import {
     FaFile,
@@ -20,6 +18,8 @@ import { SiJupyter } from "react-icons/si";
 import { SiYaml } from "react-icons/si";
 import { SiSqlite } from "react-icons/si";
 import { VscJson } from "react-icons/vsc";
+
+import logo from "@waldiez/studio/logo.svg";
 
 /* eslint-disable complexity */
 export function findFileIcon(fileName: string) {

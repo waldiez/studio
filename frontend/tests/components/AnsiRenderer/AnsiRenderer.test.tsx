@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
-import { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer";
 import { describe, expect, it } from "vitest";
+
+import { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer";
 
 describe("AnsiRenderer", () => {
     it("renders plain text correctly", () => {

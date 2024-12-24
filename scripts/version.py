@@ -8,12 +8,12 @@ import argparse
 import sys
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 try:
     from waldiez_studio._version import __version__
 except ImportError:
-    sys.path.append(str(ROOT_DIR))
+    sys.path.insert(0, str(ROOT_DIR))
     from waldiez_studio._version import __version__
 
 
@@ -91,7 +91,7 @@ def update_waldiez_dependency(version_string: str) -> None:
     found_dep = False
     for i, line in enumerate(lines):
         if "waldiez>" in line or "waldiez=" in line or "waldiez<" in line:
-            lines[i] = f'    "waldiez>={version_string}",\n'
+            lines[i] = f'    "waldiez=={version_string}",\n'
             found_dep = True
             break
     if not found_dep:

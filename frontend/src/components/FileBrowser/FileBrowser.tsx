@@ -1,11 +1,11 @@
+import React from "react";
+
 import { useFileBrowser } from "@waldiez/studio/components/FileBrowser";
 import { ActionButtons } from "@waldiez/studio/components/FileBrowser/ActionButtons";
 import "@waldiez/studio/components/FileBrowser/FileBrowser.css";
 import { Header } from "@waldiez/studio/components/FileBrowser/Header";
 import { PathItem } from "@waldiez/studio/components/PathItem";
 import { useSidebar } from "@waldiez/studio/components/Sidebar";
-
-import React from "react";
 
 export const FileBrowser: React.FC = () => {
     const {

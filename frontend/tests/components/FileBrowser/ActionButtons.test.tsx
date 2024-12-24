@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ActionButtons } from "@waldiez/studio/components/FileBrowser/ActionButtons";
 import { vi } from "vitest";
+
+import { ActionButtons } from "@waldiez/studio/components/FileBrowser/ActionButtons";
 
 describe("ActionButtons Component", () => {
     it('calls onNewFile when "New Flow" button is clicked', async () => {

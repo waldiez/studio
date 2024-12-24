@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
 import { describe, expect, it } from "vitest";
+
+import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
 
 describe("findFileIcon", () => {
     const className = "path-item-icon";

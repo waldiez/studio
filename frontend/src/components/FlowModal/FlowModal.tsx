@@ -1,9 +1,9 @@
-import { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer";
-import "@waldiez/studio/components/FlowModal/FlowModal.css";
-
 import React, { useEffect, useRef, useState } from "react";
 import { FaCircleXmark } from "react-icons/fa6";
 import { FiSend } from "react-icons/fi";
+
+import { AnsiRenderer } from "@waldiez/studio/components/AnsiRenderer";
+import "@waldiez/studio/components/FlowModal/FlowModal.css";
 
 type FlowModalProps = {
     isOpen: boolean;

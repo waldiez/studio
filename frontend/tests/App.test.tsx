@@ -1,6 +1,7 @@
 import { act, render, waitFor } from "@testing-library/react";
-import { App } from "@waldiez/studio/App";
 import { describe, expect, it, vi } from "vitest";
+
+import { App } from "@waldiez/studio/App";
 
 const mockMatchMedia = (matches = false) => {
     vi.spyOn(window, "matchMedia").mockImplementation(query => ({

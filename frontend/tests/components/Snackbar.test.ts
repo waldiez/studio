@@ -1,6 +1,7 @@
 import { waitFor } from "@testing-library/react";
-import { showSnackbar } from "@waldiez/studio/components/Snackbar";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { showSnackbar } from "@waldiez/studio/components/Snackbar";
 
 describe("Snackbar", () => {
     beforeEach(() => {

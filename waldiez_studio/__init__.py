@@ -1,6 +1,7 @@
 """Waldiez studio package."""
 
 import logging
+import warnings
 
 from ._version import __version__  # noqa
 
@@ -30,6 +31,7 @@ __HANDLED_FLAML_LOGGER = False
 if not __HANDLED_FLAML_LOGGER:
     flam_logger = logging.getLogger("flaml")
     flam_logger.addFilter(FlamlFilter())
+    warnings.filterwarnings("ignore", module="flaml")
     __HANDLED_FLAML_LOGGER = True
 
 

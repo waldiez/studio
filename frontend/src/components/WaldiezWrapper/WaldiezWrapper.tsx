@@ -1,10 +1,10 @@
-import { FlowModal } from "@waldiez/studio/components/FlowModal";
-import "@waldiez/studio/components/WaldiezWrapper/WaldiezWrapper.css";
-import { useWaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper/useWaldiezWrapper";
-
 import { useEffect } from "react";
 
 import { Waldiez } from "@waldiez/react";
+
+import { FlowModal } from "@waldiez/studio/components/FlowModal";
+import "@waldiez/studio/components/WaldiezWrapper/WaldiezWrapper.css";
+import { useWaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper/useWaldiezWrapper";
 
 const vsPath = "monaco/vs";
 const inputPrompt = null;

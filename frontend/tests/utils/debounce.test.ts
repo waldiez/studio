@@ -1,5 +1,6 @@
-import { debounce, debounceSync } from "@waldiez/studio/utils/debounce";
 import { describe, expect, it, vi } from "vitest";
+
+import { debounce, debounceSync } from "@waldiez/studio/utils/debounce";
 
 describe("debounceSync", () => {
     it("calls the function after the delay", async () => {

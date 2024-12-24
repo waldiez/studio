@@ -1,5 +1,6 @@
-import { startApp } from "@waldiez/studio/index";
 import { afterEach, vi } from "vitest";
+
+import { startApp } from "@waldiez/studio/index";
 
 describe("index", () => {
     beforeEach(() => {

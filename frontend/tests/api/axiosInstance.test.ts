@@ -1,6 +1,7 @@
-import axiosInstance, { ApiError, ApiErrorDetail, getErrorMessage } from "@waldiez/studio/api/axiosInstance";
 import { AxiosError } from "axios";
 import { describe, expect, it } from "vitest";
+
+import axiosInstance, { ApiError, ApiErrorDetail, getErrorMessage } from "@waldiez/studio/api/axiosInstance";
 
 describe("axiosInstance", () => {
     describe("ApiError", () => {

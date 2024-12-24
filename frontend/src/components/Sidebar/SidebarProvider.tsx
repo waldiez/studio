@@ -1,6 +1,6 @@
-import { SidebarContext } from "@waldiez/studio/components/Sidebar/useSidebar";
-
 import React, { ReactNode, useState } from "react";
+
+import { SidebarContext } from "@waldiez/studio/components/Sidebar/useSidebar";
 
 export const SidebarProvider: React.FC<{ children: ReactNode; initialVisible?: boolean }> = ({
     children,

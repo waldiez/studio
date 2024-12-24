@@ -13,7 +13,29 @@
     "[css]": {
         "editor.tabSize": 4
     },
-    "npm.packageManager": "yarn",
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "keep",
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        }
+    },
+    "npm.packageManager": "bun",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/out": true,
+        "**/coverage": true,
+        "**/.mypy_cache": true,
+        "**/.pytest_cache": true,
+        "**/.ruff_cache": true
+    },
     "files.eol": "\n",
     "svg.preview.background": "dark-transparent",
     "cSpell.mergeCSpellSettings": true,
