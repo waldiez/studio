@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AI Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.2.1",
+        "@waldiez/react": "^0.2.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
