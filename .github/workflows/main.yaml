@@ -3,11 +3,12 @@ name: Lint and Test
 
 # yamllint disable rule:truthy
 on:
-  workflow_call:
   push:
     branches:
       - main
       - dev
+  workflow_dispatch:
+  merge_group:
 
 jobs:
   lint_and_test:
