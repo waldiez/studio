@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 
 import { ReactNode } from "react";
 

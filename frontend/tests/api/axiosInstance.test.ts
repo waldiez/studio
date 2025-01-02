@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import axiosInstance, { ApiError, ApiErrorDetail, getErrorMessage } from "@waldiez/studio/api/axiosInstance";
 
