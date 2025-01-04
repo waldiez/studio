@@ -21,3 +21,4 @@ exclude =
     build,
     dist,
     examples,
+    waldiez_out,

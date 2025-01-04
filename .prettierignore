@@ -12,4 +12,5 @@ coverage
 **/vs/
 **/min-maps/
 **/*cache/
+**/waldiez_out/
 **/static/**/assets/

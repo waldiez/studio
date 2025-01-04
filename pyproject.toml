@@ -120,6 +120,7 @@ exclude = '''
   | .local
   | examples
   | node_modules
+  | waldiez_our
   | waldiez_studio/files
 )/
 '''
@@ -153,6 +154,7 @@ exclude = [
     'examples',
     'node_modules',
     'frontend',
+    "waldiez_out",
     'waldiez_studio/files',
 ]
 
@@ -171,6 +173,7 @@ skip=[
     "dist",
     'examples',
     'node_modules',
+    "waldiez_out",
     'waldiez_studio/files',
 ]
 include_trailing_comma=true
@@ -180,7 +183,7 @@ line_length=80
 
 # pydocstyle
 [tool.pydocstyle]
-match-dir='([^!(.venv)].*)([^!(.local)].*)([^!(examples)].*)'
+match-dir='([^!(.venv)].*)([^!(.local)].*)([^!(examples)].*)([^!(node_modules)].*)([^!(waldiez_out)].*)([^!(waldiez_studio/files)].*)'
 
 # pylint
 [tool.pylint.master]
@@ -201,6 +204,7 @@ ignore-paths = [
     ".local*",
     "examples",
     "node_modules",
+    "waldiez_out",
     'waldiez_studio/files',
 ]
 unsafe-load-any-extension="no"
