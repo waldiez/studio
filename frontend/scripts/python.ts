@@ -10,8 +10,8 @@ import url from "url";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// this dir: scripts
-const __rootDir = path.resolve(__dirname, "..");
+// this dir: frontend/scripts
+const __rootDir = path.resolve(__dirname, "..", "..");
 const __me = path.relative(__rootDir, __filename);
 
 const isWindows = process.platform === "win32";
