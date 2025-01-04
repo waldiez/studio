@@ -1,5 +1,7 @@
-"""Tests for the workspace routes."""
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Tests for the workspace routes."""
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long
 

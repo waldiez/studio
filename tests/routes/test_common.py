@@ -1,5 +1,7 @@
-"""Tests for waldiez_studio.routes.common."""
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Tests for waldiez_studio.routes.common."""
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-param-doc,line-too-long
 
