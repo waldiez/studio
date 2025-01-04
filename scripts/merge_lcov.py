@@ -58,6 +58,25 @@ def is_lcov_2(lcov_cmd: List[str]) -> bool:
     return False
 
 
+def keep_any_lcov(frontend_lcov: Path, backend_lcov: Path) -> None:
+    """Keep any lcov file found and copy it to the coverage directory.
+
+    Parameters
+    ----------
+    frontend_lcov : Path
+        The frontend lcov file.
+    backend_lcov : Path
+        The backend lcov file.
+    """
+    destination = ROOT_DIR / "coverage" / "lcov.info"
+    if destination.is_file():
+        return
+    if frontend_lcov.is_file():
+        shutil.copyfile(frontend_lcov, ROOT_DIR / "coverage" / "lcov.info")
+    elif backend_lcov.is_file():
+        shutil.copyfile(backend_lcov, ROOT_DIR / "coverage" / "lcov.info")
+
+
 def merge_lcov(lcov_cmd: List[str]) -> None:
     """Merge lcov files.
 
@@ -69,7 +88,8 @@ def merge_lcov(lcov_cmd: List[str]) -> None:
     frontend_lcov = ROOT_DIR / "coverage" / "frontend" / "lcov.info"
     backend_lcov = ROOT_DIR / "coverage" / "backend" / "lcov.info"
     if not frontend_lcov.is_file() or not backend_lcov.is_file():
-        print("lcov files not found. Skipping.")
+        print("not all lcov files found. Skipping.")
+        keep_any_lcov(frontend_lcov, backend_lcov)
         return
     if is_lcov_2(lcov_cmd):
         branch_coverage = "branch_coverage=1"

@@ -7,16 +7,35 @@
 # >    and it should either return `x.y.z` or set the version to `x.y.z`.
 
 import argparse
-import sys
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).parent.parent
+PACKAGE_NAME = "waldiez_studio"
 
-try:
-    from waldiez_studio._version import __version__
-except ImportError:
-    sys.path.insert(0, str(ROOT_DIR))
-    from waldiez_studio._version import __version__
+
+def read_version_from_file() -> str:
+    """Read the version from the _version.py file.
+
+    Returns
+    -------
+    str
+        The version string in the format x.y.z
+
+    Raises
+    ------
+    ValueError
+        If the version string was not found in the _version.py file
+    FileNotFoundError
+        If the _version.py file was not found
+    """
+    version_py_path = ROOT_DIR / PACKAGE_NAME / "_version.py"
+    if not version_py_path.exists():
+        raise FileNotFoundError("The _version.py file was not found")
+    with open(version_py_path, "r", encoding="utf-8") as file:
+        for line in file:
+            if line.startswith("__version__"):
+                return line.split(" = ")[1].strip().strip('"')
+    raise ValueError("The version string was not found in the _version.py file")
 
 
 def set_version(version_string: str) -> None:
@@ -43,7 +62,7 @@ def set_version(version_string: str) -> None:
             "The version string must be in the format x.y.z"
         ) from error
     new_version = f"{major}.{minor}.{patch}"
-    version_py_path = ROOT_DIR / "waldiez_studio" / "_version.py"
+    version_py_path = ROOT_DIR / PACKAGE_NAME / "_version.py"
     if not version_py_path.exists():
         raise FileNotFoundError("The _version.py file was not found")
     with open(version_py_path, "r", encoding="utf-8") as file:
@@ -120,7 +139,7 @@ def main() -> None:
         set_version(args.set)
         update_waldiez_dependency(args.set)
     elif args.get:
-        print(__version__)
+        print(read_version_from_file())
     else:
         parser.print_help()
 
