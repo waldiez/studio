@@ -93,10 +93,10 @@ async function downloadFile(url: string, dest: string): Promise<void> {
                     reject(new Error(`Failed to download file: ${res.statusCode}`));
                     return;
                 }
-
                 res.pipe(file);
-                file.on("finish", () => file.close(() => resolve()));
-                file.on("error", reject);
+                res.on("end", () => {
+                    file.close(() => resolve());
+                });
             })
             .on("error", reject);
     });
