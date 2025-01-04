@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-"""Tests for main.py"""
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long, unused-argument
+
+"""Tests for main.py"""
 
 import json
 import os
@@ -115,8 +116,6 @@ async def client_fixture(
 async def test_health_endpoint(client: AsyncClient) -> None:
     """Test the health check endpoints."""
     response = await client.get("/health")
-    print(response.content)
-    print(response.headers)
     assert response.status_code == 200
 
     response = await client.get("/healthz")

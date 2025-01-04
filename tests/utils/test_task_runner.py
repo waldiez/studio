@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-"""Test the task runner."""
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-param-doc,missing-yield-doc,protected-access,unused-argument,line-too-long
+
+"""Test the task runner."""
 
 import asyncio
 import shutil
