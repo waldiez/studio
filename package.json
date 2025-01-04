@@ -6,7 +6,7 @@
     "keywords": [
         "waldiez"
     ],
-    "license": "MIT",
+    "license": "Apache-2.0",
     "private": true,
     "homepage": "https://github.com/waldiez/studio",
     "bugs": {
