@@ -3,7 +3,7 @@
 .TESTS_DIR := tests
 .REPORTS_DIR := coverage
 .PACKAGE_NAME := waldiez_studio
-.PACKAGE_MANaGER := bun
+.PACKAGE_MANAGER := bun
 
 .PHONY: help
 help:
@@ -48,7 +48,7 @@ format-back:
 
 .PHONY: format-front
 format-front:
-	${.PACKAGE_MANaGER} run format
+	${.PACKAGE_MANAGER} run format
 
 .PHONY: format
 format: format-back format-front
@@ -67,7 +67,7 @@ lint-back:
 
 .PHONY: lint-front
 lint-front:
-	${.PACKAGE_MANaGER} run lint
+	${.PACKAGE_MANAGER} run lint
 
 .PHONY: lint
 lint: lint-back lint-front
@@ -81,7 +81,7 @@ clean-back:
 
 .PHONY: clean-front
 clean-front:
-	${.PACKAGE_MANaGER} run clean
+	${.PACKAGE_MANAGER} run clean
 
 .PHONY: clean
 clean: clean-back clean-front
@@ -92,7 +92,7 @@ requirements-back:
 
 .PHONY: requirements-front
 requirements-front:
-	${.PACKAGE_MANaGER} run requirements
+	${.PACKAGE_MANAGER} run requirements
 
 .PHONY: .before_test
 .before_test:
@@ -108,14 +108,14 @@ test-back: .before_test
 
 .PHONY: test-front
 test-front:
-	${.PACKAGE_MANaGER} run test:front
+	${.PACKAGE_MANAGER} run test:front
 
 .PHONY: test
 test: test-front test-back
 
 .PHONY: build-front
 build-front:
-	${.PACKAGE_MANaGER} run build
+	${.PACKAGE_MANAGER} run build
 
 .PHONY: build-back
 build-back:
@@ -143,8 +143,8 @@ dev-back:
 
 .PHONY: dev-front
 dev-front:
-	${.PACKAGE_MANaGER} run dev:front
+	${.PACKAGE_MANAGER} run dev:front
 
 .PHONY: dev
 dev:
-	${.PACKAGE_MANaGER} run dev
+	${.PACKAGE_MANAGER} run dev
