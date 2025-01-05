@@ -13,4 +13,4 @@
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/waldiez/studio/blob/main/LICENSE) file for details.
+This project is licensed under the [Apache License, Version 2.0 (Apache-2.0)](https://github.com/waldiez/studio/blob/main/LICENSE).
