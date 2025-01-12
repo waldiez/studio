@@ -82,7 +82,7 @@ test = [
     # mistralai 1.2.5 requires httpx<0.28.0,>=0.27.0
     'httpx<0.28.0,>=0.27.0',
     'pytest==8.3.4',
-    'pytest-asyncio==0.25.1',
+    'pytest-asyncio==0.25.2',
     'pytest-cov==6.0.0',
     'pytest-html==4.1.1',
     # mistralai 1.2.5 requires httpx<0.28.0,>=0.27.0
