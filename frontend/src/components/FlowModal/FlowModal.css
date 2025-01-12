@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0 0 0 /50%);
+    background-color: rgba(0 0 0 / 50%);
     z-index: 1000;
 }
 
@@ -20,7 +20,7 @@
     background: var(--background-color);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0 0 0 20%);
+    box-shadow: 0 4px 8px rgba(0 0 0 / 20%);
     display: flex;
     flex-direction: column;
     color: var(--text-color);
@@ -150,7 +150,7 @@
 }
 
 .waldiez-studio-flow-input-container button svg {
-    fill: "currentColor";
+    fill: currentcolor;
 }
 
 body.waldiez-light .waldiez-studio-flow-input-container button svg {
