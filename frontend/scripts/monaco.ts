@@ -95,7 +95,8 @@ async function downloadFile(url: string, dest: string): Promise<void> {
                 }
                 res.pipe(file);
                 res.on("end", () => {
-                    file.close(() => resolve());
+                    file.close();
+                    resolve();
                 });
             })
             .on("error", reject);
