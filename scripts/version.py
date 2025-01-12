@@ -70,7 +70,7 @@ def set_version(version_string: str) -> None:
     found_version = False
     for index, line in enumerate(lines):
         if line.startswith("__version__"):
-            lines[index] = f'__version__ = "{new_version}"\n'
+            lines[index] = f'__version__ = "{new_version}"' + "\n"
             found_version = True
             break
     if not found_version:
@@ -112,7 +112,7 @@ def update_waldiez_dependency(version_string: str) -> None:
     found_dep = False
     for i, line in enumerate(lines):
         if "waldiez>" in line or "waldiez=" in line or "waldiez<" in line:
-            lines[i] = f'    "waldiez=={version_string}",\n'
+            lines[i] = f'    "waldiez=={version_string}",' + "\n"
             found_dep = True
             break
     if not found_dep:
