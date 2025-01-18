@@ -47,9 +47,8 @@ def test_path_to_id_and_back() -> None:
     reconstructed_path = id_to_path(path_id)
 
     assert isinstance(path_id, str), "Encoded ID should be a string."
-    assert (
-        reconstructed_path == path
-    ), "Reconstructed Path should match the original."
+    error = "Reconstructed Path should match the original."
+    assert reconstructed_path == path, error
 
 
 def test_different_paths_generate_different_ids() -> None:
@@ -80,9 +79,8 @@ def test_empty_path() -> None:
     path_id = path_to_id(path)
     reconstructed_path = id_to_path(path_id)
 
-    assert (
-        reconstructed_path == path
-    ), "Reconstructed Path should match the empty Path."
+    error = "Reconstructed Path should match the empty Path."
+    assert reconstructed_path == path, error
 
 
 def test_path_with_special_characters() -> None:
@@ -91,9 +89,10 @@ def test_path_with_special_characters() -> None:
     path_id = path_to_id(path)
     reconstructed_path = id_to_path(path_id)
 
-    assert (
-        reconstructed_path == path
-    ), "Reconstructed Path should match the original with special characters."
+    error = (
+        "Reconstructed Path should match the original with special characters."
+    )
+    assert reconstructed_path == path, error
 
 
 def test_path_with_unicode_characters() -> None:
@@ -103,9 +102,8 @@ def test_path_with_unicode_characters() -> None:
     path_id = path_to_id(path)
     reconstructed_path = id_to_path(path_id)
 
-    assert (
-        reconstructed_path == path
-    ), "Reconstructed Path should match the original Unicode path."
+    error = "Reconstructed Path should match the original Unicode path."
+    assert reconstructed_path == path, error
 
 
 def test_invalid_base64_input() -> None:
@@ -126,6 +124,5 @@ def test_trailing_padding() -> None:
 
     # Ensure decoding works with missing padding
     reconstructed_path = id_to_path(padded_id)
-    assert (
-        reconstructed_path == path
-    ), "Reconstructed Path should match even with stripped padding."
+    error = "Reconstructed Path should match even with stripped padding."
+    assert reconstructed_path == path, error

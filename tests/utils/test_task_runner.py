@@ -63,9 +63,8 @@ async def test_listen_handle_start(
         mock_run.assert_awaited_once()
 
     # Confirm task state transitioned to COMPLETED
-    assert (
-        task_runner.task_state == TaskState.COMPLETED
-    ), "Task state did not transition to COMPLETED"
+    error_msg = "Task state did not transition to COMPLETED"
+    assert task_runner.task_state == TaskState.COMPLETED, error_msg
 
 
 @pytest.mark.asyncio
