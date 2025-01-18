@@ -107,7 +107,7 @@ export default defineConfig(({ command }) => {
             },
         },
         test: {
-            include: testsInclude,
+            include: [testsInclude],
             // support `describe`, `test` etc. globally,
             globals: true,
             // pool: 'vmThreads',
