@@ -101,6 +101,6 @@ describe("FileBrowser Component", () => {
             });
         });
         waitFor(() => expect(screen.queryByTestId("waldiez-loading-flow")).toBeFalsy());
-        await waitFor(() => expect(screen.queryByTitle("Run flow")).toBeTruthy());
+        await waitFor(() => expect(screen.queryAllByTitle("Run flow")).toBeTruthy());
     });
 });
