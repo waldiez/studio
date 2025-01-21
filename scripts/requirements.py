@@ -19,7 +19,7 @@ EXCLUDED_EXTRAS: List[str] = []
 # we might need a version not yet published
 # or handled in a parent project (with uv and workspaces)
 # in any case they can be installed manually if needed
-EXCLUDED_PACKAGES: List[str] = ["waldiez"]
+EXCLUDED_PACKAGES: List[str] = []
 
 # toml uses 'r' mode, tomllib uses 'rb' mode
 OPEN_MODE = "rb" if sys.version_info >= (3, 11) else "r"
