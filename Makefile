@@ -90,6 +90,9 @@ clean: clean-back clean-front
 requirements-back:
 	python scripts/requirements.py
 
+.PHONY: requirements
+requirements: requirements-back
+
 .PHONY: requirements-front
 requirements-front:
 	${.PACKAGE_MANAGER} run requirements
