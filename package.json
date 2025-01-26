@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AI Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.3.6",
+    "version": "0.3.7",
     "type": "module",
     "keywords": [
         "waldiez"
