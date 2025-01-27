@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.3.6",
+        "@waldiez/react": "^0.3.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
@@ -68,7 +68,7 @@
         "stylelint": "^16.14.0",
         "stylelint-config-recommended": "^15.0.0",
         "stylelint-config-standard": "^37.0.0",
-        "stylelint-prettier": "^5.0.2",
+        "stylelint-prettier": "^5.0.3",
         "tar-stream": "^3.1.7",
         "terser": "^5.37.0",
         "tsx": "^4.19.2",

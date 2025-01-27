@@ -37,7 +37,7 @@ dependencies = [
     # together (ag2-extra) 1.2.0 depends on typer<0.13 and >=0.9
     'typer>=0.9,<0.13',
     'uvicorn[standard]==0.34.0',
-    "waldiez==0.3.6",
+    "waldiez==0.3.7",
 ]
 
 [project.urls]
