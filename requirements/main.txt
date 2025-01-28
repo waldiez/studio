@@ -1,9 +1,9 @@
 aiofiles==24.1.0
 aiohttp==3.11.11
-fastapi==0.115.6
+fastapi==0.115.7
 pydantic-settings==2.7.1
 python-multipart==0.0.20
-tenacity>=8.2.0,<9.0.0
+tenacity<10.0.0
 typer>=0.9,<0.13
 uvicorn[standard]==0.34.0
-waldiez==0.3.7
+waldiez==0.3.8

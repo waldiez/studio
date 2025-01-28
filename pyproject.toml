@@ -29,15 +29,14 @@ classifiers = [
 dependencies = [
     'aiofiles==24.1.0',
     'aiohttp==3.11.11',
-    'fastapi==0.115.6',
+    'fastapi==0.115.7',
     'pydantic-settings==2.7.1',
     'python-multipart==0.0.20',
-    # llama-index-legacy 0.9.48.post4 requires tenacity<9.0.0,>=8.2.0
-    'tenacity>=8.2.0,<9.0.0',
+    'tenacity<10.0.0',
     # together (ag2-extra) 1.2.0 depends on typer<0.13 and >=0.9
     'typer>=0.9,<0.13',
     'uvicorn[standard]==0.34.0',
-    "waldiez==0.3.7",
+    "waldiez==0.3.8",
 ]
 
 [project.urls]
