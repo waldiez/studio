@@ -21,7 +21,7 @@ else:
 
 os.environ["PYTHONUNBUFFERED"] = "1"
 _ROOT_DIR = Path(__file__).parent.parent.resolve()
-_DEFAULT_IMAGE = os.environ.get("IMAGE_NAME", "my/package")
+_DEFAULT_IMAGE = os.environ.get("IMAGE_NAME", "waldiez/studio")
 _FALLBACK_TAG = "dev" if "--dev" in sys.argv else "latest"
 _DEFAULT_TAG = os.environ.get("IMAGE_TAG", _FALLBACK_TAG)
 _DEFAULT_PLATFORM = os.environ.get("PLATFORM", "linux/amd64")
