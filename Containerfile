@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 # install system dependencies
 RUN apt update && \
-    apt install -y curl unzip git ca-certificates python3-dev python3-pip && \
+    apt install -y curl unzip git ca-certificates python3-dev python3-pip pkg-config && \
     curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt install -y nodejs curl && \
