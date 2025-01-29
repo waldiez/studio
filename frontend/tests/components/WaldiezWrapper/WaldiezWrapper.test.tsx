@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import { FileBrowser, FileBrowserProvider } from "@waldiez/studio/components/FileBrowser";
 import { SidebarProvider } from "@waldiez/studio/components/Sidebar";
@@ -79,7 +80,7 @@ describe("FileBrowser Component", () => {
         await waitFor(() => expect(screen.getByTestId("waldiez-loading-flow")).toBeInTheDocument());
     });
 
-    it("displays Waldiez UI when .waldiez file is loaded", async () => {
+    it("displays Waldiez UI when a .waldiez file is loaded", async () => {
         await act(async () => {
             render(
                 <SidebarProvider>
@@ -90,17 +91,11 @@ describe("FileBrowser Component", () => {
                 </SidebarProvider>,
             );
         });
-
-        await waitFor(() => expect(screen.getByTestId("path-navigate")).toBeInTheDocument());
-        await act(async () => {
-            fireEvent.click(screen.getByTestId("path-navigate"));
-        });
-        await act(async () => {
-            await waitFor(async () => {
-                expect(screen.getByTestId("waldiez-loading-flow")).toBeInTheDocument();
-            });
+        await userEvent.click(screen.getByTestId("path-navigate"));
+        waitFor(() => {
+            expect(screen.getByTestId("waldiez-loading-flow")).toBeInTheDocument();
         });
         waitFor(() => expect(screen.queryByTestId("waldiez-loading-flow")).toBeFalsy());
-        await waitFor(() => expect(screen.queryAllByTitle("Run flow")).toBeTruthy());
+        waitFor(() => expect(screen.queryAllByTitle("Run flow")).toBeTruthy());
     });
 });
