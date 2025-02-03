@@ -4,7 +4,7 @@
     "": {
       "name": "@waldiez/studio",
       "dependencies": {
-        "@waldiez/react": "^0.3.11",
+        "@waldiez/react": "^0.3.12",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
       },
@@ -582,7 +582,7 @@
 
     "@vitest/utils": ["@vitest/utils@3.0.5", "", { "dependencies": { "@vitest/pretty-format": "3.0.5", "loupe": "^3.1.2", "tinyrainbow": "^2.0.0" } }, "sha512-N9AX0NUoUtVwKwy21JtwzaqR5L5R5A99GAbrHfCCXK1lp593i/3AZAXhSP43wRQuxYsflrdzEfXZFo1reR1Nkg=="],
 
-    "@waldiez/react": ["@waldiez/react@0.3.11", "", { "dependencies": { "@monaco-editor/react": "^4.6.0", "@xyflow/react": "^12.4.2", "microdiff": "^1.5.0", "nanoid": "^5.0.9", "rc-slider": "^11.1.8", "react-error-boundary": "^5.0.0", "react-fast-compare": "^3.2.2", "react-hotkeys-hook": "^4.6.1", "react-icons": "^5.4.0", "react-select": "^5.10.0", "zundo": "^2.3.0", "zustand": "^5.0.3" }, "peerDependencies": { "react": "^18.3.1 || ^19.0.0", "react-dom": "^18.3.1 || ^19.0.0" } }, "sha512-uMcKGb1czp+vk2lT88OVZ5RCmY5lZ6l363bqLs95m7geu5qH9Lwuuui6FILuZjCrHrWTmV1ZtVVybFIGDBps1A=="],
+    "@waldiez/react": ["@waldiez/react@0.3.12", "", { "dependencies": { "@monaco-editor/react": "^4.6.0", "@xyflow/react": "^12.4.2", "microdiff": "^1.5.0", "nanoid": "^5.0.9", "rc-slider": "^11.1.8", "react-error-boundary": "^5.0.0", "react-fast-compare": "^3.2.2", "react-hotkeys-hook": "^4.6.1", "react-icons": "^5.4.0", "react-select": "^5.10.0", "zundo": "^2.3.0", "zustand": "^5.0.3" }, "peerDependencies": { "react": "^18.3.1 || ^19.0.0", "react-dom": "^18.3.1 || ^19.0.0" } }, "sha512-BkIVaprffTAmVuzEsf83qwm0O29HQxOwl5nLMjUHdRXMTLAN1mSW9ib4q8n5ZYLJiMJDPL+IJelhJUbyAxRSvg=="],
 
     "@xyflow/react": ["@xyflow/react@12.4.2", "", { "dependencies": { "@xyflow/system": "0.0.50", "classcat": "^5.0.3", "zustand": "^4.4.0" }, "peerDependencies": { "react": ">=17", "react-dom": ">=17" } }, "sha512-AFJKVc/fCPtgSOnRst3xdYJwiEcUN9lDY7EO/YiRvFHYCJGgfzg+jpvZjkTOnBLGyrMJre9378pRxAc3fsR06A=="],
 
