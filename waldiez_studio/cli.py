@@ -131,7 +131,7 @@ def run(
         app_dir=chdir_to,
         date_header=False,
         server_header=False,
-        reload_dirs=[str(this_dir)],
+        reload_dirs=[str(this_dir)] if reload else None,
         reload_excludes=(
             [
                 "**/waldiez_out/**/*",
