@@ -17,7 +17,7 @@ START_YEAR = 2024
 LICENSE_LINE = "# SPDX-License-Identifier: Apache-2.0."
 HOLDER = "Waldiez and contributors."
 DIRECTORIES_TO_SCAN = [
-    str(ROOT_DIR / "studio"),
+    str(ROOT_DIR / "waldiez_studio"),
     str(ROOT_DIR / "tests"),
     str(ROOT_DIR / "scripts"),
 ]

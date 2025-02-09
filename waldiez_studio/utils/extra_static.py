@@ -1,5 +1,7 @@
-"""Utilities for managing extra static files."""
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Utilities for managing extra static files."""
 # pylint: disable=broad-except, too-many-try-statements
 
 import hashlib

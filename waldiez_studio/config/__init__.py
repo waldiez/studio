@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 """Configuration module for Waldiez Studio."""
 
 from .lib import get_default_domain_name, get_default_host, get_default_port

@@ -1,5 +1,7 @@
-"""Config related helper functions.
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Config related helper functions.
 To get configuration values from
 environment variables or command line arguments.
 """

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 """Command line interface module."""
 
 # pylint: disable=missing-param-doc,missing-return-doc,missing-raises-doc

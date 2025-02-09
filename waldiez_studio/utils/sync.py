@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 """Run a synchronous function in an asynchronous way."""
 
 import asyncio

@@ -1,5 +1,7 @@
-"""Flow API routes."""
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Flow API routes."""
 # mypy: disable-error-code="unused-ignore,assignment"
 # pylint: disable=broad-except,wrong-import-order,ungrouped-imports
 

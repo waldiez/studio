@@ -1,5 +1,7 @@
-"""Models for the workspace API."""
+# SPDX-License-Identifier: Apache-2.0.
+# Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+"""Models for the workspace API."""
 # mypy: disable-error-code="unused-ignore,assignment"
 
 from typing import Optional
