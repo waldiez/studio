@@ -116,5 +116,5 @@ async def test_security_headers_disabled_csp() -> None:
     ) as client:
         response = await client.get("/")
 
-        assert response.headers["Content-Security-Policy"] == ""
+        assert "Content-Security-Policy" not in response.headers
         assert response.headers["X-Frame-Options"] == "DENY"

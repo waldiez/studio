@@ -66,7 +66,13 @@ def parse_policy(policy: Dict[str, str | List[str]] | str) -> str:
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to all responses."""
 
-    def __init__(self, app: FastAPI, csp: bool = True) -> None:
+    def __init__(
+        self,
+        app: FastAPI,
+        csp: bool = True,
+        force_ssl: bool = True,
+        max_age: int = 31556926,
+    ):
         """Init SecurityHeadersMiddleware.
 
         Parameters
@@ -75,9 +81,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             The FastAPI app
         csp: bool
             Whether to add a Content-Security-Policy header
+        force_ssl: bool
+            Whether to add a Strict-Transport-Security header
+        max_age: int
+            The max age for the Strict-Transport-Security header
         """
         super().__init__(app)
         self.csp = csp
+        self.force_ssl = force_ssl
+        self.max_age = max_age
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -100,16 +112,18 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         if request.url.path == "/docs":
             return await call_next(request)
         headers = {
-            "Content-Security-Policy": (
-                "" if not self.csp else parse_policy(CSP)
-            ),
             "Cross-Origin-Opener-Policy": "same-origin",
             "Referrer-Policy": "strict-origin-when-cross-origin",
-            "Strict-Transport-Security": "max-age=31556926; includeSubDomains",
             "X-Content-Type-Options": "nosniff",
             "X-Frame-Options": "DENY",
             "X-XSS-Protection": "1; mode=block",
         }
+        if self.csp:
+            headers["Content-Security-Policy"] = parse_policy(CSP)
+        if self.force_ssl:
+            headers["Strict-Transport-Security"] = (
+                f"max-age={self.max_age}; includeSubDomains"
+            )
         response = await call_next(request)
         response.headers.update(headers)
 

@@ -99,7 +99,12 @@ app.add_middleware(
     www_redirect=False,
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
-app.add_middleware(SecurityHeadersMiddleware, csp=True)
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    csp=True,
+    force_ssl=settings.force_ssl,
+    max_age=31556926,
+)
 
 
 # self-hosted Swagger UI
