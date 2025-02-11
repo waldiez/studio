@@ -43,6 +43,7 @@
         "genhtml",
         "geninfo",
         "getbasetemp",
+        "graphviz",
         "greut",
         "hasattr",
         "healthz",
@@ -55,6 +56,11 @@
         "Kasnesis",
         "Lazaros",
         "levelprefix",
+        "libcairo",
+        "libgif",
+        "libjpeg",
+        "libpango",
+        "librsvg",
         "makedirs",
         "mccabe",
         "metaclass",
@@ -123,6 +129,8 @@
         ".vscode",
         ".venv/**"
     ],
-    "files": ["/**"],
+    "files": [
+        "/**"
+    ],
     "useGitignore": true
 }
