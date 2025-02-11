@@ -68,7 +68,7 @@ dev = [
     'pydocstyle==6.3.0',
     'pylint==3.3.4',
     'python-dotenv==1.0.1',
-    'ruff==0.9.5',
+    'ruff==0.9.6',
     'toml; python_version <= "3.10"',
     'types-aiofiles==24.1.0.20241221',
     'types-PyYAML==6.0.12.20241230',
