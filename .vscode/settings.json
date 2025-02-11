@@ -1,8 +1,14 @@
 {
+    "python.envFile": "",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    },
     "pylint.args": ["--rcfile=pyproject.toml"],
     "pylint.importStrategy": "fromEnvironment",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "black-formatter.args": ["--config=pyproject.toml"],
     "mypy.runUsingActiveInterpreter": true,
-    "python.envFile": "",
     "mypy-type-checker.args": ["--config pyproject.toml"],
     "[typescript]": {
         "editor.tabSize": 4
@@ -37,11 +43,11 @@
         "**/.ruff_cache": true
     },
     "files.eol": "\n",
+    "files.trimTrailingWhitespaceInRegexAndStrings": false,
     "svg.preview.background": "dark-transparent",
     "cSpell.mergeCSpellSettings": true,
     "cSpell.configFile": "cspell.json",
     "python.testing.pytestArgs": ["tests"],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "cSpell.words": ["graphviz"]
+    "python.testing.pytestEnabled": true
 }
