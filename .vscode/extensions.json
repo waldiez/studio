@@ -1,3 +1,7 @@
 {
-    "recommendations": ["waldiez.waldiez-vscode"]
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "waldiez.waldiez-vscode"
+    ]
 }
