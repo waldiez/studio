@@ -120,6 +120,7 @@ class WsServerConnection(ServerConnection):
         kwargs : Any
             Additional keyword arguments.
         """
+        # pylint: disable=broad-except,too-many-try-statements
         try:
             is_input, message_string = self.is_input_prompt(message)
             data_dict: MessageToSend = {
