@@ -6,10 +6,11 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, TypedDict
 
 from autogen.io.websockets import IOWebsockets, ServerConnection  # type: ignore
 from fastapi import WebSocket
+from typing_extensions import Literal
 
 INPUT_INDICATOR = (
     "Press enter to skip and use auto-reply, "
@@ -20,6 +21,13 @@ LOG = logging.getLogger(__name__)
 
 Data = str | bytes
 Message = Data | Dict[str, Data] | List[Data]
+
+
+class MessageToSend(TypedDict):
+    """Message to send."""
+
+    type: Literal["print", "input"]
+    data: str
 
 
 class WsServerConnection(ServerConnection):
@@ -112,42 +120,26 @@ class WsServerConnection(ServerConnection):
         kwargs : Any
             Additional keyword arguments.
         """
-        is_input, message_string = self.is_input_prompt(message)
-        data_dict = {
-            "type": "print",
-            "data": message_string,
-        }
-        if is_input:
-            # le'ts also send the input prompt
+        try:
+            is_input, message_string = self.is_input_prompt(message)
+            data_dict: MessageToSend = {
+                "type": "print",
+                "data": message_string,
+            }
+            if is_input:
+                # let's also send the input prompt
+                input_data_dict: MessageToSend = {
+                    "type": "input",
+                    "data": message_string,
+                }
+                asyncio.run_coroutine_threadsafe(
+                    self.websocket.send_json(input_data_dict), self.loop
+                ).result()
             asyncio.run_coroutine_threadsafe(
                 self.websocket.send_json(data_dict), self.loop
             ).result()
-            data_dict["type"] = "input"
-        asyncio.run_coroutine_threadsafe(
-            self.websocket.send_json(data_dict), self.loop
-        ).result()
-
-
-def get_print_data_string(message: Message) -> str:
-    """Get the print data string.
-
-    Parameters
-    ----------
-    message : Message
-        The message.
-
-    Returns
-    -------
-    str
-        The print data string.
-    """
-    if isinstance(message, bytes):
-        return message.decode()
-    if isinstance(message, str):
-        return message
-    if isinstance(message, (dict, list)):
-        return json.dumps(message)
-    return str(message)
+        except BaseException as exc:
+            LOG.error("Error sending data: %s", exc)
 
 
 class IOWebsocketsStream(IOWebsockets):
@@ -184,3 +176,25 @@ class IOWebsocketsStream(IOWebsockets):
         end = kwargs.get("end", "\n")
         message += end
         self.server_connection.send(message)
+
+
+def get_print_data_string(message: Message) -> str:
+    """Get the print data string.
+
+    Parameters
+    ----------
+    message : Message
+        The message.
+
+    Returns
+    -------
+    str
+        The print data string.
+    """
+    if isinstance(message, bytes):
+        return message.decode()
+    if isinstance(message, str):
+        return message
+    if isinstance(message, (dict, list)):
+        return json.dumps(message)
+    return str(message)

@@ -2,8 +2,7 @@
 import react from "@vitejs/plugin-react";
 import dotenv from "dotenv";
 import fs from "fs-extra";
-import path from "path";
-import { relative, resolve } from "path";
+import path, { relative, resolve } from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 
@@ -88,14 +87,20 @@ export default defineConfig(({ command }) => {
         build: {
             emptyOutDir: true,
             minify: "terser",
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                },
+            },
+            target: "esnext",
             outDir: resolve(__dirname, "..", "waldiez_studio", "static", "frontend"),
             rollupOptions: {
                 output: {
-                    manualChunks: {
-                        react: ["react"],
-                        "react-dom": ["react-dom"],
-                        "xyflow-react": ["@xyflow/react"],
-                        "waldiez-react": ["@waldiez/react"],
+                    manualChunks(id) {
+                        if (id.includes("node_modules")) {
+                            return id.toString().split("node_modules/")[1].split("/")[0].toString();
+                        }
                     },
                 },
             },
