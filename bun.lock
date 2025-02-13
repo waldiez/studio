@@ -4,7 +4,7 @@
     "": {
       "name": "@waldiez/studio",
       "dependencies": {
-        "@waldiez/react": "^0.3.12",
+        "@waldiez/react": "^0.4.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
       },
@@ -39,7 +39,7 @@
         "jsdom": "^26.0.0",
         "npm-run-all2": "^7.0.2",
         "playwright": "^1.50.1",
-        "prettier": "^3.5.0",
+        "prettier": "^3.5.1",
         "react-use-websocket": "^4.13.0",
         "rimraf": "^6.0.1",
         "stylelint": "^16.14.1",
@@ -582,11 +582,11 @@
 
     "@vitest/utils": ["@vitest/utils@3.0.5", "", { "dependencies": { "@vitest/pretty-format": "3.0.5", "loupe": "^3.1.2", "tinyrainbow": "^2.0.0" } }, "sha512-N9AX0NUoUtVwKwy21JtwzaqR5L5R5A99GAbrHfCCXK1lp593i/3AZAXhSP43wRQuxYsflrdzEfXZFo1reR1Nkg=="],
 
-    "@waldiez/react": ["@waldiez/react@0.3.12", "", { "dependencies": { "@monaco-editor/react": "^4.6.0", "@xyflow/react": "^12.4.2", "microdiff": "^1.5.0", "nanoid": "^5.0.9", "rc-slider": "^11.1.8", "react-error-boundary": "^5.0.0", "react-fast-compare": "^3.2.2", "react-hotkeys-hook": "^4.6.1", "react-icons": "^5.4.0", "react-select": "^5.10.0", "zundo": "^2.3.0", "zustand": "^5.0.3" }, "peerDependencies": { "react": "^18.3.1 || ^19.0.0", "react-dom": "^18.3.1 || ^19.0.0" } }, "sha512-BkIVaprffTAmVuzEsf83qwm0O29HQxOwl5nLMjUHdRXMTLAN1mSW9ib4q8n5ZYLJiMJDPL+IJelhJUbyAxRSvg=="],
+    "@waldiez/react": ["@waldiez/react@0.4.0", "", { "dependencies": { "@monaco-editor/react": "^4.6.0", "@xyflow/react": "^12.4.3", "microdiff": "^1.5.0", "nanoid": "^5.0.9", "rc-slider": "^11.1.8", "react-error-boundary": "^5.0.0", "react-fast-compare": "^3.2.2", "react-hotkeys-hook": "^4.6.1", "react-icons": "^5.4.0", "react-select": "^5.10.0", "zundo": "^2.3.0", "zustand": "^5.0.3" }, "peerDependencies": { "react": "^18.3.1 || ^19.0.0", "react-dom": "^18.3.1 || ^19.0.0" } }, "sha512-VxJk8rj+OI3APg954tYXBsdbHAayQqxUZe91312mc6lZqLnGtoaVRHfXhWn3fd4klFyx7t71M56j1wl8OsX/fw=="],
 
-    "@xyflow/react": ["@xyflow/react@12.4.2", "", { "dependencies": { "@xyflow/system": "0.0.50", "classcat": "^5.0.3", "zustand": "^4.4.0" }, "peerDependencies": { "react": ">=17", "react-dom": ">=17" } }, "sha512-AFJKVc/fCPtgSOnRst3xdYJwiEcUN9lDY7EO/YiRvFHYCJGgfzg+jpvZjkTOnBLGyrMJre9378pRxAc3fsR06A=="],
+    "@xyflow/react": ["@xyflow/react@12.4.3", "", { "dependencies": { "@xyflow/system": "0.0.51", "classcat": "^5.0.3", "zustand": "^4.4.0" }, "peerDependencies": { "react": ">=17", "react-dom": ">=17" } }, "sha512-oO50TIY4rbgOURK5pmvL4LwLOQdh6YkvrvOBZPBedltJ1TINCRp0FiyYKfYhLnaDcW8/aayvGtFpUcSkPQxpGg=="],
 
-    "@xyflow/system": ["@xyflow/system@0.0.50", "", { "dependencies": { "@types/d3-drag": "^3.0.7", "@types/d3-selection": "^3.0.10", "@types/d3-transition": "^3.0.8", "@types/d3-zoom": "^3.0.8", "d3-drag": "^3.0.0", "d3-selection": "^3.0.0", "d3-zoom": "^3.0.0" } }, "sha512-HVUZd4LlY88XAaldFh2nwVxDOcdIBxGpQ5txzwfJPf+CAjj2BfYug1fHs2p4yS7YO8H6A3EFJQovBE8YuHkAdg=="],
+    "@xyflow/system": ["@xyflow/system@0.0.51", "", { "dependencies": { "@types/d3-drag": "^3.0.7", "@types/d3-selection": "^3.0.10", "@types/d3-transition": "^3.0.8", "@types/d3-zoom": "^3.0.8", "d3-drag": "^3.0.0", "d3-selection": "^3.0.0", "d3-zoom": "^3.0.0" } }, "sha512-cYnuM3oWQQjx2Rdz0LdZCnbUaWZdZDiik20kPDYsa5SIlq++ZDIcKiDF6a93ncfMv9Ej5GWfDkouE7bObrdRqQ=="],
 
     "acorn": ["acorn@8.14.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA=="],
 
@@ -1266,7 +1266,7 @@
 
     "prelude-ls": ["prelude-ls@1.2.1", "", {}, "sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g=="],
 
-    "prettier": ["prettier@3.5.0", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-quyMrVt6svPS7CjQ9gKb3GLEX/rl3BCL2oa/QkNcXv4YNVBC9olt3s+H7ukto06q7B1Qz46PbrKLO34PR6vXcA=="],
+    "prettier": ["prettier@3.5.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-hPpFQvHwL3Qv5AdRvBFMhnKo4tYxp0ReXiPn2bxkiohEX6mBeBwEpBSQTkD458RaaDKQMYSp4hX4UtfUTA5wDw=="],
 
     "prettier-linter-helpers": ["prettier-linter-helpers@1.0.0", "", { "dependencies": { "fast-diff": "^1.1.2" } }, "sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w=="],
 

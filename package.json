@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.3.12",
+        "@waldiez/react": "^0.4.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
@@ -62,7 +62,7 @@
         "jsdom": "^26.0.0",
         "npm-run-all2": "^7.0.2",
         "playwright": "^1.50.1",
-        "prettier": "^3.5.0",
+        "prettier": "^3.5.1",
         "react-use-websocket": "^4.13.0",
         "rimraf": "^6.0.1",
         "stylelint": "^16.14.1",
