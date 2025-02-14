@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.4.0",
+        "@waldiez/react": "^0.4.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
