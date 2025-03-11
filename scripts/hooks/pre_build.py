@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
+# pylint: disable=import-error
+# pyright: reportMissingImports=false
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 THRESHOLD = 600  # 10 minutes before this check
