@@ -12,7 +12,7 @@ authors = [
   { name = 'Stella Ioannidou', email = 'stella@humancentered.gr'}
 ]
 readme = "README.md"
-requires-python = '>=3.10,<3.13'
+requires-python = '>=3.10,<3.14'
 dynamic = ["version"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -22,7 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-#   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.13",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
@@ -36,7 +36,7 @@ dependencies = [
     'tenacity<=9.0.0',
     'typer<=0.15.2',
     'uvicorn[standard]==0.34.0',
-    "waldiez==0.4.1",
+    'waldiez==0.4.1; python_version < "3.13"',  # till waldiez is available on pypi for py 3.13",
 ]
 
 [project.urls]
@@ -72,7 +72,7 @@ dev = [
     'ruff==0.11.2',
     'toml; python_version <= "3.10"',
     'types-aiofiles==24.1.0.20250326',
-    'types-PyYAML==6.0.12.20241230',
+    'types-PyYAML==6.0.12.20250326',
     'types-toml==0.10.8.20240310',
     'yamllint==1.37.0',
 ]

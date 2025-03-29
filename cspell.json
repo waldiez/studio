@@ -83,6 +83,7 @@
         "pydantic",
         "pydocstyle",
         "pylint",
+        "pypi",
         "pyproject",
         "pytest",
         "PYTHONDONTWRITEBYTECODE",
