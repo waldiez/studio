@@ -20,14 +20,16 @@ else:
     load_dotenv(override=False)
 
 os.environ["PYTHONUNBUFFERED"] = "1"
+_MY_ARCH = platform.machine()
+if _MY_ARCH == "x86_64":
+    _MY_ARCH = "amd64"
+elif _MY_ARCH in ("aarch64", "arm64"):
+    _MY_ARCH = "arm64"
 _ROOT_DIR = Path(__file__).parent.parent.resolve()
 _DEFAULT_IMAGE = os.environ.get("IMAGE_NAME", "waldiez/studio")
 _FALLBACK_TAG = "dev" if "--dev" in sys.argv else "latest"
 _DEFAULT_TAG = os.environ.get("IMAGE_TAG", _FALLBACK_TAG)
-_DEFAULT_PLATFORM = os.environ.get("PLATFORM", "linux/amd64")
-_DEFAULT_CONTAINER_FILE = "Containerfile"
-if "--dev" in sys.argv:
-    _DEFAULT_CONTAINER_FILE = "Containerfile.dev"
+_DEFAULT_PLATFORM = os.environ.get("PLATFORM", f"linux/{_MY_ARCH}")
 
 
 def cli() -> argparse.ArgumentParser:
@@ -80,16 +82,6 @@ def cli() -> argparse.ArgumentParser:
         action="store_true",
         help="Push the image.",
     )
-    parser.add_argument(
-        "--container-file",
-        default=_DEFAULT_CONTAINER_FILE,
-        help="The container file to use.",
-    )
-    parser.add_argument(
-        "--dev",
-        action="store_true",
-        help="Use the development container file.",
-    )
     return parser
 
 
@@ -130,6 +122,7 @@ def run_command(command: List[str]) -> None:
     subprocess.CalledProcessError
         If the command returns a non-zero exit status.
     """
+    # pylint: disable=inconsistent-quotes
     command_string = " ".join(command)
     print("Running command: \n" + command_string + "\n")
     subprocess.run(
@@ -249,14 +242,9 @@ def check_other_platform(container_command: str, platform_arg: str) -> bool:
     """
     is_windows = platform.system() == "Windows"
     is_other_platform = is_windows
+    platform_arg_arch = platform_arg.split("/")[1]
     if not is_windows:
-        my_arch = platform.machine()
-        if my_arch == "x86_64":
-            my_arch = "amd64"
-        elif my_arch in ("aarch64", "arm64"):
-            my_arch = "arm64"
-        if platform_arg != f"linux/{my_arch}":
-            is_other_platform = True
+        is_other_platform = platform_arg_arch != _MY_ARCH
     # pylint: disable=line-too-long
     # for multi-platform builds, we need qemu-user-static:
     #
@@ -299,12 +287,13 @@ def main() -> None:
     """
     args, _ = cli().parse_known_args()
     build_args = args.build_args or []
+    container_file = "Containerfile"
     platform_arg = args.platform
     container_command = args.container_command
     allow_error = check_other_platform(container_command, platform_arg)
     try:
         build_image(
-            container_file=args.container_file,
+            container_file=container_file,
             image_name=args.image_name,
             image_tag=args.image_tag,
             image_platform=platform_arg,
