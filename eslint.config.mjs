@@ -18,7 +18,7 @@ const compat = new FlatCompat({
     recommendedConfig: eslint.configs.recommended,
 });
 
-function legacyPlugin(name, alias = name) {
+const legacyPlugin = (name, alias = name) => {
     const plugin = compat.plugins(name)[0]?.plugins?.[alias];
 
     if (!plugin) {
