@@ -6,4 +6,4 @@ python-multipart==0.0.20
 tenacity<=9.1.2
 typer<=0.15.2
 uvicorn[standard]==0.34.0
-waldiez==0.4.2
+waldiez==0.4.3
