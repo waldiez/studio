@@ -22,7 +22,7 @@ import { VscJson } from "react-icons/vsc";
 import logo from "@waldiez/studio/logo.svg";
 
 /* eslint-disable complexity */
-export function findFileIcon(fileName: string) {
+export const findFileIcon = (fileName: string) => {
     const extension = fileName.split(".").pop();
     const className = "path-item-icon";
     if (!extension) {
@@ -144,4 +144,4 @@ export function findFileIcon(fileName: string) {
         default:
             return <FaFile className={className} title="File" />;
     }
-}
+};

@@ -12,11 +12,11 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __rootDir = path.resolve(__dirname, "..", "..");
 
-function getPackageManager() {
+const getPackageManager = (): string => {
     const ifNotFound = "yarn";
     const packageManager = packageJson.packageManager || ifNotFound;
     return packageManager.split("@")[0];
-}
+};
 
 const main = () => {
     const lcovPath = path.resolve(__dirname, "..", "..", "coverage", "lcov.info");

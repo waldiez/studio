@@ -23,7 +23,7 @@ interface IPackageDetails {
     last_check: string;
 }
 
-function readMonacoDetails(): IPackageDetails | null {
+const readMonacoDetails = (): IPackageDetails | null => {
     if (!fs.existsSync(MONACO_DETAILS_PATH)) {
         return null;
     }
@@ -38,9 +38,9 @@ function readMonacoDetails(): IPackageDetails | null {
         console.error("Error reading Monaco details:", err);
     }
     return null;
-}
+};
 
-async function fetchPackageDetails(): Promise<IPackageDetails> {
+const fetchPackageDetails = async (): Promise<IPackageDetails> => {
     return new Promise((resolve, reject) => {
         const url = `${REGISTRY_BASE_URL}/${PACKAGE_NAME}`;
         https
@@ -82,9 +82,9 @@ async function fetchPackageDetails(): Promise<IPackageDetails> {
             })
             .on("error", reject);
     });
-}
+};
 
-async function downloadFile(url: string, dest: string): Promise<void> {
+const downloadFile = (url: string, dest: string): Promise<void> => {
     return new Promise((resolve, reject) => {
         const file = fs.createWriteStream(dest);
         https
@@ -101,9 +101,9 @@ async function downloadFile(url: string, dest: string): Promise<void> {
             })
             .on("error", reject);
     });
-}
+};
 
-async function ensureMonacoFiles(): Promise<void> {
+const ensureMonacoFiles = async (): Promise<void> => {
     const cachedDetails = readMonacoDetails();
     const details = cachedDetails || (await fetchPackageDetails());
     const monacoPath = path.join(PUBLIC_PATH);
@@ -160,9 +160,9 @@ async function ensureMonacoFiles(): Promise<void> {
                 }
             });
     });
-}
+};
 
-async function extractTarFile(file: string, dest: string): Promise<void> {
+const extractTarFile = async (file: string, dest: string): Promise<void> => {
     console.info("Extracting tar file...");
     return new Promise((resolve, reject) => {
         const extract = tar.extract();
@@ -182,7 +182,7 @@ async function extractTarFile(file: string, dest: string): Promise<void> {
 
         fs.createReadStream(file).pipe(zlib.createGunzip()).pipe(extract);
     });
-}
+};
 
 (async () => {
     try {
