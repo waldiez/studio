@@ -119,7 +119,7 @@ class PreBuildHook(BuildHookInterface):  # type: ignore
         package_json_path = Path(self.root) / "package.json"
         if not package_json_path.exists():
             raise RuntimeError("package.json not found.")
-        # get from package.json: "packageManager": "bun@1.2.9",
+        # get from package.json: "packageManager": "bun@1.2.10",
         with open(package_json_path, "r", encoding="utf-8") as f_read:
             try:
                 package_json = json.load(f_read)
