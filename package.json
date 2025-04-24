@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AI Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.4.3",
+    "version": "0.4.4",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -15,11 +15,11 @@
     "contributors": [
         {
             "name": "Panagiotis Kasnesis",
-            "email": "pkasnesis@thingenious.io"
+            "email": "pkasnesis@waldiez.io"
         },
         {
             "name": "Lazaros Toumanidis",
-            "email": "laztoum@protonmail.com"
+            "email": "laztoum@waldiez.io"
         },
         {
             "name": "Stella Ioannidou",
@@ -34,7 +34,7 @@
     "devDependencies": {
         "@cspell/eslint-plugin": "^8.19.2",
         "@eslint/compat": "^1.2.8",
-        "@eslint/js": "9.25.0",
+        "@eslint/js": "9.25.1",
         "@lcov-viewer/cli": "^1.3.0",
         "@stylistic/eslint-plugin": "^4.2.0",
         "@testing-library/jest-dom": "^6.6.3",
@@ -47,18 +47,18 @@
         "@types/react-dom": "^19.1.2",
         "@types/tar-stream": "^3.1.3",
         "@vitejs/plugin-react": "^4.4.1",
-        "@vitest/browser": "^3.1.1",
-        "@vitest/coverage-v8": "3.1.1",
+        "@vitest/browser": "^3.1.2",
+        "@vitest/coverage-v8": "3.1.2",
         "all-contributors-cli": "^6.26.1",
         "axios": "^1.8.4",
         "dotenv": "^16.5.0",
         "esbuild": "0.25.2",
-        "eslint": "^9.25.0",
+        "eslint": "^9.25.1",
         "eslint-config-prettier": "^10.1.2",
-        "eslint-import-resolver-typescript": "^4.3.3",
+        "eslint-import-resolver-typescript": "^4.3.4",
         "eslint-plugin-import": "^2.31.0",
         "eslint-plugin-prettier": "^5.2.6",
-        "eslint-plugin-react-refresh": "^0.4.19",
+        "eslint-plugin-react-refresh": "^0.4.20",
         "fs-extra": "^11.3.0",
         "jsdom": "^26.1.0",
         "npm-run-all2": "^7.0.2",
@@ -66,7 +66,7 @@
         "prettier": "^3.5.3",
         "react-use-websocket": "^4.13.0",
         "rimraf": "^6.0.1",
-        "stylelint": "^16.18.0",
+        "stylelint": "^16.19.0",
         "stylelint-config-recommended": "^16.0.0",
         "stylelint-config-standard": "^38.0.0",
         "stylelint-prettier": "^5.0.3",
@@ -74,9 +74,9 @@
         "terser": "^5.39.0",
         "tsx": "^4.19.3",
         "typescript": "^5.8.3",
-        "typescript-eslint": "^8.30.1",
-        "vite": "^6.3.2",
-        "vitest": "^3.1.1"
+        "typescript-eslint": "^8.31.0",
+        "vite": "^6.3.3",
+        "vitest": "^3.1.2"
     },
     "scripts": {
         "dev:front": "bun monaco && vite -c frontend/vite.config.ts",
