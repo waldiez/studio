@@ -36,7 +36,7 @@ dependencies = [
     'tenacity<=9.1.2',
     'typer<=0.15.2',
     'uvicorn[standard]==0.34.2',
-    "waldiez==0.4.3",
+    "waldiez==0.4.4",
 ]
 
 [project.urls]
