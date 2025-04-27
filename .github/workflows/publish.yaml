@@ -1,5 +1,5 @@
 ---
-  name: Package
+  name: Publish
   # yamllint disable rule:truthy
   on:
     push:
