@@ -36,7 +36,7 @@ dependencies = [
     'tenacity<=9.1.2',
     'typer<=0.15.2',
     'uvicorn[standard]==0.34.2',
-    "waldiez==0.4.5",
+    "waldiez==0.4.6",
 ]
 
 [project.urls]
@@ -67,14 +67,14 @@ dev = [
     'mypy==1.15.0',
     'pre-commit==4.2.0',
     'pydocstyle==6.3.0',
-    'pylint==3.3.6',
+    'pylint==3.3.7',
     'python-dotenv==1.1.0',
-    'ruff==0.11.7',
+    'ruff==0.11.8',
     'toml==0.10.2; python_version <= "3.10"',
     'types-aiofiles==24.1.0.20250326',
     'types-PyYAML==6.0.12.20250402',
     'types-toml==0.10.8.20240310',
-    'yamllint==1.37.0',
+    'yamllint==1.37.1',
 ]
 test = [
     'asgi-lifespan==2.1.0',
@@ -85,7 +85,7 @@ test = [
     'pytest-html==4.1.1',
     'pytest-httpx',
     'pytest-sugar==1.0.0',
-    'pytest-timeout==2.3.1',
+    'pytest-timeout==2.4.0',
 ]
 
 [tool.hatch.version]
