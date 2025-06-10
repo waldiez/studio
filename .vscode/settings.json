@@ -1,53 +1,65 @@
 {
+    "files.eol": "\n",
+    "files.trimTrailingWhitespaceInRegexAndStrings": false,
     "python.envFile": "",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/dist": true,
+        "**/out": true
+    },
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always"
     },
     "pylint.args": ["--rcfile=pyproject.toml"],
     "pylint.importStrategy": "fromEnvironment",
-    "editor.defaultFormatter": "ms-python.black-formatter",
-    "black-formatter.args": ["--config=pyproject.toml"],
-    "mypy.runUsingActiveInterpreter": true,
-    "mypy-type-checker.args": ["--config pyproject.toml"],
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
     "[typescript]": {
-        "editor.tabSize": 4
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[typescriptreact]": {
-        "editor.tabSize": 4
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[css]": {
-        "editor.tabSize": 4
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[yaml]": {
-        "editor.insertSpaces": true,
         "editor.tabSize": 2,
-        "editor.autoIndent": "keep",
-        "diffEditor.ignoreTrimWhitespace": false,
-        "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
-            "strings": true
-        }
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[toml]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "yaml.format.indent": 2,
+    "mypy.runUsingActiveInterpreter": true,
+    "mypy-type-checker.args": ["--config pyproject.toml"],
+    "yaml.customTags": ["tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format"],
+    "yaml.format.printWidth": 100,
     "npm.packageManager": "bun",
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/.venv": true,
-        "**/dist": true,
-        "**/build": true,
-        "**/out": true,
-        "**/coverage": true,
-        "**/.mypy_cache": true,
-        "**/.pytest_cache": true,
-        "**/.ruff_cache": true
-    },
-    "files.eol": "\n",
-    "files.trimTrailingWhitespaceInRegexAndStrings": false,
-    "svg.preview.background": "dark-transparent",
     "cSpell.mergeCSpellSettings": true,
     "cSpell.configFile": "cspell.json",
-    "python.testing.pytestArgs": ["tests"],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "vitest.disableWorkspaceWarning": true,
+    "prettier.configPath": "package.json",
+    "mypy-type-checker.importStrategy": "fromEnvironment"
 }

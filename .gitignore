@@ -7,6 +7,7 @@
 waldiez_studio/static/
 waldiez_studio/files/
 .env
+uv.lock
 **/.yarn/
 public/*
 !public/files/
