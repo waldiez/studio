@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
 """Module for defining task states using an enumeration."""
+
 from enum import Enum, auto
 
 

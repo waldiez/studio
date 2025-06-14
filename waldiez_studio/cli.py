@@ -14,7 +14,7 @@ from typing import List
 
 import typer
 import uvicorn
-import uvicorn.config  # type: ignore
+import uvicorn.config  # pyright: ignore
 
 try:
     from dotenv import load_dotenv

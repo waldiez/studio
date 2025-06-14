@@ -30,12 +30,14 @@ active_tasks_semaphore = asyncio.Semaphore(MAX_ACTIVE_TASKS)
 class TaskRunner:
     """TaskRunner to manage task execution and WebSocket communication."""
 
+    task_state: TaskState
+
     def __init__(
         self, task_id: str, websocket: WebSocket, input_timeout: float = 30
     ) -> None:
         self.websocket = websocket
         self.task_id = task_id
-        self.task_state: TaskState = TaskState.NOT_STARTED
+        self.task_state = TaskState.NOT_STARTED
         self.running_task: asyncio.Task[None] | None = None
         self.comm_handler_task: asyncio.Task[None] | None = None
         self.loop = asyncio.get_running_loop()
@@ -145,7 +147,7 @@ class TaskRunner:
                 await self.send_message("info", "Task is already completed.")
                 return
 
-            self.task_state: TaskState = TaskState.RUNNING
+            self.task_state = TaskState.RUNNING
             self.stop_event.clear()
 
             # Start comm handler to forward outputs
@@ -168,6 +170,7 @@ class TaskRunner:
                     except asyncio.CancelledError:
                         pass
                 self.running_task = None
+                # pylint: disable=redefined-variable-type
                 self.task_state = TaskState.COMPLETED
 
     async def _handle_action(self, action: str) -> None:

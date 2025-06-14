@@ -7,8 +7,7 @@
 
 import asyncio
 import time
-from functools import partial
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -109,44 +108,13 @@ async def test_sync_to_async_with_kwargs() -> None:
     assert result == "Hello, Alice!"
 
 
-@pytest.mark.asyncio
-async def test_sync_to_async_loop_closure() -> None:
-    """Test that a new event loop is created and properly closed."""
+def test_sync_to_async_no_event_loop_fallback() -> None:
+    """Test the synchronous fallback when no event loop is running."""
 
-    def test_func(x: int) -> int:
-        """Return x + 1."""
-        return x + 1
-
-    async_test_func = sync_to_async(test_func)
-
-    with (
-        patch(
-            "asyncio.get_running_loop",
-            side_effect=RuntimeError("No running loop"),
-        ),
-        patch("asyncio.new_event_loop") as mock_new_event_loop,
-        patch("asyncio.set_event_loop") as mock_set_event_loop,
-    ):
-        mock_loop = MagicMock()
-        mock_loop.run_in_executor = AsyncMock(return_value=43)
-        mock_loop.close = (
-            MagicMock()
-        )  # Ensure `close` is treated as a synchronous method
-        mock_new_event_loop.return_value = mock_loop
-
-        result = await async_test_func(42)
-
-        mock_new_event_loop.assert_called_once()
-        mock_set_event_loop.assert_any_call(mock_loop)
-        mock_set_event_loop.assert_any_call(None)
-
-        expected_partial = partial(test_func, 42)
-        mock_loop.run_in_executor.assert_awaited_once()
-        actual_partial = mock_loop.run_in_executor.await_args[0][1]  # type: ignore
-        # pylint: disable=no-member
-        assert actual_partial.func == expected_partial.func
-        assert actual_partial.args == expected_partial.args
-
-        mock_loop.close.assert_called_once()
-
-        assert result == 43
+    async_add = sync_to_async(add)
+    with patch("asyncio.get_running_loop") as mock_get_loop:
+        mock_get_loop.side_effect = RuntimeError("no running event loop")
+        coro = async_add(5, 10)
+        result = asyncio.run(coro)
+        mock_get_loop.assert_called_once()
+        assert result == 15

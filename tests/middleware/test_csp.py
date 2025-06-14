@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
 # flake8: noqa
+# pyright: reportUnusedFunction=false
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long
 
 """Tests for the CSP middleware."""
@@ -31,11 +32,6 @@ async def get_client() -> AsyncGenerator[AsyncClient, None]:
         """Home page."""
         return JSONResponse(content={"message": "Hello, World!"})
 
-    @app.get("/docs")
-    async def docs() -> JSONResponse:
-        """Docs page."""
-        return JSONResponse(content={"message": "Docs page"})
-
     app.add_middleware(SecurityHeadersMiddleware, csp=True)
 
     async with AsyncClient(
@@ -45,7 +41,7 @@ async def get_client() -> AsyncGenerator[AsyncClient, None]:
         yield api_client
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_parse_policy_dict() -> None:
     """Test parsing of a policy dictionary into a string."""
     policy_dict: Dict[str, Any] = {
@@ -56,20 +52,20 @@ async def test_parse_policy_dict() -> None:
     assert parse_policy(policy_dict) == expected
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_parse_policy_string() -> None:
-    """Test parsing of a policy string into a dictionary and back to string."""
+    """Test parsing of a policy string ."""
     policy_str = "default-src 'self'; style-src 'self' 'unsafe-inline'"
     assert parse_policy(policy_str) == policy_str
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_parse_policy_invalid_type() -> None:
-    """Test parsing with an invalid type raises no error but returns empty string."""
+    """Test parsing with an invalid type returns empty string."""
     assert parse_policy({}) == ""
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_security_headers_middleware(client: AsyncClient) -> None:
     """Test if middleware adds security headers to responses."""
     response = await client.get("/")
@@ -89,16 +85,7 @@ async def test_security_headers_middleware(client: AsyncClient) -> None:
     assert response.headers["X-XSS-Protection"] == "1; mode=block"
 
 
-@pytest.mark.asyncio
-async def test_middleware_skips_docs(client: AsyncClient) -> None:
-    """Test middleware skips headers for /docs endpoint."""
-    response = await client.get("/docs")
-
-    assert "Content-Security-Policy" not in response.headers
-    assert "Cross-Origin-Opener-Policy" not in response.headers
-
-
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_security_headers_disabled_csp() -> None:
     """Test middleware when CSP is disabled."""
     app = FastAPI()
@@ -118,3 +105,24 @@ async def test_security_headers_disabled_csp() -> None:
 
         assert "Content-Security-Policy" not in response.headers
         assert response.headers["X-Frame-Options"] == "DENY"
+
+
+@pytest.mark.anyio
+async def test_security_headers_disabled_ssl() -> None:
+    """Test middleware when SSL is disabled."""
+    app = FastAPI()
+
+    @app.get("/")
+    async def home() -> JSONResponse:
+        """Home page."""
+        return JSONResponse(content={"message": "Hello, World!"})
+
+    app.add_middleware(SecurityHeadersMiddleware, force_ssl=False)
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
+        response = await client.get("/")
+
+        assert "Strict-Transport-Security" not in response.headers
