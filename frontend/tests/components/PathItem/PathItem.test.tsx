@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 
@@ -6,7 +10,7 @@ import { PathInstance } from "@waldiez/studio/types";
 
 const mockOnRename = vi.fn();
 const mockOnDelete = vi.fn();
-const mockOnNavigate = vi.fn();
+const mockOnClick = vi.fn();
 const mockOnDownload = vi.fn();
 
 describe("PathItem Component", () => {
@@ -38,7 +42,7 @@ describe("PathItem Component", () => {
                 item={mockItem}
                 onRename={mockOnRename}
                 onDelete={mockOnDelete}
-                onNavigate={mockOnNavigate}
+                onClick={mockOnClick}
                 onDownload={mockOnDownload}
             />,
         );
@@ -47,34 +51,34 @@ describe("PathItem Component", () => {
     });
 
     it("renders folder item correctly", () => {
-        render(<PathItem currentPath="/path/to" item={mockFolderItem} onNavigate={mockOnNavigate} />);
+        render(<PathItem currentPath="/path/to" item={mockFolderItem} onClick={mockOnClick} />);
 
         expect(screen.getByText("folder")).toBeInTheDocument();
     });
 
     it("renders up-folder item correctly", () => {
-        render(<PathItem currentPath="/path/to" item={mockUpFolderItem} onNavigate={mockOnNavigate} />);
+        render(<PathItem currentPath="/path/to" item={mockUpFolderItem} onClick={mockOnClick} />);
 
         expect(screen.getByText("..")).toBeInTheDocument();
     });
 
-    it("calls onNavigate when clicking on a navigable item", () => {
-        render(<PathItem currentPath="/path/to" item={mockFolderItem} onNavigate={mockOnNavigate} />);
+    it("calls onClick when clicking on a navigable item", () => {
+        render(<PathItem currentPath="/path/to" item={mockFolderItem} onClick={mockOnClick} />);
 
         const clickableName = screen.getByText("folder");
         fireEvent.click(clickableName);
 
-        expect(mockOnNavigate).toHaveBeenCalledWith(mockFolderItem, expect.anything());
-        expect(mockOnNavigate).toHaveBeenCalledTimes(1);
+        expect(mockOnClick).toHaveBeenCalledWith(mockFolderItem, expect.anything());
+        expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
-    it("does not call onNavigate for non-navigable items", () => {
+    it("does not call onClick for non-navigable items", () => {
         render(<PathItem currentPath="/path/to/test.txt" item={mockItem} />);
 
         const name = screen.getByText("test.txt");
         fireEvent.click(name);
 
-        expect(mockOnNavigate).not.toHaveBeenCalled();
+        expect(mockOnClick).not.toHaveBeenCalled();
     });
 
     it("handles renaming a file", async () => {

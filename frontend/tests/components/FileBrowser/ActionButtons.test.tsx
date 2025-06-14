@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
@@ -33,7 +37,9 @@ describe("ActionButtons Component", () => {
         await userEvent.click(uploadButton);
 
         const fileInput = screen.getByTestId("file-input");
-        const file = new File(["file contents"], "test.txt", { type: "text/plain" });
+        const file = new File(["file contents"], "test.txt", {
+            type: "text/plain",
+        });
         await userEvent.upload(fileInput, file);
 
         expect(onUploadMock).toHaveBeenCalledWith(file);

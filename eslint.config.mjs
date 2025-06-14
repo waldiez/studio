@@ -3,11 +3,20 @@ import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
+import headers from "eslint-plugin-headers";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import reactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
+import eslintPluginTsDoc from "eslint-plugin-tsdoc";
 import path from "path";
 import eslintTs from "typescript-eslint";
 import { fileURLToPath } from "url";
+
+const owner = "Waldiez";
+const startYear = 2024;
+const spdxIdentifier = "Apache-2.0";
+const currentYear = new Date().getFullYear();
+const ownerAndContributors = `${owner} & contributors`;
 
 // https://github.com/import-js/eslint-plugin-import/issues/2948#issuecomment-2148832701
 const project = "./tsconfig.app.json";
@@ -26,7 +35,7 @@ const legacyPlugin = (name, alias = name) => {
     }
 
     return fixupPluginRules(plugin);
-}
+};
 
 const customBaseConfig = {
     ...eslint.configs.recommended,
@@ -57,8 +66,46 @@ const defaultConfig = eslintTs.config({
         "react-refresh": eslintPluginReactRefresh,
         import: legacyPlugin("eslint-plugin-import", "import"),
         "@cspell": cspellPlugin,
+        "react-hooks": reactHooks,
+        tsdoc: eslintPluginTsDoc,
+        headers,
     },
     rules: {
+        "prettier/prettier": [
+            "error",
+            {
+                tabWidth: 4,
+                printWidth: 110,
+                arrowParens: "avoid",
+                bracketSpacing: true,
+                singleQuote: false,
+                trailingComma: "all",
+                endOfLine: "lf",
+                plugins: ["@trivago/prettier-plugin-sort-imports"],
+                importOrderSeparation: true,
+                importOrderSortSpecifiers: true,
+                importOrder: [
+                    "^@fortawesome/",
+                    "^@xyflow/",
+                    "^react",
+                    "^react-dom",
+                    "^react-select",
+                    "^zustand",
+                    "^nanoid",
+                    "^@monaco-editor/react",
+                    "^@waldiez/",
+                    "^[./]",
+                ],
+                overrides: [
+                    {
+                        files: ["**/*.yml", "**/*.yaml", "**/*.md", "**/*.css"],
+                        options: {
+                            tabWidth: 2,
+                        },
+                    },
+                ],
+            },
+        ],
         "@typescript-eslint/naming-convention": [
             "error",
             {
@@ -70,6 +117,8 @@ const defaultConfig = eslintTs.config({
                 },
             },
         ],
+        "react-hooks/exhaustive-deps": "warn",
+        "react-hooks/rules-of-hooks": "error",
         "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
@@ -101,16 +150,22 @@ const defaultConfig = eslintTs.config({
         curly: ["error", "all"],
         eqeqeq: "error",
         "prefer-arrow-callback": "error",
-        complexity: ["error", 11],
+        "tsdoc/syntax": "warn",
+        complexity: ["error", 20],
         "max-depth": ["error", 4],
         "max-nested-callbacks": ["error", 4],
-        "max-statements": ["error", 11, { ignoreTopLevelFunctions: true }],
-        "max-lines": ["error", { max: 500, skipBlankLines: true, skipComments: true }],
+        "max-statements": ["error", 15, { ignoreTopLevelFunctions: true }],
+        "max-lines": ["error", { max: 400, skipBlankLines: true, skipComments: true }],
         "max-lines-per-function": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
-        "@cspell/spellchecker": [
-            "warn",
+        "headers/header-format": [
+            "error",
             {
-                configFile: "./cspell.json",
+                source: "string",
+                content: "{licenseLine}\n{copyRightLine}",
+                variables: {
+                    licenseLine: `SPDX-License-Identifier: ${spdxIdentifier}`,
+                    copyRightLine: `Copyright ${startYear} - ${currentYear} ${ownerAndContributors}`,
+                },
             },
         ],
     },

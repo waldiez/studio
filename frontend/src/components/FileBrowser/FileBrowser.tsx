@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import React from "react";
 
 import { useFileBrowser } from "@waldiez/studio/components/FileBrowser";
@@ -12,7 +16,7 @@ export const FileBrowser: React.FC = () => {
         entries,
         loading,
         refresh,
-        onNavigate,
+        onClick,
         onCreate,
         onDelete,
         onRename,
@@ -29,12 +33,7 @@ export const FileBrowser: React.FC = () => {
         await onCreate("folder");
     };
     return (
-        <div
-            className="file-browser"
-            style={{
-                width: isSidebarVisible ? "250px" : "60px",
-            }}
-        >
+        <div className={`file-browser ${isSidebarVisible ? "expanded" : "collapsed"}`}>
             <Header
                 isSidebarVisible={isSidebarVisible}
                 refresh={refresh}
@@ -56,7 +55,7 @@ export const FileBrowser: React.FC = () => {
                                 item={item}
                                 onDelete={onDelete}
                                 onRename={onRename}
-                                onNavigate={onNavigate}
+                                onClick={onClick}
                                 onDownload={onDownload}
                             />
                         ))}

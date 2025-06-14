@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { createContext, useContext } from "react";
 
 import { PathInstance, PathInstanceType } from "@waldiez/studio/types";
@@ -10,7 +14,7 @@ type FileBrowserContextType = {
     pathName: string;
     setError: (error: string | null) => void;
     refresh: () => Promise<void>;
-    onNavigate: (path: PathInstance) => void;
+    onClick: (path: PathInstance) => void;
     onGoUp: () => void;
     onCreate: (type: PathInstanceType) => Promise<void>;
     onDelete: (path: PathInstance) => Promise<void>;

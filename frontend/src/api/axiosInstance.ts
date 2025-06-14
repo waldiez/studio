@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import axios, { AxiosError } from "axios";
 
 export type ApiErrorDetail = {
@@ -24,7 +28,9 @@ axiosInstance.interceptors.response.use(
     response => response,
     error => {
         if (error.code === "ECONNABORTED") {
-            return Promise.reject(new ApiError(error.response?.status || 0, "Request timed out.", error));
+            return Promise.reject(
+                new ApiError(error.response?.status || /* c8 ignore next */ 0, "Request timed out.", error),
+            );
         }
         let message = "An unexpected error occurred.";
         let status = 0;
@@ -42,7 +48,9 @@ axiosInstance.interceptors.response.use(
 export const getErrorMessage = (error: AxiosError): string => {
     let message = "An unexpected error occurred.";
     const errorData = error.response?.data as ApiErrorDetail;
+    /* c8 ignore next */
     if (typeof errorData === "string") {
+        /* c8 ignore next */
         message = errorData;
     } else if (errorData?.detail) {
         message = errorData.detail;

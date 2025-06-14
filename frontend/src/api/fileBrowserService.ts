@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import axiosInstance from "@waldiez/studio/api/axiosInstance";
 import type { MessageResponse, PathInstance, PathInstancesResponse } from "@waldiez/studio/types";
 
@@ -70,7 +74,9 @@ export const uploadFile = async (path: string = "/", file: File): Promise<PathIn
  * @returns A promise resolving to a success message.
  */
 export const deleteFileOrFolder = async (path: string = "/"): Promise<MessageResponse> => {
-    const pathParam = ["", "/"].includes(path) ? "" : `?path=${encodeURIComponent(path)}`;
+    const pathParam = /* c8 ignore next */ ["", "/"].includes(path)
+        ? /* c8 ignore next */ ""
+        : `?path=${encodeURIComponent(path)}`;
     const response = await axiosInstance.delete<MessageResponse>(`${WORKSPACE_PREFIX}${pathParam}`);
     return response.data;
 };

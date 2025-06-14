@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { describe, expect, it, vi } from "vitest";
 
 import axiosInstance from "@waldiez/studio/api/axiosInstance";
@@ -23,7 +27,9 @@ describe("fileBrowserService", () => {
         const parent = "/test";
         const result = await fileBrowserService.fetchFiles(parent);
 
-        expect(axiosInstance.get).toHaveBeenCalledWith("/workspace", { params: { parent } });
+        expect(axiosInstance.get).toHaveBeenCalledWith("/workspace", {
+            params: { parent },
+        });
         expect(result).toEqual(mockResponse.data);
     });
 
@@ -34,7 +40,10 @@ describe("fileBrowserService", () => {
         const parent = "/";
         const result = await fileBrowserService.createFolder(parent);
 
-        expect(axiosInstance.post).toHaveBeenCalledWith("/workspace", { type: "folder", parent });
+        expect(axiosInstance.post).toHaveBeenCalledWith("/workspace", {
+            type: "folder",
+            parent,
+        });
         expect(result).toEqual(mockResponse.data);
     });
 
@@ -45,7 +54,10 @@ describe("fileBrowserService", () => {
         const parent = "/";
         const result = await fileBrowserService.createFile(parent);
 
-        expect(axiosInstance.post).toHaveBeenCalledWith("/workspace", { type: "file", parent });
+        expect(axiosInstance.post).toHaveBeenCalledWith("/workspace", {
+            type: "file",
+            parent,
+        });
         expect(result).toEqual(mockResponse.data);
     });
 

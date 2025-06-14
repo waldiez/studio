@@ -1,4 +1,7 @@
-/* eslint-disable max-statements */
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import crypto from "crypto";
 import fs from "fs-extra";
 import https from "https";
@@ -103,6 +106,7 @@ const downloadFile = (url: string, dest: string): Promise<void> => {
     });
 };
 
+// eslint-disable-next-line max-statements
 const ensureMonacoFiles = async (): Promise<void> => {
     const cachedDetails = readMonacoDetails();
     const details = cachedDetails || (await fetchPackageDetails());

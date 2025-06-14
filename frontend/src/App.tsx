@@ -1,10 +1,14 @@
-import { FileBrowserProvider } from "./components/FileBrowser/FileBrowserProvider";
-
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { useEffect } from "react";
 
 import { FileBrowser } from "@waldiez/studio/components/FileBrowser";
 import { SidebarProvider } from "@waldiez/studio/components/Sidebar";
 import { WaldiezWrapper } from "@waldiez/studio/components/WaldiezWrapper";
+
+import { FileBrowserProvider } from "./components/FileBrowser/FileBrowserProvider";
 
 export const App = () => {
     useEffect(() => {

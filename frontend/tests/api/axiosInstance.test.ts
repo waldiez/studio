@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { AxiosError } from "axios";
 import { describe, expect, it, vi } from "vitest";
 
@@ -19,7 +23,9 @@ describe("axiosInstance", () => {
     describe("getErrorMessage", () => {
         it("should return the detail property if present in the error response", () => {
             const error: AxiosError = {
-                response: { data: { detail: "Detailed error message" } as ApiErrorDetail } as any,
+                response: {
+                    data: { detail: "Detailed error message" } as ApiErrorDetail,
+                } as any,
             } as AxiosError;
 
             const message = getErrorMessage(error);
@@ -28,7 +34,9 @@ describe("axiosInstance", () => {
 
         it("should return the message property if detail is not present", () => {
             const error: AxiosError = {
-                response: { data: { message: "Error message" } as ApiErrorDetail } as any,
+                response: {
+                    data: { message: "Error message" } as ApiErrorDetail,
+                } as any,
             } as AxiosError;
 
             const message = getErrorMessage(error);
@@ -86,7 +94,10 @@ describe("axiosInstance", () => {
 
         it("should handle Axios errors and provide appropriate messages", async () => {
             const axiosError = new AxiosError("Server error");
-            axiosError.response = { status: 500, data: { message: "Server failure" } } as any;
+            axiosError.response = {
+                status: 500,
+                data: { message: "Server failure" },
+            } as any;
 
             const axiosMock = axiosInstance as any;
             const rejection = axiosMock._onRejected(axiosError);

@@ -1,6 +1,6 @@
 /**
- * Run python commands using the compatible python version.
- * If no virtual environment is found, it creates one.
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
  */
 import { execSync } from "child_process";
 import fs from "fs-extra";
@@ -20,7 +20,7 @@ const possiblePys = ["python", "python3", "python3.12", "python3.10", "python3.1
 
 /**
  * Check if the python version is greater than or equal to 3.10 and less than 3.14
- * @param pyCmd the python command to check
+ * @param pyCmd - The python command to check
  * @returns true if the python version is compatible, false otherwise
  */
 const isPyGte310lte314 = (pyCmd: string) => {
@@ -40,7 +40,7 @@ const isPyGte310lte314 = (pyCmd: string) => {
 
 /**
  * Check if the python executable is in a virtual environment
- * @param pythonExecutable the python executable
+ * @param pythonExecutable - The python executable
  * @returns true if the python executable is in a virtual environment, false otherwise
  */
 const inVenv = (pythonExecutable: string): boolean => {
@@ -61,7 +61,10 @@ const inVenv = (pythonExecutable: string): boolean => {
  * along with a boolean indicating if the python executable is in a virtual environment
  * if no compatible python is found
  */
-const getCompatiblePythonExecutable = (): { path: string | null; virtualEnv: boolean } => {
+const getCompatiblePythonExecutable = (): {
+    path: string | null;
+    virtualEnv: boolean;
+} => {
     let pyThonExec: string | null = null;
     for (const pyCmd of possiblePys) {
         try {
@@ -81,7 +84,7 @@ const getCompatiblePythonExecutable = (): { path: string | null; virtualEnv: boo
 };
 /**
  * Get the python executable from the virtual environment directory
- * @param venvDir the virtual environment directory
+ * @param venvDir - The virtual environment directory
  * @returns the python executable
  */
 const getVenvPythonExecutable = (venvDir: string) => {

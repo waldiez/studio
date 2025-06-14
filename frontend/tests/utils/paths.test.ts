@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { describe, expect, it } from "vitest";
 
 import { getInitialPath, getParentPath, isFile, normalizePath } from "@waldiez/studio/utils/paths";

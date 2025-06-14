@@ -1,7 +1,7 @@
-/*
-    This script is used to store the last build date in the destination directory.
-    This script is run after the build is complete.
-*/
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import fs from "fs-extra";
 import path from "path";
 import url from "url";

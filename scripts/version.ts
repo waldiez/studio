@@ -73,7 +73,9 @@ const setVersion = (version: string): void => {
         console.error("Error: @waldiez/react not found in dependencies");
         process.exit(1);
     }
-    writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`, { encoding: "utf8" });
+    writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`, {
+        encoding: "utf8",
+    });
     // the new version might not be available in the registry yet
     // execSync("bun install", { stdio: "inherit", cwd: path.join(__dirname, "..") });
 };

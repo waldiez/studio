@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { describe, expect, it, vi } from "vitest";
 
 import axiosInstance from "@waldiez/studio/api/axiosInstance";
@@ -19,7 +23,9 @@ describe("getFlowContents", () => {
         const path = "/example/flow";
         const result = await getFlowContents(path);
 
-        expect(axiosInstance.get).toHaveBeenCalledWith("/flow", { params: { path } });
+        expect(axiosInstance.get).toHaveBeenCalledWith("/flow", {
+            params: { path },
+        });
         expect(result).toBe(mockResponse.data);
     });
 });

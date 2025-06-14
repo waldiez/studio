@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import React from "react";
 import { FaEdit, FaFolder, FaTrashAlt } from "react-icons/fa";
 import { MdCancel, MdDone } from "react-icons/md";
@@ -11,7 +15,7 @@ export const PathItem: React.FC<{
     item: PathInstance;
     onRename?: (path: PathInstance, newName: string) => Promise<void>;
     onDelete?: (path: PathInstance) => Promise<void>;
-    onNavigate?: (path: PathInstance) => void;
+    onClick?: (path: PathInstance) => void;
     onConvert?: (path: PathInstance) => Promise<void>;
     onDownload?: (path: PathInstance) => Promise<void>;
 }> = ({
@@ -19,7 +23,7 @@ export const PathItem: React.FC<{
     item,
     onRename = undefined,
     onDelete = undefined,
-    onNavigate = undefined,
+    onClick = undefined,
     onDownload = undefined,
 }) => {
     const {
@@ -38,7 +42,14 @@ export const PathItem: React.FC<{
         handleCancel,
         handleContextMenu,
         closeContextMenu,
-    } = usePathItem({ currentPath, item, onRename, onDelete, onNavigate, onDownload });
+    } = usePathItem({
+        currentPath,
+        item,
+        onRename,
+        onDelete,
+        onClick,
+        onDownload,
+    });
     const renderIcon = () => {
         if (isEditing) {
             return <MdCancel className="path-item-edit" onClick={handleCancel} />;
@@ -66,12 +77,12 @@ export const PathItem: React.FC<{
                 />
             );
         }
-        if (canClick && onNavigate) {
+        if (canClick && onClick) {
             return (
                 <span
                     className="path-name clickable"
                     data-testid="path-navigate"
-                    onClick={onNavigate.bind(null, item)}
+                    onClick={onClick.bind(null, item)}
                 >
                     {item.name}
                 </span>

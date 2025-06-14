@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import React, { useEffect, useState } from "react";
 
 import * as fileBrowserService from "@waldiez/studio/api/fileBrowserService";
@@ -35,7 +39,13 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
             const response = await fileBrowserService.fetchFiles(path);
             const parentEntry =
                 path !== "/"
-                    ? [{ name: "..", path: getParentPath(path), type: "folder" as PathInstanceType }]
+                    ? [
+                          {
+                              name: "..",
+                              path: getParentPath(path),
+                              type: "folder" as PathInstanceType,
+                          },
+                      ]
                     : [];
             setEntries([...parentEntry, ...response.items]);
         } catch (err: unknown) {
@@ -54,7 +64,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
         return sanitizedPath;
     };
 
-    const onNavigate = async (item: PathInstance, noDebounce: boolean = true) => {
+    const onClick = async (item: PathInstance, noDebounce: boolean = true) => {
         if (item.path === currentPath || `/${item.path}` === currentPath) {
             return;
         }
@@ -70,7 +80,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     const onGoUp = async () => {
         const parent = getParentPath(currentPath);
-        await onNavigate({ name: "..", path: parent, type: "folder" });
+        await onClick({ name: "..", path: parent, type: "folder" });
     };
     const onCreate = async (type: PathInstanceType) => {
         const parent = isFile(currentPath) ? getParentPath(currentPath) : currentPath;
@@ -166,7 +176,7 @@ export const FileBrowserProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 setError,
                 refresh,
                 onGoUp,
-                onNavigate,
+                onClick,
                 onCreate,
                 onDelete,
                 onRename,

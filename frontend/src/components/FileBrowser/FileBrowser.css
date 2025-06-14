@@ -1,114 +1,122 @@
 .file-browser {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    transition: width 0.3s ease;
-    border-right: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  border-right: 1px solid var(--border-color);
+}
+
+.file-browser.collapsed {
+  width: 50px;
+}
+
+.file-browser.expanded {
+  width: 250px;
 }
 
 .file-browser-toggle-icon {
-    color: var(--text-color);
-    cursor: pointer;
-    font-size: larger;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: larger;
 }
 
 .file-browser-toggle {
-    padding: 10px;
-    display: flex;
-    align-items: center;
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .file-browser-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-width: 200px;
-    margin: 4px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 200px;
+  margin: 4px 0;
 }
 
 .file-browser-toggle h3 {
-    margin: 0;
+  margin: 0;
 }
 
 .file-browser-content {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 .file-browser-error {
-    color: red;
-    margin-bottom: 10px;
-    font-size: 14px;
+  color: red;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .file-browser-refresh {
-    color: var(--text-color);
-    display: flex;
-    margin-right: 12px;
-    padding: 0;
-    border: none;
-    background-color: transparent;
-    font-size: 18px;
+  color: var(--text-color);
+  display: flex;
+  margin-right: 12px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  font-size: 18px;
 }
 
 .file-browser-up {
-    color: var(--text-color);
-    display: flex;
-    font-size: 18px;
-    margin-top: 10px;
-    margin-right: 12px;
-    justify-content: end;
+  color: var(--text-color);
+  display: flex;
+  font-size: 18px;
+  margin-top: 10px;
+  margin-right: 12px;
+  justify-content: end;
 }
 
 .action-buttons {
-    padding: 10px;
+  padding: 10px;
 }
 
 .action-button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: var(--primary-color);
-    color: var(--background-color);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .action-button svg {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .action-button:hover {
-    background-color: var(--primary-color-hover);
+  background-color: var(--primary-color-hover);
 }
 
 .spinner {
-    animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
 
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (width <= 600px) {
-    .file-browser {
-        width: 100%;
-    }
+  .file-browser {
+    width: 100%;
+  }
 
-    .file-browser-toggle {
-        justify-content: center;
-    }
+  .file-browser-toggle {
+    justify-content: center;
+  }
 }

@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { useEffect, useRef, useState } from "react";
 
 import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
@@ -10,16 +14,19 @@ type PathItemProps = {
     item: PathInstance;
     onRename?: (path: PathInstance, newName: string) => Promise<void> | null;
     onDelete?: (path: PathInstance) => Promise<void> | null;
-    onNavigate?: (path: PathInstance) => void | null;
+    onClick?: (path: PathInstance) => void | null;
     onDownload?: (path: PathInstance) => Promise<void> | null;
 };
 
 export const usePathItem = (props: PathItemProps) => {
-    const { item, currentPath, onDelete, onRename, onNavigate, onDownload } = props;
+    const { item, currentPath, onDelete, onRename, onClick, onDownload } = props;
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(item.name);
     const [contextMenuVisible, setContextMenuVisible] = useState(false);
-    const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null);
+    const [contextMenuPosition, setContextMenuPosition] = useState<{
+        x: number;
+        y: number;
+    } | null>(null);
 
     const contextMenuRef = useRef<HTMLDivElement | null>(null);
     const fileIcon = findFileIcon(item.name);
@@ -81,7 +88,7 @@ export const usePathItem = (props: PathItemProps) => {
         return false;
     };
 
-    const canClick = onNavigate !== null && canNavigate();
+    const canClick = onClick !== null && canNavigate();
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
         setContextMenuVisible(true);

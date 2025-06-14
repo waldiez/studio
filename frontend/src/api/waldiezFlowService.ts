@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import axiosInstance from "@waldiez/studio/api/axiosInstance";
 import { PathInstance } from "@waldiez/studio/types";
 

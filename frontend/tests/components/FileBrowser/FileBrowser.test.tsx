@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { it, vi } from "vitest";
 
@@ -272,7 +276,9 @@ describe("FileBrowser Component", () => {
         act(() => {
             fireEvent.click(uploadButton);
             const file = new File([""], "test.txt", { type: "text/plain" });
-            fireEvent.change(screen.getByTestId("file-input"), { target: { files: [file] } });
+            fireEvent.change(screen.getByTestId("file-input"), {
+                target: { files: [file] },
+            });
         });
 
         await waitFor(() => expect(uploadMock).toHaveBeenCalled());

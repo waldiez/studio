@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { DiMarkdown } from "react-icons/di";
 import {
     FaFile,
@@ -14,12 +18,10 @@ import {
     FaPython,
 } from "react-icons/fa";
 import { LuCodeXml } from "react-icons/lu";
-import { SiJupyter } from "react-icons/si";
-import { SiYaml } from "react-icons/si";
-import { SiSqlite } from "react-icons/si";
+import { SiJupyter, SiSqlite, SiYaml } from "react-icons/si";
 import { VscJson } from "react-icons/vsc";
 
-import logo from "@waldiez/studio/logo.svg";
+import logo from "@waldiez/react/dist/icon.svg";
 
 /* eslint-disable complexity */
 export const findFileIcon = (fileName: string) => {

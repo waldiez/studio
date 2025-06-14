@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -20,6 +24,21 @@ vi.mock("@waldiez/studio/api/waldiezFlowService", () => ({
         ),
     saveFlow: vi.fn().mockResolvedValue({}),
     convertFlow: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock("@waldiez/react", () => ({
+    Waldiez: ({ flowId }: { flowId: string }) => (
+        <div data-testid="waldiez-component" data-flow-id={flowId}>
+            Waldiez Component Loaded
+            <button title="Run flow">Run</button>
+        </div>
+    ),
+    importFlow: vi.fn().mockReturnValue({
+        flowId: "test-flow-id",
+        name: "Test Flow",
+        description: "Test Description",
+    }),
+    showSnackbar: vi.fn(),
 }));
 
 describe("FileBrowser Component", () => {
@@ -95,7 +114,7 @@ describe("FileBrowser Component", () => {
         waitFor(() => {
             expect(screen.getByTestId("waldiez-loading-flow")).toBeInTheDocument();
         });
-        waitFor(() => expect(screen.queryByTestId("waldiez-loading-flow")).toBeFalsy());
-        waitFor(() => expect(screen.queryAllByTitle("Run flow")).toBeTruthy());
+        await waitFor(() => expect(screen.queryByTestId("waldiez-loading-flow")).toBeFalsy());
+        await waitFor(() => expect(screen.queryAllByTitle("Run flow")).toBeTruthy());
     });
 });
