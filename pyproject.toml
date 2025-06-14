@@ -7,9 +7,9 @@ build-backend = "hatchling.build"
 name = "waldiez_studio"
 description = 'waldiez studio'
 authors = [
-  { name = 'Panagiotis Kasnesis', email = 'pkasnesis@thingenious.io' },
+  { name = 'Panagiotis Kasnesis', email = 'pkasnesis@waldiez.io' },
   { name= 'Lazaros Toumanidis', email= 'laztoum@waldiez.io' },
-  { name = 'Stella Ioannidou', email = 'stella@humancentered.gr'}
+  { name = 'Stella Ioannidou', email = 'stella@waldiez.io'}
 ]
 readme = "README.md"
 requires-python = '>=3.10,<3.14'
