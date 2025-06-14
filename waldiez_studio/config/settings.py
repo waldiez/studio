@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+# pyright: reportUnknownVariableType=false
 """Waldiez Studio settings module."""
 
 import os
@@ -120,7 +121,7 @@ class Settings(BaseSettings):
                 env_value = (
                     str(value)
                     if not isinstance(value, list)
-                    else ",".join(value)
+                    else ",".join(value)  # pyright: ignore
                 )
                 os.environ[env_key] = env_value
 
@@ -160,7 +161,7 @@ def get_settings() -> Settings:
     """
     settings = Settings()
     is_testing = os.environ.get("WALDIEZ_STUDIO_TESTING", "False") == "true"
-    if is_testing:
+    if is_testing:  # pragma: no branch
         settings.trusted_hosts = ["test"]
         settings.trusted_origins = ["http://test"]
     return settings

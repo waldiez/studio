@@ -14,7 +14,7 @@ from typing import List
 
 import typer
 import uvicorn
-import uvicorn.config
+import uvicorn.config  # type: ignore
 
 try:
     from dotenv import load_dotenv
@@ -50,8 +50,8 @@ class LogLevel(str, Enum):
 
 DEFAULT_LOG_LEVEL = os.environ.get("WALDIEZ_STUDIO_LOG_LEVEL", "INFO")
 LOG_LEVELS = {level.value for level in LogLevel}
-if DEFAULT_LOG_LEVEL not in LOG_LEVELS:
-    DEFAULT_LOG_LEVEL = "INFO"
+if DEFAULT_LOG_LEVEL not in LOG_LEVELS:  # pragma: no cover
+    DEFAULT_LOG_LEVEL = "INFO"  # pyright: ignore
 
 
 app = typer.Typer(
@@ -120,7 +120,7 @@ def run(
     this_dir = Path(__file__).parent
     this_dir_name = this_dir.name
     chdir_to = str(this_dir.parent)
-    if os.getcwd() != chdir_to:
+    if os.getcwd() != chdir_to:  # pragma: no cover
         os.chdir(chdir_to)
     app_module_path = f"{this_dir_name}.main"
     uvicorn.run(

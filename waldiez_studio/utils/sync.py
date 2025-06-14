@@ -51,16 +51,10 @@ def sync_to_async(func: Callable[P, R]) -> Callable[P, Coroutine[Any, Any, R]]:
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                partial_func = partial(func, *args, **kwargs)
-                return await loop.run_in_executor(None, partial_func)
-            finally:
-                loop.close()
-                asyncio.set_event_loop(None)
-        else:
-            partial_func = partial(func, *args, **kwargs)
-            return await loop.run_in_executor(None, partial_func)
+            # No event loop running, execute synchronously
+            return func(*args, **kwargs)
+
+        partial_func = partial(func, *args, **kwargs)
+        return await loop.run_in_executor(None, partial_func)
 
     return run_in_executor

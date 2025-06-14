@@ -1,18 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-"""Middleware for security."""
-
+"""Middleware for additional headers."""
 # src/credits:
 # https://github.com/fastapi/fastapi/discussions/8548#discussioncomment-5152780
-from collections import OrderedDict
-from typing import Dict, List
 
-from fastapi import FastAPI, Request, Response
-from starlette.middleware.base import (
-    BaseHTTPMiddleware,
-    RequestResponseEndpoint,
-)
+import re
+from collections import OrderedDict
+from typing import Dict, List, Optional
+
+from starlette.datastructures import MutableHeaders
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 CSP: dict[str, str | list[str]] = {
     "default-src": "'none'",
@@ -49,7 +47,7 @@ def parse_policy(policy: Dict[str, str | List[str]] | str) -> str:
             policy_parts = policy_part.strip().split(" ")
             policy[policy_parts[0]] = " ".join(policy_parts[1:])
 
-    policies = []
+    policies: list[str] = []
     for section, content in policy.items():
         if not isinstance(content, str):
             content = " ".join(content)
@@ -63,12 +61,13 @@ def parse_policy(policy: Dict[str, str | List[str]] | str) -> str:
 
 
 # pylint: disable=too-few-public-methods
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+class SecurityHeadersMiddleware:
     """Add security headers to all responses."""
 
     def __init__(
         self,
-        app: FastAPI,
+        app: ASGIApp,
+        exclude_patterns: Optional[List[str]] = None,
         csp: bool = True,
         force_ssl: bool = True,
         max_age: int = 31556926,
@@ -77,8 +76,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         Parameters
         ----------
-        app: FastAPI
-            The FastAPI app
+        app: ASGIApp
+            The ASGI Application
         csp: bool
             Whether to add a Content-Security-Policy header
         force_ssl: bool
@@ -86,45 +85,58 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         max_age: int
             The max age for the Strict-Transport-Security header
         """
-        super().__init__(app)
+        self.app = app
         self.csp = csp
         self.force_ssl = force_ssl
         self.max_age = max_age
+        self.exclude_patterns = [
+            re.compile(p) for p in (exclude_patterns or [])
+        ]
+        self._policy = parse_policy(CSP)
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
-        """Dispatch of the middleware.
+    async def __call__(
+        self, scope: Scope, receive: Receive, send: Send
+    ) -> None:
+        """Call the middleware.
 
         Parameters
         ----------
-        request : Request
-            The request
-        call_next : RequestResponseEndpoint
-            The next call
-
-        Returns
-        -------
-        Response
-            The response
+        scope : Scope
+            The ASGI scope
+        receive : Receive
+            The ASGI receive channel
+        send : Send
+            The ASGI send channel
         """
-        # if we are on '/docs', skip the middleware
-        if request.url.path == "/docs":
-            return await call_next(request)
-        headers = {
-            "Cross-Origin-Opener-Policy": "same-origin",
-            "Referrer-Policy": "strict-origin-when-cross-origin",
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "DENY",
-            "X-XSS-Protection": "1; mode=block",
-        }
-        if self.csp:
-            headers["Content-Security-Policy"] = parse_policy(CSP)
-        if self.force_ssl:
-            headers["Strict-Transport-Security"] = (
-                f"max-age={self.max_age}; includeSubDomains"
-            )
-        response = await call_next(request)
-        response.headers.update(headers)
+        scope_path = scope.get("path", "")
+        scope_type = scope.get("type")
+        skip = scope_type != "http"
+        # skip = scope.get("type", "") != "http"
+        if not skip:
+            skip = any(p.search(scope_path) for p in self.exclude_patterns)
+        if skip:
+            await self.app(scope, receive, send)
+        else:
 
-        return response
+            async def send_wrapper(message: Message) -> None:
+                if message["type"] == "http.response.start":
+                    headers = MutableHeaders(scope=message)
+                    additional_headers = {
+                        "Cross-Origin-Opener-Policy": "same-origin",
+                        "Referrer-Policy": "strict-origin-when-cross-origin",
+                        "X-Content-Type-Options": "nosniff",
+                        "X-Frame-Options": "DENY",
+                        "X-XSS-Protection": "1; mode=block",
+                    }
+                    if self.csp:
+                        additional_headers["Content-Security-Policy"] = (
+                            self._policy
+                        )
+                    if self.force_ssl:
+                        additional_headers["Strict-Transport-Security"] = (
+                            f"max-age={self.max_age}; includeSubDomains"
+                        )
+                    headers.update(additional_headers)
+                await send(message)
+
+            await self.app(scope, receive, send_wrapper)

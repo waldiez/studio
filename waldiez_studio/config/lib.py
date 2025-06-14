@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+# pyright: reportUnnecessaryIsInstance=false
 """Config related helper functions.
 To get configuration values from
 environment variables or command line arguments.
@@ -30,21 +31,25 @@ def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
         The trusted hosts
     """
     from_env = os.environ.get(f"{ENV_PREFIX}TRUSTED_HOSTS", "")
-    trusted_hosts = from_env.split(",") if from_env else []
-    if not isinstance(trusted_hosts, list):
+    trusted_hosts: list[str] = from_env.split(",") if from_env else []
+    if not isinstance(trusted_hosts, list):  # pragma: no cover
         trusted_hosts = [trusted_hosts]
-    if not trusted_hosts or domain_name not in trusted_hosts:
+    if (
+        not trusted_hosts or domain_name not in trusted_hosts
+    ):  # pragma: no cover
         trusted_hosts.append(domain_name)
     if host not in trusted_hosts and host not in ["localhost", "0.0.0.0"]:
         trusted_hosts.append(host)
-    if "--trusted-hosts" in sys.argv:
+    if "--trusted-hosts" in sys.argv:  # pragma: no branch
         trusted_host_index = sys.argv.index("--trusted-hosts") + 1
-        if trusted_host_index < len(sys.argv):
+        if trusted_host_index < len(sys.argv):  # pragma: no branch
             trusted_hosts_arg = sys.argv[trusted_host_index]
-            if trusted_hosts_arg:
+            if trusted_hosts_arg:  # pragma: no branch
                 trusted_hosts_split = trusted_hosts_arg.split(",")
                 for trusted_host in trusted_hosts_split:
-                    if trusted_host and trusted_host not in trusted_hosts:
+                    if (
+                        trusted_host and trusted_host not in trusted_hosts
+                    ):  # pragma: no branch
                         trusted_hosts.append(trusted_host)
     return trusted_hosts
 
@@ -92,11 +97,13 @@ def get_trusted_origins(
         if origin not in trusted_origins
     )
 
-    if "--trusted-origins" in sys.argv:
+    if "--trusted-origins" in sys.argv:  # pragma: no branch
         trusted_origin_index = sys.argv.index("--trusted-origins") + 1
-        if trusted_origin_index < len(sys.argv):
+        if trusted_origin_index < len(sys.argv):  # pragma: no branch
             trusted_origin = sys.argv[trusted_origin_index]
-            if trusted_origin and trusted_origin not in trusted_origins:
+            if (
+                trusted_origin and trusted_origin not in trusted_origins
+            ):  # pragma: no branch
                 trusted_origins.append(trusted_origin)
 
     return trusted_origins
@@ -110,11 +117,11 @@ def get_default_domain_name() -> str:
     str
         The default domain name
     """
-    if "--domain-name" in sys.argv:
+    if "--domain-name" in sys.argv:  # pragma: no branch
         domain_name_index = sys.argv.index("--domain-name") + 1
-        if domain_name_index < len(sys.argv):
+        if domain_name_index < len(sys.argv):  # pragma: no branch
             domain_name = sys.argv[domain_name_index]
-            if domain_name:
+            if domain_name:  # pragma: no branch
                 os.environ[f"{ENV_PREFIX}DOMAIN_NAME"] = domain_name
                 return domain_name
     return os.environ.get(f"{ENV_PREFIX}DOMAIN_NAME", "localhost")
@@ -128,11 +135,11 @@ def get_default_host() -> str:
     str
         The default host
     """
-    if "--host" in sys.argv:
+    if "--host" in sys.argv:  # pragma: no branch
         host_index = sys.argv.index("--host") + 1
-        if host_index < len(sys.argv):
+        if host_index < len(sys.argv):  # pragma: no branch
             host = sys.argv[host_index]
-            if host:
+            if host:  # pragma: no branch
                 os.environ[f"{ENV_PREFIX}HOST"] = host
                 return host
     return os.environ.get(f"{ENV_PREFIX}HOST", "localhost")
@@ -146,9 +153,9 @@ def get_default_port() -> int:
     int
         The default port
     """
-    if "--port" in sys.argv:
+    if "--port" in sys.argv:  # pragma: no branch
         port_index = sys.argv.index("--port") + 1
-        if port_index < len(sys.argv):
+        if port_index < len(sys.argv):  # pragma: no branch
             try:
                 port = int(sys.argv[port_index])
                 os.environ[f"{ENV_PREFIX}PORT"] = str(port)

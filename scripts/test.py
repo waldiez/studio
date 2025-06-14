@@ -86,7 +86,7 @@ def run_pytest() -> None:
 
 def main() -> None:
     """Run the tests."""
-    ensure_test_requirements()
+    # ensure_test_requirements()
     run_pytest()
 
 

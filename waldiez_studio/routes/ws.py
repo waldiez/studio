@@ -60,12 +60,13 @@ async def websocket_endpoint(
     )
     # pylint: disable=broad-except
     try:
-        listen_task = asyncio.create_task(task_runner.listen())
-        await listen_task
+        await asyncio.gather(
+            task_runner.listen(),
+        )
     except BaseException as exc:
         LOG.warning("WebSocket connection error: %s", exc)
     finally:
         try:
             await websocket.close(code=1006, reason="Connection error")
-        except BaseException as error:
-            LOG.error("Error closing websocket: %s", error)
+        except BaseException:
+            pass

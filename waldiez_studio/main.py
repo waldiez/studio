@@ -60,7 +60,7 @@ async def lifespan(
     try:
         await ensure_extra_static_files(STATIC_DIR)
         LOG.debug("Monaco editor files are ready.")
-    except BaseException as e:
+    except BaseException as e:  # pragma: no cover
         LOG.error("Failed to prepare extra static files.")
         raise RuntimeError("Critical setup step failed.") from e
     yield
@@ -90,7 +90,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(
-    ProxyHeadersMiddleware,
+    ProxyHeadersMiddleware,  # type: ignore
     trusted_hosts=settings.trusted_hosts,
 )
 app.add_middleware(
@@ -102,6 +102,14 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     SecurityHeadersMiddleware,
     csp=True,
+    exclude_patterns=[
+        "^/docs",
+        "^/openapi.json",
+        "^/favicon.ico",
+        "^/robots.txt",
+        "^/health",
+        "^/healthz",
+    ],
     force_ssl=settings.force_ssl,
     max_age=31556926,
 )

@@ -11,7 +11,6 @@ from typing import List, Optional
 
 import aiofiles
 import aiofiles.os
-import aiofiles.tempfile
 from fastapi import (
     APIRouter,
     BackgroundTasks,
