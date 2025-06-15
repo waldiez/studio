@@ -5,6 +5,7 @@
 
 import asyncio
 import logging
+import os
 import uuid
 from typing import Any, Callable
 from urllib.parse import quote
@@ -17,6 +18,7 @@ from waldiez.io import UserResponse
 
 from .delegated_iostream import DelegatedIOStream
 from .paths import get_root_dir, id_to_path
+from .restart import restart_process
 from .results import serialize_results
 from .task_state import TaskState
 
@@ -27,6 +29,7 @@ MAX_ACTIVE_TASKS = 10
 active_tasks_semaphore = asyncio.Semaphore(MAX_ACTIVE_TASKS)
 
 
+# pylint: disable=too-many-instance-attributes
 class TaskRunner:
     """TaskRunner to manage task execution and WebSocket communication."""
 
@@ -44,6 +47,7 @@ class TaskRunner:
         self.stop_event = asyncio.Event()
         self.input_timeout = input_timeout
 
+        self.cwd = os.getcwd()
         self.latest_request_id: str | None = None
         self.pending_inputs: dict[str, asyncio.Future[str]] = {}
         self.output_messages: asyncio.Queue[str] = asyncio.Queue()
@@ -113,7 +117,9 @@ class TaskRunner:
         ):  # pragma: no branch
             self.running_task.cancel()
             try:
-                await self.running_task
+                await asyncio.wait_for(self.running_task, timeout=5)
+            except asyncio.TimeoutError:
+                LOG.warning("Forcefully stopping running task due to timeout.")
             except asyncio.CancelledError:
                 pass
 
@@ -122,12 +128,28 @@ class TaskRunner:
         ):  # pragma: no branch
             self.comm_handler_task.cancel()
             try:
-                await self.comm_handler_task
+                await asyncio.wait_for(self.comm_handler_task, timeout=2)
+            except asyncio.TimeoutError:
+                LOG.warning(
+                    "Forcefully stopping comm handler task due to timeout."
+                )
             except asyncio.CancelledError:
                 pass
 
         self.task_state = TaskState.COMPLETED
         await self.send_message("info", "Task stopped.")
+        # Restart the process to ensure a clean state
+        self._restart_process()
+
+    def _restart_process(self) -> None:  # pragma: no cover
+        """Restart the current process to ensure a clean state."""
+        is_testing = (
+            os.environ.get("WALDIEZ_STUDIO_TESTING", "False").lower() == "true"
+        )
+        if is_testing:
+            return
+        os.chdir(self.cwd)
+        restart_process()
 
     async def run(self) -> None:
         """Run the task in a separate thread and handle communication.
@@ -227,10 +249,13 @@ class TaskRunner:
         try:
             while not self.stop_event.is_set():
                 try:
-                    msg = self.output_messages.get_nowait()
+                    # Use asyncio.wait_for to avoid infinite blocking
+                    msg = await asyncio.wait_for(
+                        self.output_messages.get(), timeout=0.1
+                    )
                     await self._send_output(msg)
-                except asyncio.QueueEmpty:
-                    await asyncio.sleep(0.01)
+                except asyncio.TimeoutError:
+                    continue
         except asyncio.CancelledError:  # pragma: no cover
             LOG.warning("Thread communication handler cancelled.")
 

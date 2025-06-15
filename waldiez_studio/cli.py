@@ -120,8 +120,6 @@ def run(
     this_dir = Path(__file__).parent
     this_dir_name = this_dir.name
     chdir_to = str(this_dir.parent)
-    if os.getcwd() != chdir_to:  # pragma: no cover
-        os.chdir(chdir_to)
     app_module_path = f"{this_dir_name}.main"
     uvicorn.run(
         f"{app_module_path}:app",

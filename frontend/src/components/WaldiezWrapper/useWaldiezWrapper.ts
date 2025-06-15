@@ -70,7 +70,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
             statusRef.current = "COMPLETED";
             setFlowChatConfig(prevConfig => ({
                 ...prevConfig,
-                showUI: prevConfig.messages.length > 0, // Keep visible if there are messages
+                showUI: false,
                 activeRequest: undefined,
                 handlers: {
                     ...prevConfig.handlers,
@@ -178,7 +178,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                         showUI: false,
                         handlers: {
                             ...prevConfig.handlers,
-                            onInterrupt: undefined,
+                            onInterrupt: onStop,
                         },
                     }));
                 }
@@ -268,12 +268,19 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                             if (messageObject.type === "results") {
                                 onResults();
                             }
-                            console.log(
-                                "Received message of type:",
-                                messageObject.type,
-                                "with data:",
-                                messageObject.data,
-                            );
+                            // eslint-disable-next-line max-depth
+                            if (messageObject.type === "error") {
+                                onError();
+                            } else if (messageObject.type === "info") {
+                                onInfo(messageObject.data);
+                            } else {
+                                console.log(
+                                    "Received message of type:",
+                                    messageObject.type,
+                                    "with data:",
+                                    messageObject.data,
+                                );
+                            }
                         }
                     }
                 }
@@ -282,6 +289,38 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         },
         [onStatus],
     );
+
+    const onError = () => {
+        // Handle error if needed
+        console.debug("Received error from WebSocket");
+        statusRef.current = "COMPLETED";
+        setFlowChatConfig(prevConfig => ({
+            ...prevConfig,
+            showUI: false,
+            activeRequest: undefined,
+            handlers: {
+                ...prevConfig.handlers,
+                onInterrupt: undefined, // hide the "stop" button
+            },
+        }));
+    };
+
+    const onInfo = (info: any) => {
+        // Handle info if needed
+        console.debug("Received info from WebSocket");
+        if ("data" in info && info.data === "Task stopped") {
+            statusRef.current = "COMPLETED";
+        }
+        setFlowChatConfig(prevConfig => ({
+            ...prevConfig,
+            showUI: false,
+            activeRequest: undefined,
+            handlers: {
+                ...prevConfig.handlers,
+                onInterrupt: undefined,
+            },
+        }));
+    };
 
     const onResults = () => {
         // Handle results if needed
