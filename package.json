@@ -129,6 +129,9 @@
     "resolutions": {
         "esbuild": "0.25.5"
     },
+    "overrides": {
+        "rollup": "npm:@rollup/wasm-node"
+    },
     "prettier": {
         "tabWidth": 4,
         "printWidth": 110,
