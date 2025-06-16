@@ -37,7 +37,7 @@ dependencies = [
     "typer>=0.9.0,<1",
     "click<8.2",
     "uvicorn[standard]==0.34.3",
-    "waldiez==0.4.8",
+    "waldiez==0.4.9",
 ]
 
 [project.urls]
