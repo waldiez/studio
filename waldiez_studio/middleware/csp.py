@@ -19,7 +19,7 @@ CSP: dict[str, str | list[str]] = {
     "img-src": ["'self'", "data:"],
     "worker-src": ["'self'", "blob:"],
     "connect-src": "*",
-    "font-src": "'self'",
+    "font-src": ["'self'", "data:"],
     "manifest-src": "'self'",
     "media-src": ["'self'", "data:"],
 }

@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.4.9",
+        "@waldiez/react": "git+https://github.com/waldiez/waldiez.git#dev",
         "react": "^19.1.0",
         "react-dom": "^19.1.0"
     },
@@ -83,7 +83,7 @@
     },
     "scripts": {
         "dev:front": "bun monaco && vite -c frontend/vite.config.ts",
-        "dev:back": "bun python -m waldiez_studio --reload --log-level debug",
+        "dev:back": "bun python -m waldiez_studio --log-level debug",
         "dev": "npm-run-all --parallel dev:front dev:back",
         "check-types": "tsc --noEmit",
         "python": "bun frontend/scripts/python.ts",
