@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AG2 Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.4.11",
+    "version": "0.5.0",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.4.11",
+        "@waldiez/react": "^0.5.0",
         "react": "^19.1.0",
         "react-dom": "^19.1.0"
     },
@@ -47,8 +47,8 @@
         "@types/react-dom": "^19.1.6",
         "@types/tar-stream": "^3.1.4",
         "@vitejs/plugin-react": "^4.5.2",
-        "@vitest/browser": "^3.2.3",
-        "@vitest/coverage-v8": "3.2.3",
+        "@vitest/browser": "^3.2.4",
+        "@vitest/coverage-v8": "3.2.4",
         "all-contributors-cli": "^6.26.1",
         "axios": "^1.10.0",
         "dotenv": "^16.5.0",
@@ -65,21 +65,21 @@
         "fs-extra": "^11.3.0",
         "jsdom": "^26.1.0",
         "npm-run-all2": "^8.0.4",
-        "playwright": "^1.53.0",
+        "playwright": "^1.53.1",
         "prettier": "^3.5.3",
         "react-use-websocket": "^4.13.0",
         "rimraf": "^6.0.1",
-        "stylelint": "^16.20.0",
+        "stylelint": "^16.21.0",
         "stylelint-config-recommended": "^16.0.0",
         "stylelint-config-standard": "^38.0.0",
         "stylelint-prettier": "^5.0.3",
         "tar-stream": "^3.1.7",
-        "terser": "^5.42.0",
+        "terser": "^5.43.1",
         "tsx": "^4.20.3",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.34.1",
         "vite": "^6.3.5",
-        "vitest": "^3.2.3"
+        "vitest": "^3.2.4"
     },
     "scripts": {
         "dev:front": "bun monaco && vite -c frontend/vite.config.ts",
