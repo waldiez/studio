@@ -44,8 +44,9 @@ COPY . /tmp/package
 
 # build the frontend
 ENV WALDIEZ_STUDIO_BASE_URL=/frontend/
-# try to build the frontend even with low memory
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# if there is not enough memory on the host, we can
+# try to build the frontend even with low memory:
+# ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN bun install && bun run build
 # build the backend
 RUN python3 -m build --sdist --wheel --outdir dist/
