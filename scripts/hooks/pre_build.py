@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 # pylint: disable=import-error
-# pyright: reportMissingImports=false
+# pyright: reportMissingImports=false,reportUnknownVariableType=false
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 THRESHOLD = 600  # 10 minutes before this check
@@ -143,4 +143,4 @@ class PreBuildHook(BuildHookInterface):  # type: ignore
             raise RuntimeError(
                 f"{manager_name} is required to build the frontend."
             )
-        return str(manager_path)
+        return str(manager_path)  # pyright: ignore
