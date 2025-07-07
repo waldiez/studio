@@ -125,7 +125,7 @@
         "all:back": "bun requirements:back && bun clean:back && bun format:back && bun lint:back && bun test:back && bun build:back",
         "all": "bun requirements && bun clean && bun run format && bun run lint && bun run test && bun run build && bun version:get"
     },
-    "packageManager": "bun@1.2.16",
+    "packageManager": "bun@1.2.18",
     "resolutions": {
         "esbuild": "0.25.5"
     },
