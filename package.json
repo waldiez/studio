@@ -27,7 +27,7 @@
         }
     ],
     "dependencies": {
-        "@waldiez/react": "^0.5.2",
+        "@waldiez/react": "git+https://github.com/waldiez/waldiez.git#dev",
         "react": "^19.1.0",
         "react-dom": "^19.1.0"
     },

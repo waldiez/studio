@@ -11,6 +11,7 @@ import {
     WaldiezChatMessageProcessor,
     WaldiezChatUserInput,
     WaldiezProps,
+    WaldiezTimelineData,
     importFlow,
     showSnackbar,
 } from "@waldiez/react";
@@ -84,6 +85,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
     const [flowChatConfig, setFlowChatConfig] = useState<WaldiezChatConfig>(() => ({
         showUI: false,
         messages: [],
+        timeline: undefined,
         userParticipants: [],
         activeRequest: undefined,
         handlers: {
@@ -237,6 +239,43 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
             }));
         }
     };
+    const handleMessageContent = useCallback(
+        (content: any) => {
+            const result = WaldiezChatMessageProcessor.process(JSON.stringify(content));
+            console.debug("Processed message content:", result);
+            if (!result) {
+                return;
+            }
+            if (result.timeline) {
+                handleTimelineUpdate(result.timeline);
+                return;
+            }
+            if (result.message && result.message.type === "input_request") {
+                const prompt = result.message.prompt || "Enter your message:";
+                const requestId = result.requestId || result.message?.request_id || result.message?.id;
+                const password = result.message.password || false;
+                setFlowChatConfig(prevConfig => ({
+                    ...prevConfig,
+                    showUI: true,
+                    messages: [...prevConfig.messages, result.message!],
+                    activeRequest: {
+                        request_id: requestId,
+                        prompt,
+                        password,
+                    },
+                }));
+                return;
+            }
+            if (result.message) {
+                setFlowChatConfig(prevConfig => ({
+                    ...prevConfig,
+                    showUI: true,
+                    messages: [...prevConfig.messages, result.message!],
+                }));
+            }
+        },
+        [setFlowChatConfig],
+    );
     const onMessage = useCallback(
         // eslint-disable-next-line max-statements
         (message: MessageEvent) => {
@@ -258,7 +297,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                 ("data" in messageObject || "content" in messageObject)
             ) {
                 if ("content" in messageObject) {
-                    handleMessagContent(messageObject);
+                    handleMessageContent(messageObject);
                 } else if ("data" in messageObject) {
                     if (["status", "results", "error", "info", "warning"].includes(messageObject.type)) {
                         if (messageObject.type === "status") {
@@ -287,7 +326,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
                 return;
             }
         },
-        [onStatus],
+        [onStatus, handleMessageContent],
     );
 
     const onError = () => {
@@ -337,35 +376,29 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         }));
     };
 
-    const handleMessagContent = (content: any) => {
-        const result = WaldiezChatMessageProcessor.process(JSON.stringify(content));
-        console.debug("Processed message content:", result);
-        if (!result) {
+    const handleTimelineUpdate = (timeline: WaldiezTimelineData) => {
+        if (
+            !timeline ||
+            !timeline.metadata ||
+            !timeline.summary ||
+            !timeline.agents ||
+            !Array.isArray(timeline.agents) ||
+            timeline.agents.length === 0 ||
+            !timeline.cost_timeline ||
+            !Array.isArray(timeline.cost_timeline) ||
+            timeline.cost_timeline.length === 0 ||
+            !timeline.timeline ||
+            !Array.isArray(timeline.timeline) ||
+            timeline.timeline.length === 0
+        ) {
+            console.warn("Received invalid or empty timeline data:", timeline);
             return;
         }
-        if (result.message && result.message.type === "input_request") {
-            const prompt = result.message.prompt || "Enter your message:";
-            const requestId = result.requestId || result.message?.request_id || result.message?.id;
-            const password = result.message.password || false;
-            setFlowChatConfig(prevConfig => ({
-                ...prevConfig,
-                showUI: true,
-                messages: [...prevConfig.messages, result.message!],
-                activeRequest: {
-                    request_id: requestId,
-                    prompt,
-                    password,
-                },
-            }));
-            return;
-        }
-        if (result.message) {
-            setFlowChatConfig(prevConfig => ({
-                ...prevConfig,
-                showUI: true,
-                messages: [...prevConfig.messages, result.message!],
-            }));
-        }
+        setFlowChatConfig(prevConfig => ({
+            ...prevConfig,
+            showUI: false,
+            timeline,
+        }));
     };
 
     const onWsError = (event: Event) => {
