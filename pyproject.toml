@@ -37,7 +37,7 @@ dependencies = [
     "typer>=0.9.0,<1",
     "click<8.2",
     "uvicorn[standard]>=0.34.3",
-    "waldiez @ git+https://github.com/waldiez/waldiez.git@dev",
+    "waldiez==0.5.3",
 ]
 
 [project.urls]
