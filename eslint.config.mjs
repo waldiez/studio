@@ -144,7 +144,7 @@ const defaultConfig = eslintTs.config({
             "double",
             {
                 avoidEscape: true,
-                allowTemplateLiterals: false,
+                allowTemplateLiterals: "never",
             },
         ],
         curly: ["error", "all"],
