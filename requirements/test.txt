@@ -1,7 +1,7 @@
 -r main.txt
 asgi-lifespan==2.1.0
 httpx<1
-pytest-asyncio==1.0.0
+pytest-asyncio==1.1.0
 pytest-cov==6.2.1
 pytest-html==4.1.1
 pytest-httpx
