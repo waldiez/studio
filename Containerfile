@@ -199,8 +199,6 @@ ENV DISPLAY=:99
 
 RUN pip install --upgrade pip
 
-RUN npx playwright install chromium firefox
-
 COPY --from=builder --chown=waldiez:waldiez /tmp/package/dist/*.whl /home/waldiez/tmp/
 RUN pip install --user /home/waldiez/tmp/*.whl && \
     rm -rf /home/waldiez/tmp
