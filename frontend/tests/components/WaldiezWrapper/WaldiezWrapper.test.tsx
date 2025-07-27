@@ -43,6 +43,7 @@ vi.mock("@waldiez/react", () => ({
 
 describe("FileBrowser Component", () => {
     const mockMatchMedia = (matches = false) => {
+        // noinspection JSDeprecatedSymbols
         vi.spyOn(window, "matchMedia").mockImplementation(query => ({
             matches,
             media: query,
@@ -111,7 +112,7 @@ describe("FileBrowser Component", () => {
             );
         });
         await userEvent.click(screen.getByTestId("path-navigate"));
-        waitFor(() => {
+        await waitFor(() => {
             expect(screen.getByTestId("waldiez-loading-flow")).toBeInTheDocument();
         });
         await waitFor(() => expect(screen.queryByTestId("waldiez-loading-flow")).toBeFalsy());

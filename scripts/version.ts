@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 /* handle version updates
 
 if `--get` is passed, return the current version (x.y.z format)
@@ -5,9 +9,10 @@ if `--set` is passed, set the version to the value of the next argument
 if `--set` validate that it is a valid version(x.y.z format)
 */
 import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-import url from "url";
+import * as path from "path";
+import * as url from "url";
 
+// @ts-expect-error import.meta.url
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

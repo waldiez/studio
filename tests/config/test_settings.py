@@ -83,6 +83,7 @@ def test_settings_with_env_vars() -> None:
 
 def test_settings_with_cli_args() -> None:
     """Test settings loaded from CLI arguments."""
+    # noinspection HttpUrlsUsage
     sys.argv.extend(
         [
             "--host",
@@ -111,6 +112,7 @@ def test_settings_with_cli_args() -> None:
         "https://cli-origin1",
         "http://cli-origin2",
     ]
+    # noinspection HttpUrlsUsage
     assert settings.trusted_origin_regex == "^http://.*"
 
 

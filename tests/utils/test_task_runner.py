@@ -342,6 +342,7 @@ def test_run_task_success(tmp_path: Path) -> None:
     file_path = tmp_path / "abc123.json"
     file_path.write_text("{}")  # just to exist
 
+    # noinspection PyUnusedLocal
     def mock_on_input(prompt: str, **kwargs: Any) -> str:
         return "yes"
 
@@ -370,6 +371,7 @@ def test_run_task_fails_to_load_raises(tmp_path: Path) -> None:
     file_path = tmp_path / "abc123.json"
     file_path.write_text("{}")
 
+    # noinspection PyUnusedLocal
     def mock_on_input(prompt: str, **kwargs: Any) -> str:
         return "ok"
 
@@ -399,6 +401,7 @@ def test_run_task_fails_to_run_raises(tmp_path: Path) -> None:
     mock_runner.is_async = False
     mock_runner.run.side_effect = RuntimeError("Execution failed")
 
+    # noinspection PyUnusedLocal
     def mock_on_input(prompt: str, **kwargs: Any) -> str:
         return "yes"
 

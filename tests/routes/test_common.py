@@ -86,6 +86,7 @@ def test_sanitize_unresolved_path(root_dir: Path) -> None:
     unresolved_path = f"subdir4{os.path.sep}file.txt"
     (root_dir / "subdir4").mkdir(exist_ok=True)
     (root_dir / "subdir4" / "file.txt").unlink(missing_ok=True)
+    # noinspection PyTypeChecker
     with pytest.raises(
         (ValueError, FileNotFoundError), match="Error: Path not resolved"
     ):

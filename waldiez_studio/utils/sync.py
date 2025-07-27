@@ -55,6 +55,7 @@ def sync_to_async(func: Callable[P, R]) -> Callable[P, Coroutine[Any, Any, R]]:
             return func(*args, **kwargs)
 
         partial_func = partial(func, *args, **kwargs)
+        # noinspection PyTypeChecker
         return await loop.run_in_executor(None, partial_func)
 
     return run_in_executor

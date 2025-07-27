@@ -7,7 +7,6 @@
 waldiez_studio/files/*
 !scripts/hooks/*
 **/__pycache__/
-**/*.py[cod]
 !package.json
 !bun.lockb
 !bun.lock

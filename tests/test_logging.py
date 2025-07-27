@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import pytest
 
+# noinspection PyProtectedMember
 from waldiez_studio._logging import get_logging_config
 
 

@@ -187,7 +187,7 @@ describe("useWaldiezWrapper Hook", () => {
             const { result } = renderHook(() => useWaldiezWrapper());
 
             await act(async () => {
-                await result.current.onSave("test flow content");
+                result.current.onSave("test flow content");
             });
 
             expect(mockSaveFlow).toHaveBeenCalledWith("/", "test flow content");
@@ -205,7 +205,7 @@ describe("useWaldiezWrapper Hook", () => {
             const { result } = renderHook(() => useWaldiezWrapper());
 
             await act(async () => {
-                await result.current.onSave("test flow content");
+                result.current.onSave("test flow content");
             });
 
             expect(mockShowSnackbar).toHaveBeenCalledWith({
@@ -220,7 +220,7 @@ describe("useWaldiezWrapper Hook", () => {
             const { result } = renderHook(() => useWaldiezWrapper());
 
             await act(async () => {
-                await result.current.onConvert("test flow", "py");
+                result.current.onConvert("test flow", "py");
             });
 
             expect(mockConvertFlow).toHaveBeenCalledWith("/", "test flow", "py");
@@ -233,7 +233,7 @@ describe("useWaldiezWrapper Hook", () => {
             const { result } = renderHook(() => useWaldiezWrapper());
 
             await act(async () => {
-                await result.current.onConvert("test flow", "ipynb");
+                result.current.onConvert("test flow", "ipynb");
             });
 
             expect(mockShowSnackbar).toHaveBeenCalledWith({

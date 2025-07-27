@@ -58,6 +58,7 @@ export const PathItem: React.FC<{
     };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
+            // noinspection JSIgnoredPromiseFromCall
             handleRename();
         } else if (event.key === "Escape") {
             handleCancel();

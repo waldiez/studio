@@ -76,6 +76,7 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+# noinspection PyUnresolvedReferences
 swagger_ui_oauth2_redirect_url = (
     app.swagger_ui_oauth2_redirect_url or "/docs/oauth2-redirect"
 )
@@ -125,6 +126,7 @@ async def custom_swagger_ui_html() -> HTMLResponse:
     HTMLResponse
         The custom Swagger UI HTML page
     """
+    # noinspection PyUnresolvedReferences
     return get_swagger_ui_html(
         openapi_url=app.openapi_url or "/openapi.json",
         title=app.title + " - Swagger UI",
@@ -226,6 +228,7 @@ app.mount(
 
 
 # pylint: disable=unused-argument
+# noinspection PyUnusedLocal
 @app.get("/{full_path:path}", include_in_schema=False)
 async def catch_all(full_path: str = "") -> Response:
     """Serve the frontend's index.html.

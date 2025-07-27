@@ -17,6 +17,7 @@ import uvicorn
 import uvicorn.config  # pyright: ignore
 
 try:
+    # noinspection PyUnresolvedReferences
     from dotenv import load_dotenv
 except ImportError:
     pass
@@ -114,7 +115,14 @@ def run(
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger("waldiez::studio")
     logger.debug("Starting the application")
-    settings = Settings()
+    settings = Settings(
+        domain_name=domain_name,
+        trusted_hosts=trusted_hosts,
+        trusted_origins=trusted_origins,
+        force_ssl=force_ssl,
+        host=host,
+        port=port,
+    )
     logger.debug("Settings: %s", settings.model_dump_json(indent=2))
     settings.to_env()
     this_dir = Path(__file__).parent

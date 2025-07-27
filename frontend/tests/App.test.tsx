@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 import { App } from "@waldiez/studio/App";
 
 const mockMatchMedia = (matches = false) => {
+    // noinspection JSDeprecatedSymbols
     vi.spyOn(window, "matchMedia").mockImplementation(query => ({
         matches,
         media: query,

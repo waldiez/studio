@@ -336,6 +336,7 @@ async def test_create_folder_with_permission_error(
 ) -> None:
     """Test creating a folder when a permission error occurs."""
 
+    # noinspection PyUnusedLocal
     def mock_mkdir(*args: Any, **kwargs: Any) -> None:
         """Mock the `Path.mkdir` method to raise a permission error."""
         raise PermissionError("Mocked permission error")
@@ -373,6 +374,7 @@ async def test_delete_folder_permission_error(
 ) -> None:
     """Test deleting a folder when a permission error occurs."""
 
+    # noinspection PyUnusedLocal
     def mock_rmtree(*args: Any, **kwargs: Any) -> None:
         """Mock the `shutil.rmtree` function to raise a permission error."""
         raise PermissionError("Mocked permission error")
@@ -435,6 +437,7 @@ async def test_create_file_permission_error(
 ) -> None:
     """Test creating a file when a permission error occurs."""
 
+    # noinspection PyUnusedLocal
     def mock_open(*args: Any, **kwargs: Any) -> None:
         """Mock the `aiofiles.open` function to raise a permission error."""
         raise PermissionError("Mocked permission error")
@@ -456,6 +459,7 @@ async def test_rename_file_operation_error(
     test_file = tmp_path / "file.txt"
     test_file.write_text("Test content")
 
+    # noinspection PyUnusedLocal
     def mock_rename(*args: Any, **kwargs: Any) -> None:
         """Mock the `Path.rename` method to raise an OSError."""
         raise OSError("Mocked rename error")
@@ -478,6 +482,7 @@ async def test_delete_folder_operation_error(
     test_folder = tmp_path / "folder_to_delete"
     test_folder.mkdir()
 
+    # noinspection PyUnusedLocal
     def mock_rmtree(*args: Any, **kwargs: Any) -> None:
         """Mock the `shutil.rmtree` function to raise an OSError."""
         raise OSError("Mocked delete error")

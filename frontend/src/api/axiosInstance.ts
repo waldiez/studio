@@ -49,6 +49,7 @@ export const getErrorMessage = (error: AxiosError): string => {
     let message = "An unexpected error occurred.";
     const errorData = error.response?.data as ApiErrorDetail;
     /* c8 ignore next */
+    // noinspection SuspiciousTypeOfGuard
     if (typeof errorData === "string") {
         /* c8 ignore next */
         message = errorData;

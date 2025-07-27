@@ -32,7 +32,8 @@ const testsInclude = isBrowserTest
     : `${relativePath}tests/**/*.test.{ts,tsx}`;
 
 dotenv.config();
-
+const recordingsDir = normalizedResolve(".local", "recordings");
+fs.ensureDirSync(recordingsDir);
 const thresholdLimit = 50;
 const viewport = { width: 1280, height: 720 };
 const thresholds = {
@@ -91,6 +92,7 @@ export default defineConfig(({ command }) => {
     }
     const publicDir =
         command === "build" ? normalizedResolve("..", "public", "files") : normalizedResolve("..", "public");
+    // noinspection JSUnusedGlobalSymbols
     return {
         publicDir,
         base,
@@ -149,19 +151,21 @@ export default defineConfig(({ command }) => {
             browser: {
                 provider: "playwright", // or 'webdriverio'
                 enabled: isBrowserTest,
-                name: "chromium", // browser name is required
                 headless: true,
                 viewport,
-                providerOptions: {
-                    context: {
-                        recordVideo: {
-                            dir: "./tests/browser/videos",
-                            size: viewport,
+                instances: [
+                    {
+                        browser: "chromium",
+                        context: {
+                            recordVideo: {
+                                dir: recordingsDir,
+                                size: viewport,
+                            },
+                            viewport,
+                            reducedMotion: "reduce",
                         },
-                        viewport,
-                        reducedMotion: "reduce",
                     },
-                },
+                ],
             },
         },
     };

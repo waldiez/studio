@@ -3,13 +3,13 @@
 
 """Logging configuration module."""
 
-from typing import Any, Dict
+from typing import Any
 
 import uvicorn.config
 
 
 # fmt: off
-def get_logging_config(log_level: str) -> Dict[str, Any]:
+def get_logging_config(log_level: str) -> dict[str, Any]:
     """Get logging config dict.
 
     Parameters
@@ -19,7 +19,7 @@ def get_logging_config(log_level: str) -> Dict[str, Any]:
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         The logging config dict
     """
     # skip spamming logs from these modules

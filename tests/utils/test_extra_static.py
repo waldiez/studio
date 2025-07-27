@@ -344,6 +344,7 @@ async def test_check_cached_details_read_error(
     invalid_file = static_root / "read_error.json"
     invalid_file.write_text(json.dumps({"version": "1.2.3"}), encoding="utf-8")
 
+    # noinspection PyUnusedLocal
     def mock_read_text(*args: Any, **kwargs: Any) -> str:
         """Mock read_text that raises an OSError."""
         raise OSError("Simulated file read error")

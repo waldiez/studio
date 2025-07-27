@@ -38,6 +38,7 @@ vi.mock("axios", async importOriginal => {
     };
 });
 
+// noinspection JSUnusedGlobalSymbols
 export class ResizeObserver {
     callback: globalThis.ResizeObserverCallback;
 

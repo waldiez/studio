@@ -138,6 +138,7 @@ async def test_save_flow_permission_error(
     test_flow = tmp_path / "test_save_flow_permission_error.waldiez"
     test_flow.write_text("{}", encoding="utf-8")
 
+    # noinspection PyUnusedLocal
     def mock_write_text(*args: Any, **kwargs: Any) -> None:
         raise PermissionError("Mocked permission error")
 
@@ -163,9 +164,11 @@ async def test_export_flow(
 
     exporter = MagicMock()
 
+    # noinspection PyUnusedLocal
     def mock_load(*args: Any, **kwargs: Any) -> MagicMock:
         return exporter
 
+    # noinspection PyUnusedLocal
     def mock_export(path: Path, force: bool = False) -> None:
         print("exporting to", path)
         dest = Path(str(path).replace(".waldiez", ".py"))
@@ -227,6 +230,7 @@ async def test_export_flow_load_error(
     test_flow = tmp_path / "test_export_flow_load_error.waldiez"
     test_flow.write_text("{}", encoding="utf-8")
 
+    # noinspection PyUnusedLocal
     def mock_load(*args: Any, **kwargs: Any) -> None:
         raise ValueError("Mocked load error")
 
@@ -253,9 +257,11 @@ async def test_export_flow_export_error(
 
     exporter = MagicMock()
 
+    # noinspection PyUnusedLocal
     def mock_load(*args: Any, **kwargs: Any) -> MagicMock:
         return exporter
 
+    # noinspection PyUnusedLocal
     def mock_export(*args: Any, **kwargs: Any) -> None:
         raise ValueError("Mocked export error")
 

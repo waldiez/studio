@@ -13,6 +13,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from httpx import AsyncClient
+
+# noinspection PyProtectedMember
 from httpx._transports.asgi import ASGITransport
 
 from waldiez_studio.middleware.csp import (

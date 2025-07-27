@@ -28,6 +28,7 @@ const compat = new FlatCompat({
 });
 
 const legacyPlugin = (name, alias = name) => {
+    // noinspection JSUnresolvedReference
     const plugin = compat.plugins(name)[0]?.plugins?.[alias];
 
     if (!plugin) {
@@ -43,6 +44,7 @@ const customBaseConfig = {
     ignores: ["**/*.js", "**/*.mjs", "**/*.jsx"], // Explicitly ignore .js files
 };
 
+// noinspection JSCheckFunctionSignatures
 const defaultConfig = eslintTs.config({
     ignores: ["node_modules", "dist", ".local", "coverage"],
     files: ["frontend/src/**/*.{ts,tsx}"],

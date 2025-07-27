@@ -11,6 +11,5 @@ coverage
 !/package.json
 **/vs/
 **/min-maps/
-**/*cache/
 **/waldiez_out/
 **/static/**/assets/

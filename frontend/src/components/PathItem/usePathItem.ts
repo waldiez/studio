@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
 import { PathInstance } from "@waldiez/studio/types";
@@ -82,10 +82,7 @@ export const usePathItem = (props: PathItemProps) => {
         if (item.type === "folder" && currentPath !== itemPath) {
             return true;
         }
-        if (item.type === "file" && item.name.endsWith(EXTENSION) && currentPath !== itemPath) {
-            return true;
-        }
-        return false;
+        return item.type === "file" && item.name.endsWith(EXTENSION) && currentPath !== itemPath;
     };
 
     const canClick = onClick !== null && canNavigate();

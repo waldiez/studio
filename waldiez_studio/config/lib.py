@@ -33,6 +33,7 @@ def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
     from_env = os.environ.get(f"{ENV_PREFIX}TRUSTED_HOSTS", "")
     trusted_hosts: list[str] = from_env.split(",") if from_env else []
     if not isinstance(trusted_hosts, list):  # pragma: no cover
+        # noinspection PyTypeChecker
         trusted_hosts = [trusted_hosts]
     if (
         not trusted_hosts or domain_name not in trusted_hosts
@@ -82,6 +83,7 @@ def get_trusted_origins(
     if host != domain_name:
         default_trusted_origins.append(f"https://{host}")
     if not force_ssl:
+        # noinspection HttpUrlsUsage
         default_trusted_origins.extend(
             [
                 f"http://{domain_name}",

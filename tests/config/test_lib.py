@@ -77,6 +77,7 @@ def test_get_trusted_origins_no_env() -> None:
     port = 8000
     force_ssl = False
     host = "localhost"
+    # noinspection HttpUrlsUsage
     expected = [
         "https://example.com",
         "https://localhost",
@@ -113,6 +114,7 @@ def test_get_trusted_origins_with_cmd_args() -> None:
     port = 8000
     force_ssl = False
     host = "localhost"
+    # noinspection HttpUrlsUsage
     expected = [
         "https://example.com",
         "https://localhost",

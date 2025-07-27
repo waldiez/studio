@@ -9,6 +9,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* noinspection CssOverwrittenProperties */
+
 html,
 body {
   margin: 0;

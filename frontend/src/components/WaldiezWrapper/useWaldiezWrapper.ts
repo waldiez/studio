@@ -196,6 +196,7 @@ export const useWaldiezWrapper: () => UseWaldiezWrapperType = () => {
         } catch (_) {
             return;
         }
+        // noinspection SuspiciousTypeOfGuard
         if (typeof messageObject === "string") {
             try {
                 messageObject = JSON.parse(messageObject);

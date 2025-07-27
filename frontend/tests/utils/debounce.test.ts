@@ -52,7 +52,9 @@ describe("debounce", () => {
         const mockFunc = vi.fn().mockResolvedValue("result");
         const debounced = debounce(mockFunc, 100);
 
-        debounced();
+        // @ts-expect-error unused variable for testing
+        // noinspection JSUnusedLocalSymbols
+        const _promise1 = debounced();
         vi.advanceTimersByTime(50);
         const promise2 = debounced();
 

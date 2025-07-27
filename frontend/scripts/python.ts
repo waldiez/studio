@@ -32,10 +32,7 @@ const isPyGte310lte314 = (pyCmd: string) => {
     }
     const version = pythonVersion.split(" ")[1];
     const [major, minor] = version.split(".").map(x => parseInt(x, 10));
-    if (major !== 3 || minor < 10 || minor >= 14) {
-        return false;
-    }
-    return true;
+    return !(major !== 3 || minor < 10 || minor >= 14);
 };
 
 /**
@@ -74,7 +71,7 @@ const getCompatiblePythonExecutable = (): {
                 break;
             }
         } catch (_) {
-            continue;
+            //
         }
     }
     if (!pyThonExec) {
@@ -88,10 +85,7 @@ const getCompatiblePythonExecutable = (): {
  * @returns the python executable
  */
 const getVenvPythonExecutable = (venvDir: string) => {
-    const venvPythonPath = isWindows
-        ? path.join(venvDir, "Scripts", "python.exe")
-        : path.join(venvDir, "bin", "python");
-    return venvPythonPath;
+    return isWindows ? path.join(venvDir, "Scripts", "python.exe") : path.join(venvDir, "bin", "python");
 };
 /**
  * Get a new python executable
@@ -129,7 +123,7 @@ const tryGetPythonExecutable = (): string | null => {
             break;
         }
     }
-    return found === true ? pythonPath : getNewPythonExecutable();
+    return found ? pythonPath : getNewPythonExecutable();
 };
 
 /**

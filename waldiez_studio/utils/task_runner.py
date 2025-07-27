@@ -10,8 +10,11 @@ import uuid
 from typing import Any, Callable
 from urllib.parse import quote
 
-from autogen import ChatResult  # type: ignore
 from autogen.io import IOStream  # type: ignore
+from autogen.io.run_response import (  # type: ignore
+    AsyncRunResponseProtocol,
+    RunResponseProtocol,
+)
 from fastapi import WebSocket, WebSocketDisconnect
 from waldiez import WaldiezRunner
 from waldiez.io import UserResponse
@@ -263,6 +266,7 @@ class TaskRunner:
         self,
     ) -> tuple[Callable[[str], str], Callable[..., None]]:
         # pylint: disable=unused-argument
+        # noinspection PyUnusedLocal
         def on_input(prompt: str, *, password: bool = False) -> str:
             """Thread-safe input callback.
 
@@ -282,8 +286,9 @@ class TaskRunner:
             future = asyncio.run_coroutine_threadsafe(coro, self.loop)
             return future.result(timeout=self.input_timeout)
 
+        # noinspection PyUnusedLocal
         def on_output(
-            *objects: Any, sep: str = " ", end: str = "\n", flush: bool = False
+            *objects: Any, sep: str = " ", end: str = "\n", flush: bool = True
         ) -> None:
             """Thread-safe output callback.
 
@@ -297,7 +302,7 @@ class TaskRunner:
                 The string appended after the last object.
                 Defaults to a new line (\\n).
             flush : bool, optional
-                Whether to flush the output (default is False).
+                Whether to flush the output (default is True).
             """
             message = sep.join(str(obj) for obj in objects) + end
             self.output_messages.put_nowait(message)
@@ -330,6 +335,7 @@ class TaskRunner:
             )
             return ""
         finally:
+            # noinspection PyAsyncCall
             self.pending_inputs.pop(request_id, None)
 
     def _replace_image_placeholders(self, message: str) -> str:
@@ -398,7 +404,7 @@ def run_task(
     task_id: str,
     on_input: Callable[..., str],
     on_output: Callable[..., None],
-) -> ChatResult | list[ChatResult] | dict[int, ChatResult]:
+) -> list[RunResponseProtocol] | list[AsyncRunResponseProtocol]:
     """Run a Waldiez task with the given task ID.
 
     Parameters
@@ -412,7 +418,7 @@ def run_task(
 
     Returns
     -------
-    ChatResult | list[ChatResult] | dict[int, ChatResult]
+    list[RunResponseProtocol] | list[AsyncRunResponseProtocol]
         The results of the task execution.
 
     Raises

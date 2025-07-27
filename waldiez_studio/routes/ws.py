@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
-
+# pylint: disable=broad-exception-caught
 """Websocket routes."""
 
 import asyncio
@@ -20,6 +20,7 @@ LOG = logging.getLogger(__name__)
 
 
 # pylint: disable=unused-argument
+# noinspection PyBroadException
 @router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
@@ -37,7 +38,6 @@ async def websocket_endpoint(
     root_dir : Path
         The root directory of the workspace
     """
-    # pylint: disable=broad-except
     try:
         flow_path = check_path(
             path,
@@ -58,7 +58,6 @@ async def websocket_endpoint(
         task_id=task_id,
         websocket=websocket,
     )
-    # pylint: disable=broad-except
     try:
         await asyncio.gather(
             task_runner.listen(),

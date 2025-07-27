@@ -37,6 +37,8 @@ FILE_PATTERNS = [
 SKIP_DIRS = [".venv", "node_modules", ".git"]
 
 
+# pylint: disable=broad-exception-caught
+# noinspection PyBroadException
 def _remove_dirs() -> None:
     for pattern in DIR_PATTERNS:
         for dirpath in glob.glob(f"./**/{pattern}", recursive=True):
@@ -48,10 +50,12 @@ def _remove_dirs() -> None:
             print(f"removing dir: {dirpath}")
             try:
                 shutil.rmtree(dirpath)
-            except BaseException:  # pylint: disable=broad-except
+            except BaseException:
                 print(f"failed to remove dir: {dirpath}", file=sys.stderr)
 
 
+# pylint: disable=broad-exception-caught
+# noinspection PyBroadException
 def _remove_files() -> None:
     for pattern in FILE_PATTERNS:
         for filepath in glob.glob(f"./**/{pattern}", recursive=True):
@@ -63,7 +67,7 @@ def _remove_files() -> None:
             print(f"removing file: {filepath}")
             try:
                 os.remove(filepath)
-            except BaseException:  # pylint: disable=broad-except
+            except BaseException:
                 print(f"failed to remove file: {filepath}", file=sys.stderr)
 
 

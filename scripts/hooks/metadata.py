@@ -50,8 +50,6 @@ def _write_version(version: str) -> None:
     ----------
     version : str
         Version to write.
-    root : str
-        Root directory.
     """
     version_path = ROOT_DIR / "waldiez_studio" / "_version.py"
     version_string = f'''# SPDX-License-Identifier: Apache-2.0.

@@ -126,6 +126,7 @@ class Settings(BaseSettings):
                 os.environ[env_key] = env_value
 
     # pylint: disable=unused-argument
+    # noinspection PyUnusedLocal,PyNestedDecorators
     @field_validator("trusted_hosts", "trusted_origins", mode="before")
     @classmethod
     def split_value(cls, value: Any, info: ValidationInfo) -> List[str]:
