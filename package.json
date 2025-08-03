@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AG2 Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.5.8",
+    "version": "0.5.9",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -28,7 +28,7 @@
     ],
     "dependencies": {
         "@eslint/eslintrc": "^3.3.1",
-        "@waldiez/react": "^0.5.8",
+        "@waldiez/react": "^0.5.9",
         "react": "^19.1.1",
         "react-dom": "^19.1.1"
     },

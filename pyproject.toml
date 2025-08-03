@@ -29,7 +29,7 @@ classifiers = [
 ]
 dependencies = [
     "aiofiles==24.1.0",
-    "aiohttp==3.12.14",
+    "aiohttp==3.12.15",
     "fastapi",
     "pydantic-settings==2.10.1",
     "python-multipart==0.0.20",
@@ -38,7 +38,7 @@ dependencies = [
     "typer>=0.9.0,<1",
     "click<8.2",
     "uvicorn[standard]==0.35.0",
-    "waldiez==0.5.8",
+    "waldiez==0.5.9",
 ]
 
 [project.urls]
