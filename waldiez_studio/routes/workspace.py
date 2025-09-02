@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import List, Optional
 
 import aiofiles
-import aiofiles.os
+import puremagic
+from aiofiles import os
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -21,7 +22,7 @@ from fastapi import (
     Query,
     UploadFile,
 )
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, ORJSONResponse, Response
 
 from waldiez_studio.models import (
     MessageResponse,
@@ -34,6 +35,8 @@ from waldiez_studio.models import (
 from waldiez_studio.utils.sync import sync_to_async
 
 from .common import (
+    ALLOWED_EXTENSIONS,
+    TEXTUAL_EXTS,
     check_path,
     get_new_file_name,
     get_new_folder_name,
@@ -45,6 +48,7 @@ LOG = logging.getLogger(__name__)
 
 CHUNK_SIZE = 1024 * 1024  # 1 MB chunks
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB maximum file size
+MAX_FILE_SIZE_MB = f"{MAX_FILE_SIZE / 1024 / 1024:.1f}"
 
 
 @api.get("/workspace", response_model=PathItemListResponse)
@@ -343,6 +347,78 @@ async def download_file_or_folder(
     )
 
 
+@api.get(
+    "/workspace/get",
+    responses={
+        "200": {"description": "The file or folder was deleted"},
+        "400": {"description": "Error: Invalid path"},
+        "404": {"description": "Error: File or folder not found"},
+        "415": {"description": "Error: Unsupported file type"},
+        "500": {"description": "Failed to delete file or folder"},
+    },
+)
+async def get_file(
+    path: str,
+    root_dir: Path = Depends(get_root_directory),
+) -> Response:
+    """Get a file.
+
+    Parameters
+    ----------
+    path : str
+        The path to the file to get
+    root_dir : Path
+        The root directory to use.
+
+    Returns
+    -------
+    Response
+        A response with the file contents or the file itself
+
+    Raises
+    ------
+    HTTPException
+        If the request is invalid.
+    """
+    try:
+        file_path = check_path(
+            path,
+            root_dir,
+            path_type="File",
+            must_exist=True,
+            must_be_file=True,
+            must_be_dir=False,
+        )
+    except BaseException as exc:
+        LOG.error("Error: %s", exc)
+        raise HTTPException(status_code=404, detail="Invalid request") from exc
+    ext = file_path.suffix.lower()
+    mime = ALLOWED_EXTENSIONS.get(ext)
+    if not mime:
+        try:
+            ext = puremagic.from_file(file_path)  # pyright: ignore
+        except BaseException as exc:
+            raise HTTPException(
+                status_code=404, detail="Unsupported file type"
+            ) from exc
+        mime = ALLOWED_EXTENSIONS.get(ext)
+    if not mime:
+        raise HTTPException(status_code=415, detail="Unsupported file type")
+
+    if ext in TEXTUAL_EXTS:
+        content = file_path.read_text(encoding="utf-8", errors="replace")
+        return ORJSONResponse(
+            {
+                "path": str(file_path.relative_to(root_dir)),
+                "mime": mime,
+                "content": content,
+            }
+        )
+
+    # Media: stream the file
+    return FileResponse(file_path, filename=file_path.name, media_type=mime)
+
+
 @api.delete(
     "/workspace",
     response_model=MessageResponse,
@@ -387,7 +463,7 @@ async def delete_file_or_folder(
             await rmtree(target_path, ignore_errors=True)  # type: ignore[unused-ignore,call-arg]  # noqa: E501
             # fmt: on
         else:
-            await aiofiles.os.remove(target_path)
+            await os.remove(target_path)
     except BaseException as error:
         raise HTTPException(
             status_code=500, detail=f"Failed to delete {thing.lower()}"

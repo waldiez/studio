@@ -494,3 +494,50 @@ async def test_delete_folder_operation_error(
     )
     assert response.status_code == 500
     assert "Failed to delete folder" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_get_text_file(client: AsyncClient, tmp_path: Path) -> None:
+    """Test getting a text file returns JSON with content."""
+    test_file = tmp_path / "test.py"
+    test_content = "print('Hello, World!')"
+    test_file.write_text(test_content)
+
+    response = await client.get("/workspace/get", params={"path": "test.py"})
+
+    assert response.status_code == 200
+    json_response = response.json()
+    assert json_response["path"] == "test.py"
+    assert json_response["mime"] == "text/x-python"
+    assert json_response["content"] == test_content
+
+
+@pytest.mark.asyncio
+async def test_get_binary_file(client: AsyncClient, tmp_path: Path) -> None:
+    """Test getting a binary file returns FileResponse."""
+    test_file = tmp_path / "test.png"
+    # Create a minimal PNG-like binary content
+    png_header = b"\x89PNG\r\n\x1a\n"
+    test_file.write_bytes(png_header)
+
+    response = await client.get("/workspace/get", params={"path": "test.png"})
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content == png_header
+
+
+@pytest.mark.asyncio
+async def test_get_unsupported_file(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting an unsupported file type returns 415 error."""
+    test_file = tmp_path / "test.unsupported"
+    test_file.write_text("This is an unsupported file type")
+
+    response = await client.get(
+        "/workspace/get", params={"path": "test.unsupported"}
+    )
+
+    assert response.status_code == 415
+    assert "Unsupported file type" in response.json()["detail"]

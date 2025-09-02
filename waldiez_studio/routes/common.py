@@ -15,6 +15,54 @@ from waldiez_studio.utils.paths import get_root_dir
 
 LOG = logging.getLogger(__name__)
 
+ALLOWED_EXTENSIONS: dict[str, str] = {
+    ".waldiez": "application/json",
+    ".txt": "text/plain",
+    ".py": "text/x-python",
+    ".js": "application/javascript",
+    ".ts": "application/typescript",
+    ".md": "text/markdown",
+    ".rst": "text/x-rst",
+    ".css": "text/css",
+    ".html": "text/html",
+    ".xml": "application/xml",
+    ".json": "application/json",
+    ".yaml": "application/x-yaml",
+    ".yml": "application/x-yaml",
+    ".toml": "application/toml",
+    ".ini": "text/ini",
+    ".ipynb": "application/x-ipynb+json",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+    ".ogg": "video/ogg",
+    ".mp3": "audio/mpeg",
+    ".wav": "audio/wav",
+    ".oga": "audio/ogg",
+}
+TEXTUAL_EXTS = {
+    ".txt",
+    ".py",
+    ".js",
+    ".ts",
+    ".md",
+    ".rst",
+    ".css",
+    ".html",
+    ".xml",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".ini",
+    ".ipynb",
+}
+
 
 def get_root_directory() -> Path:
     """Get the root directory of the workspace.
