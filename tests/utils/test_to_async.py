@@ -7,6 +7,7 @@
 
 import asyncio
 import time
+from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import patch
 
 import pytest
@@ -118,3 +119,46 @@ def test_sync_to_async_no_event_loop_fallback() -> None:
         result = asyncio.run(coro)
         mock_get_loop.assert_called_once()
         assert result == 15
+
+
+async def dummy_add(a: int, b: int) -> int:
+    await asyncio.sleep(0)
+    return a + b
+
+
+@pytest.mark.asyncio
+async def test_sync_to_async_already_async() -> None:
+    """Test passing an async func to sync_to_async."""
+    result = await sync_to_async(dummy_add)(1, 2)
+    assert result == 3
+
+
+@pytest.mark.asyncio
+async def test_sync_to_async_with_executor() -> None:
+    """Test running a synchronous function using an executor."""
+
+    def cpu_bound_task(n: int) -> int:
+        """Simulate a CPU-bound task."""
+        total = 0
+        for i in range(n):
+            total += i
+        return total
+
+    # Create a custom thread pool executor
+    with ThreadPoolExecutor(
+        max_workers=2, thread_name_prefix="test-"
+    ) as executor:
+        async_cpu_bound = sync_to_async(cpu_bound_task, executor=executor)
+
+        # Test that it works with the custom executor
+        result = await async_cpu_bound(1000)
+        expected = sum(range(1000))
+        assert result == expected
+
+        # Test multiple concurrent calls with custom executor
+        results = await asyncio.gather(
+            async_cpu_bound(100), async_cpu_bound(200), async_cpu_bound(300)
+        )
+
+        expected_results = [sum(range(100)), sum(range(200)), sum(range(300))]
+        assert results == expected_results
