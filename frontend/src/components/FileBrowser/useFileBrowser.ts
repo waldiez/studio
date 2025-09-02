@@ -4,7 +4,7 @@
  */
 import { createContext, useContext } from "react";
 
-import { PathInstance, PathInstanceType } from "@waldiez/studio/types";
+import type { PathInstance, PathInstanceType } from "@waldiez/studio/types";
 
 type FileBrowserContextType = {
     currentPath: string;

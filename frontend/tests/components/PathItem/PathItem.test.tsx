@@ -6,7 +6,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 
 import { PathItem } from "@waldiez/studio/components/PathItem";
-import { PathInstance } from "@waldiez/studio/types";
+import { type PathInstance } from "@waldiez/studio/types";
 
 const mockOnRename = vi.fn();
 const mockOnDelete = vi.fn();

@@ -8,7 +8,7 @@ import { MdCancel, MdDone } from "react-icons/md";
 
 import "@waldiez/studio/components/PathItem/PathItem.css";
 import { usePathItem } from "@waldiez/studio/components/PathItem/usePathItem";
-import { PathInstance } from "@waldiez/studio/types";
+import { type PathInstance } from "@waldiez/studio/types";
 
 export const PathItem: React.FC<{
     currentPath: string;

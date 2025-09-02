@@ -5,7 +5,11 @@
 import { AxiosError } from "axios";
 import { describe, expect, it, vi } from "vitest";
 
-import axiosInstance, { ApiError, ApiErrorDetail, getErrorMessage } from "@waldiez/studio/api/axiosInstance";
+import axiosInstance, {
+    ApiError,
+    type ApiErrorDetail,
+    getErrorMessage,
+} from "@waldiez/studio/api/axiosInstance";
 
 describe("axiosInstance", () => {
     describe("ApiError", () => {

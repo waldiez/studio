@@ -2,6 +2,7 @@
     "files": [],
     "compilerOptions": {
         "forceConsistentCasingInFileNames": true,
+        "verbatimModuleSyntax": true,
         "strict": true
     },
     "references": [

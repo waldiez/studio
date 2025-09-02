@@ -33,7 +33,7 @@ help:
 	@echo " image            Build the podman/docker image"
 	@echo " all-back         Run format, lint, test and build for the backend"
 	@echo " all-front        Run format, lint, test and build for the frontend"
-	@echo " all              Run format, lint, test and build"
+	@echo " some             Run format, lint, test and build"
 	@echo " dev-back         Run the development server"
 	@echo " dev-front        Run the development server for the frontend"
 	@echo " dev              Run the development server for the backend and frontend"
@@ -137,8 +137,8 @@ all-back: clean-back format-back lint-back test-back build-back
 .PHONY: all-front
 all-front: clean-front format-front lint-front test-front build-front
 
-.PHONY: all
-all: all-front all-back
+.PHONY: some
+some: all-front all-back
 
 .PHONY: dev-back
 dev-back:

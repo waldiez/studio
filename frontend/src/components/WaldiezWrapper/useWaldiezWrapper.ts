@@ -7,11 +7,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import {
-    WaldiezChatConfig,
+    type WaldiezChatConfig,
     WaldiezChatMessageProcessor,
-    WaldiezChatUserInput,
-    WaldiezProps,
-    WaldiezTimelineData,
+    type WaldiezChatUserInput,
+    type WaldiezProps,
+    type WaldiezTimelineData,
     importFlow,
     showSnackbar,
 } from "@waldiez/react";

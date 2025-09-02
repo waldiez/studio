@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 
 import * as fileBrowserService from "@waldiez/studio/api/fileBrowserService";
 import { FileBrowserContext } from "@waldiez/studio/components/FileBrowser/useFileBrowser";
-import { PathInstance, PathInstanceType } from "@waldiez/studio/types";
+import { type PathInstance, type PathInstanceType } from "@waldiez/studio/types";
 import { debounce } from "@waldiez/studio/utils/debounce";
 import { getInitialPath, getParentPath, isFile, normalizePath } from "@waldiez/studio/utils/paths";
 

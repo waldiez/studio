@@ -5,7 +5,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { findFileIcon } from "@waldiez/studio/components/PathItem/FileIcon";
-import { PathInstance } from "@waldiez/studio/types";
+import { type PathInstance } from "@waldiez/studio/types";
 
 const EXTENSION = ".waldiez";
 

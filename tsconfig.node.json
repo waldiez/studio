@@ -8,6 +8,7 @@
         "forceConsistentCasingInFileNames": true,
         "allowImportingTsExtensions": true,
         "isolatedModules": true,
+        "verbatimModuleSyntax": true,
         "moduleDetection": "force",
         "noEmit": true,
         "types": [

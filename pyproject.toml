@@ -9,7 +9,6 @@ description = 'waldiez studio'
 authors = [
   { name = 'Panagiotis Kasnesis', email = 'pkasnesis@waldiez.io' },
   { name= 'Lazaros Toumanidis', email= 'laztoum@waldiez.io' },
-  { name = 'Stella Ioannidou', email = 'stella@waldiez.io'}
 ]
 readme = "README.md"
 requires-python = '>=3.10,<3.14'
@@ -74,10 +73,10 @@ dev = [
     "pydocstyle==6.3.0",
     "pylint==3.3.8",
     "python-dotenv>=1.1.1",
-    "ruff==0.12.9",
+    "ruff==0.12.11",
     "toml==0.10.2; python_version <= '3.10'",
-    "types-aiofiles==24.1.0.20250809",
-    "types-PyYAML==6.0.12.20250809",
+    "types-aiofiles==24.1.0.20250822",
+    "types-PyYAML==6.0.12.20250822",
     "types-toml==0.10.8.20240310",
     "yamllint==1.37.1",
 ]
@@ -89,7 +88,7 @@ test = [
     "pytest-cov==6.2.1",
     "pytest-html==4.1.1",
     "pytest-httpx",
-    "pytest-sugar==1.1.0",
+    "pytest-sugar==1.1.1",
     "pytest-timeout==2.4.0",
 ]
 

@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-import React, { ReactNode, useState } from "react";
+import React, { type ReactNode, useState } from "react";
 
 import { SidebarContext } from "@waldiez/studio/components/Sidebar/useSidebar";
 

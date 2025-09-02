@@ -5,7 +5,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 
 import { SidebarContext, SidebarProvider, useSidebar } from "@waldiez/studio/components/Sidebar";
 
