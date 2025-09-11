@@ -89,26 +89,41 @@ function ShikiCodeBlock({ source, language, theme }: { source: string; language:
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        let active = true;
+        // eslint-disable-next-line max-statements
         const highlightCode = async () => {
             try {
-                setIsLoading(true);
+                if (active) {
+                    setIsLoading(true);
+                }
                 if (typeof window === "undefined") {
-                    setHighlightedCode(`<pre><code>${escapeHtml(source)}</code></pre>`);
+                    if (active) {
+                        setHighlightedCode(`<pre><code>${escapeHtml(source)}</code></pre>`);
+                        setIsLoading(false);
+                    }
                     return;
                 }
                 const html = await codeToHtml(source, language, theme);
-
-                setHighlightedCode(html);
+                if (active) {
+                    setHighlightedCode(html);
+                }
             } catch (error) {
                 console.warn("Shiki highlighting failed:", error);
-                // Fallback to plain text
-                setHighlightedCode(`<pre><code>${escapeHtml(source)}</code></pre>`);
+                if (active) {
+                    // Fallback to plain text
+                    setHighlightedCode(`<pre><code>${escapeHtml(source)}</code></pre>`);
+                }
             } finally {
-                setIsLoading(false);
+                if (active) {
+                    setIsLoading(false);
+                }
             }
         };
 
         highlightCode();
+        return () => {
+            active = false;
+        };
     }, [source, language, theme]);
 
     if (isLoading) {
