@@ -17,6 +17,7 @@ CSP: dict[str, str | list[str]] = {
     "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net/npm/"],
     "script-src": [
         "'self'",
+        "'wasm-unsafe-eval'",
         "https://drag-drop-touch-js.github.io/",
         "https://cdn.jsdelivr.net/npm/",
     ],
