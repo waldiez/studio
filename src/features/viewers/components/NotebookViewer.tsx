@@ -92,7 +92,10 @@ function ShikiCodeBlock({ source, language, theme }: { source: string; language:
         const highlightCode = async () => {
             try {
                 setIsLoading(true);
-
+                if (typeof window === "undefined") {
+                    setHighlightedCode(`<pre><code>${escapeHtml(source)}</code></pre>`);
+                    return;
+                }
                 const html = await codeToHtml(source, language, theme);
 
                 setHighlightedCode(html);
