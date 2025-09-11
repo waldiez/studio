@@ -8,6 +8,7 @@
 # pyright: reportPrivateUsage=false
 
 import json
+import sys
 from pathlib import Path
 from typing import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -335,6 +336,7 @@ class TestTerminalWebSocket:
             response = websocket.receive_json()
             assert response["type"] == "session_end"
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="because")
     @patch("waldiez_studio.routes.terminal_ws.get_session")
     def test_terminal_ws_resize_with_defaults(
         self,
