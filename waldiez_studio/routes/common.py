@@ -6,7 +6,6 @@
 import logging
 import re
 from pathlib import Path
-from typing import Optional
 from urllib.parse import unquote
 
 from fastapi import Depends, HTTPException, Query
@@ -16,12 +15,14 @@ from waldiez_studio.utils.paths import get_root_dir
 LOG = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS: dict[str, str] = {
-    ".waldiez": "application/json",
+    ".waldiez": "application/x-waldiez",
     ".txt": "text/plain",
     ".py": "text/x-python",
     ".js": "application/javascript",
     ".ts": "application/typescript",
     ".md": "text/markdown",
+    ".mmd": "text/x-mermaid",
+    ".csv": "text/csv",
     ".rst": "text/x-rst",
     ".css": "text/css",
     ".html": "text/html",
@@ -49,8 +50,10 @@ TEXTUAL_EXTS = {
     ".txt",
     ".py",
     ".js",
+    ".csv",
     ".ts",
     ".md",
+    ".mmd",
     ".rst",
     ".css",
     ".html",
@@ -61,6 +64,7 @@ TEXTUAL_EXTS = {
     ".toml",
     ".ini",
     ".ipynb",
+    ".waldiez",
 }
 
 
@@ -159,7 +163,7 @@ def check_path(
     must_not_exist: bool = False,
     must_be_dir: bool = False,
     must_be_file: bool = False,
-    must_have_extension: Optional[str] = None,
+    must_have_extension: str | tuple[str] | set[str] | None = None,
 ) -> Path:
     """Reusable dependency for sanitizing paths.
 
@@ -179,8 +183,8 @@ def check_path(
         Whether the path must be a directory, by default False.
     must_be_file : bool, optional
         Whether the path must be a file, by default False.
-    must_have_extension : Optional[str], optional
-        The extension the path must have, by default None.
+    must_have_extension : str | tuple[str] | set[str] | None
+        The extension(s) the path must have, by default None.
 
     Returns
     -------
@@ -220,8 +224,16 @@ def check_path(
         raise HTTPException(status_code=400, detail="Error: Not a directory")
     if must_be_file and not the_path.is_file():
         raise HTTPException(status_code=400, detail="Error: Not a file")
-    if must_have_extension and the_path.suffix != must_have_extension:
-        raise HTTPException(status_code=400, detail="Error: Invalid file type")
+    if must_have_extension is not None:
+        extensions = (
+            {must_have_extension}
+            if isinstance(must_have_extension, str)
+            else must_have_extension
+        )
+        if the_path.suffix not in extensions:
+            raise HTTPException(
+                status_code=400, detail="Error: Invalid file type"
+            )
     return the_path.resolve(must_exist)
 
 

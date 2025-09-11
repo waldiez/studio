@@ -3,7 +3,10 @@
     "compilerOptions": {
         "forceConsistentCasingInFileNames": true,
         "verbatimModuleSyntax": true,
-        "strict": true
+        "strict": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "references": [
         {

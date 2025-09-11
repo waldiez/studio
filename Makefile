@@ -5,6 +5,16 @@
 .PACKAGE_NAME := waldiez_studio
 .PACKAGE_MANAGER := bun
 
+ifeq ($(OS),Windows_NT)
+  PYTHON_PATH := $(shell where python 2>NUL || where py 2>NUL)
+else
+  PYTHON_PATH := $(shell command -v python || command -v python3)
+endif
+
+PYTHON_NAME := $(notdir $(lastword $(PYTHON_PATH)))
+PYTHON := $(basename $(PYTHON_NAME))
+
+
 .PHONY: help
 help:
 	@echo "Usage: make [target]"
@@ -31,8 +41,8 @@ help:
 	@echo " build-front      Build the frontend package"
 	@echo " build            Build the packages"
 	@echo " image            Build the podman/docker image"
-	@echo " all-back         Run format, lint, test and build for the backend"
-	@echo " all-front        Run format, lint, test and build for the frontend"
+	@echo " some-back        Run format, lint, test and build for the backend"
+	@echo " some-front       Run format, lint, test and build for the frontend"
 	@echo " some             Run format, lint, test and build"
 	@echo " dev-back         Run the development server"
 	@echo " dev-front        Run the development server for the frontend"
@@ -77,7 +87,7 @@ forlint: format lint
 
 .PHONY: clean-back
 clean-back:
-	python scripts/clean.py
+	$(PYTHON) scripts/clean.py
 
 .PHONY: clean-front
 clean-front:
@@ -88,7 +98,7 @@ clean: clean-back clean-front
 
 .PHONY: requirements-back
 requirements-back:
-	python scripts/requirements.py
+	$(PYTHON) scripts/requirements.py
 
 .PHONY: requirements
 requirements: requirements-back
@@ -99,15 +109,15 @@ requirements-front:
 
 .PHONY: .before_test
 .before_test:
-	python -c 'import os; os.makedirs(os.path.join("${.REPORTS_DIR}", "backend"), exist_ok=True)'
-	python -c \
+	$(PYTHON) -c 'import os; os.makedirs(os.path.join("${.REPORTS_DIR}", "backend"), exist_ok=True)'
+	$(PYTHON) -c \
 		'import subprocess, sys; subprocess.run(\
 		[sys.executable, "-m", "pip", "uninstall", "-y", "${.PACKAGE_NAME}"], \
 		stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)'
 
 .PHONY: test-back
 test-back: .before_test
-	python scripts/test.py
+	$(PYTHON) scripts/test.py
 
 .PHONY: test-front
 test-front:
@@ -122,27 +132,27 @@ build-front:
 
 .PHONY: build-back
 build-back:
-	python scripts/build.py
+	$(PYTHON) scripts/build.py
 
 .PHONY: image
 image:
-	python scripts/image.py
+	$(PYTHON) scripts/image.py
 
 .PHONY: build
 build: build-front build-back
 
-.PHONY: all-back
-all-back: clean-back format-back lint-back test-back build-back
+.PHONY: some-back
+some-back: clean-back format-back lint-back test-back build-back
 
-.PHONY: all-front
-all-front: clean-front format-front lint-front test-front build-front
+.PHONY: some-front
+some-front: clean-front format-front lint-front test-front build-front
 
 .PHONY: some
-some: all-front all-back
+some: some-front some-back
 
 .PHONY: dev-back
 dev-back:
-	python -m waldiez_studio --reload --log-level debug
+	$(PYTHON) -m waldiez_studio --reload --log-level debug
 
 .PHONY: dev-front
 dev-front:

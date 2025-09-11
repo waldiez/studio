@@ -50,3 +50,10 @@ class PathItemListResponse(BaseModel):
     """Response for listing files and folders."""
 
     items: list[PathItem]
+
+
+class SaveRequest(BaseModel):
+    """Save file contents request."""
+
+    path: str
+    content: str

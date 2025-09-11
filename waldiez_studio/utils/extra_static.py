@@ -4,6 +4,7 @@
 """Utilities for managing extra static files."""
 # pylint: disable=broad-except, too-many-try-statements
 
+import asyncio
 import hashlib
 import io
 import json
@@ -19,9 +20,16 @@ import httpx
 from packaging import version
 
 LOG = logging.getLogger(__name__)
+HERE = Path(__file__).parent
+ROOT_DIR = HERE.parent
+STATIC_ROOT = ROOT_DIR / "static"
 
 REGISTRY_BASE_URL = "https://registry.npmjs.org"
 PACKAGE_NAME = "monaco-editor"
+
+# 0.53.0 does not seem to play well with @monaco-editor/react
+# let's check periodically and change it to None when we are good.
+PINNED_VERSION: str | None = "0.52.2"
 SWAGGER_DIST = (
     "https://raw.githubusercontent.com/swagger-api/swagger-ui/master/dist"
 )
@@ -68,15 +76,16 @@ def check_cached_details(file_path: Path) -> Optional[Tuple[str, str, str]]:
         return None
     try:
         last_check = datetime.fromisoformat(data.get("last_check", ""))
-        version_ = data.get("version")
+        vs_version = data.get("version")
         url = data.get("url")
+        sha_sum = data.get("sha_sum")
     except BaseException as e:
         LOG.error("Error parsing last check timestamp: %s", e)
         return None
-    if not all((last_check, version_, url)):
+    if not all((last_check, vs_version, url, sha_sum)):
         return None
     if datetime.now(timezone.utc) - last_check < timedelta(days=1):
-        return version_, url, data.get("sha_sum")
+        return vs_version, url, sha_sum
     return None
 
 
@@ -99,10 +108,12 @@ async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
         If fetching package details fails.
     """
     # let's merge loading and checking the file
-    monaco_details = static_root / "monaco_details.json"
+    monaco_details = static_root / "monaco" / "monaco.json"
+    monaco_details.parent.mkdir(parents=True, exist_ok=True)
     cached = check_cached_details(monaco_details)
     if cached:
-        return cached
+        if not PINNED_VERSION or PINNED_VERSION == cached[0]:
+            return cached
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.get(f"{REGISTRY_BASE_URL}/{PACKAGE_NAME}")
@@ -112,18 +123,24 @@ async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
                 )
 
             package_data = response.json()
-            latest_version = package_data.get("dist-tags", {}).get("latest")
-            version_info = package_data.get("versions", {}).get(latest_version)
+            target_version = package_data.get("dist-tags", {}).get("latest")
+            if PINNED_VERSION and PINNED_VERSION in package_data.get(
+                "versions"
+            ):
+                target_version = PINNED_VERSION
+            version_info = package_data.get("versions", {}).get(
+                target_version, "latest"
+            )
             tarball_url = version_info.get("dist", {}).get("tarball")
             sha_sum = version_info.get("dist", {}).get("shasum")
-            if not all((latest_version, tarball_url, sha_sum)):
+            if not all((target_version, tarball_url, sha_sum)):
                 raise DownloadError("Package details are incomplete.")
 
             # Cache the details with a 'last_check' timestamp
             monaco_details.write_text(
                 json.dumps(
                     {
-                        "version": latest_version,
+                        "version": target_version,
                         "url": tarball_url,
                         "sha_sum": sha_sum,
                         "last_check": datetime.now(timezone.utc).isoformat(),
@@ -133,7 +150,7 @@ async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
                 encoding="utf-8",
                 newline="\n",
             )
-            return latest_version, tarball_url, sha_sum
+            return target_version, tarball_url, sha_sum
     except BaseException as e:
         raise DownloadError(f"Failed to fetch package details: {e}") from e
 
@@ -192,12 +209,11 @@ async def download_monaco_editor(static_root: Path) -> None:
     ValueError
         If the SHA-1 checksum does not match the expected value.
     """
-    monaco_path = static_root / "monaco"
-    if monaco_path.exists() and (monaco_path / "vs" / "loader.js").exists():
+    details = await get_package_details(static_root)
+    loader_js = static_root / "monaco" / "vs" / "loader.js"
+    if loader_js.is_file():
         LOG.info("Monaco editor files are already present.")
         return
-
-    details = await get_package_details(static_root)
     _version, url, sha_sum = details
     try:
         async with httpx.AsyncClient(timeout=60) as client:
@@ -216,6 +232,7 @@ async def download_monaco_editor(static_root: Path) -> None:
     ).hexdigest()
     if calculated_sha_sum != sha_sum:
         raise ValueError("SHA-1 checksum mismatch.")
+    monaco_path = static_root / "monaco"
     try:
         extract_monaco_tar(tar_data, monaco_path)
     except BaseException as e:
@@ -316,3 +333,8 @@ def tar_has_filter_parameter() -> bool:  # pragma: no cover
     if py_version.minor == 10 and py_version.micro >= 12:
         return True
     return False
+
+
+if __name__ == "__main__":
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    asyncio.run(ensure_extra_static_files(STATIC_ROOT))

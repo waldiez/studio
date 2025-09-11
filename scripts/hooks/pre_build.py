@@ -9,7 +9,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # pylint: disable=import-error
 # pyright: reportMissingImports=false,reportUnknownVariableType=false
@@ -24,7 +24,7 @@ class PreBuildHook(BuildHookInterface):  # type: ignore
     PLUGIN_NAME = "pre_build"
 
     # pylint: disable=unused-argument,no-self-use
-    def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
+    def initialize(self, version: str, build_data: dict[str, Any]) -> None:
         """This occurs immediately before each build.
 
         Any modifications to the build data will be seen by the build target.

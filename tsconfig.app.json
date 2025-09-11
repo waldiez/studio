@@ -19,8 +19,8 @@
         "noFallthroughCasesInSwitch": true,
         "types": ["node"],
         "paths": {
-            "@waldiez/studio/*": ["./frontend/src/*"]
+            "@/*": ["./src/*"]
         }
     },
-    "include": ["frontend"]
+    "include": ["."]
 }

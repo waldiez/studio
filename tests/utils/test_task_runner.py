@@ -1,419 +1,367 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
-# flake8: noqa
-# pyright: reportFunctionMemberAccess=false,reportPrivateUsage=false
-# pylint: disable=missing-function-docstring,missing-return-doc,
-# pylint: disable=missing-yield-doc,missing-param-doc,missing-raises-doc
-# pylint: disable=no-member,protected-access,unused-argument,redefined-variable-type
 
 """Tests for waldiez_studio.utils.task_runner."""
+# mypy: disable-error-code="attr-defined"
+# pylint: disable=missing-function-docstring,missing-return-doc,
+# pylint: disable=missing-yield-doc,missing-param-doc,
+# pylint: disable=missing-raises-doc,line-too-long,raising-bad-type
+# pyright: reportAttributeAccessIssue=false,reportUnknownMemberType=false
+# pyright: reportUnknownArgumentType=false,reportUnknownVariableType=false
 
 import asyncio
+import json
 from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import WebSocket
+from starlette.websockets import WebSocketDisconnect
 
-from waldiez_studio.utils.task_runner import TaskRunner, run_task
-from waldiez_studio.utils.task_state import TaskState
+from waldiez_studio.engines.base import Engine
+from waldiez_studio.utils.task_runner import TaskRunner
 
 
-@pytest.fixture(name="fake_websocket")
-def fake_websocket_fixture() -> MagicMock:
-    ws = AsyncMock()
-    ws.receive_json = AsyncMock(
-        side_effect=[
-            {"action": "status"},
-            {"action": "start"},
-            {"action": "stop"},
-            {"action": "unknown"},
-            asyncio.CancelledError(),
+class MockEngine(Engine):
+    """Mock engine for testing."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        # Provide default values for required parameters
+        kwargs.setdefault("file_path", Path("/test/file.py"))
+        kwargs.setdefault("root_dir", Path("/test"))
+        kwargs.setdefault("websocket", MagicMock())
+        super().__init__(**kwargs)
+        self.start_called = False
+        self.handle_client_calls: list[dict[str, Any]] = []
+        self.shutdown_called = False
+        self.start_exception: Exception | None = None
+        self.handle_client_exception: Exception | None = None
+        self.shutdown_exception: Exception | None = None
+
+    async def start(self, start_msg: dict[str, Any] | None = None) -> None:
+        self.start_called = True
+        if self.start_exception:
+            raise self.start_exception
+
+    async def handle_client(self, msg: dict[str, Any]) -> None:
+        self.handle_client_calls.append(msg)
+        if self.handle_client_exception:
+            raise self.handle_client_exception
+
+    async def shutdown(self) -> None:
+        self.shutdown_called = True
+        if self.shutdown_exception:
+            raise self.shutdown_exception
+
+
+@pytest.fixture(name="mock_websocket")
+def mock_websocket_fixture() -> AsyncMock:
+    """Create a mock websocket."""
+    websocket = AsyncMock(spec=WebSocket)
+    return websocket
+
+
+@pytest.fixture(name="mock_engine")
+def mock_engine_fixture() -> MockEngine:
+    """Create a mock engine."""
+    return MockEngine()
+
+
+@pytest.fixture(name="task_runner")
+def task_runner_fixture(
+    mock_websocket: AsyncMock,
+    mock_engine: MockEngine,
+) -> TaskRunner:
+    """Create a TaskRunner instance."""
+    return TaskRunner(
+        task_id="test_task_123", websocket=mock_websocket, engine=mock_engine
+    )
+
+
+@pytest.mark.asyncio
+async def test_task_runner_init(
+    mock_websocket: AsyncMock, mock_engine: MockEngine
+) -> None:
+    """Test TaskRunner initialization."""
+    task_runner = TaskRunner(
+        task_id="test_task_123", websocket=mock_websocket, engine=mock_engine
+    )
+
+    assert task_runner.task_id == "test_task_123"
+    assert task_runner.websocket == mock_websocket
+    assert task_runner.engine == mock_engine
+
+
+@pytest.mark.asyncio
+async def test_listen_successful_flow(task_runner: TaskRunner) -> None:
+    """Test successful flow of listen method."""
+    # Mock websocket messages
+    start_message = {"op": "start", "data": "test"}
+    follow_up_message = {"op": "stdin", "data": "input"}
+
+    task_runner.websocket.receive_text.side_effect = [
+        json.dumps(start_message),
+        json.dumps(follow_up_message),
+        WebSocketDisconnect(),  # Simulate disconnect to exit loop
+    ]
+
+    await task_runner.listen()
+
+    # Verify engine methods were called
+    assert task_runner.engine.start_called
+    assert len(task_runner.engine.handle_client_calls) == 1
+    assert task_runner.engine.handle_client_calls[0] == follow_up_message
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_invalid_first_message_json(
+    task_runner: TaskRunner,
+) -> None:
+    """Test listen with invalid JSON in first message."""
+    task_runner.websocket.receive_text.return_value = "invalid json"
+
+    await task_runner.listen()
+
+    # Should send error message
+    task_runner.websocket.send_json.assert_called_once_with(
+        {
+            "type": "error",
+            "data": {"message": "invalid first message"},
+        }
+    )
+    assert not task_runner.engine.start_called
+
+
+@pytest.mark.asyncio
+async def test_listen_invalid_first_message_op(task_runner: TaskRunner) -> None:
+    """Test listen with invalid op in first message."""
+    invalid_start = {"op": "invalid", "data": "test"}
+    task_runner.websocket.receive_text.return_value = json.dumps(invalid_start)
+
+    await task_runner.listen()
+
+    # Should send error message
+    task_runner.websocket.send_json.assert_called_once_with(
+        {
+            "type": "error",
+            "data": {"message": "first message must be op=start"},
+        }
+    )
+    assert not task_runner.engine.start_called
+
+
+@pytest.mark.asyncio
+async def test_listen_invalid_follow_up_message(
+    task_runner: TaskRunner,
+) -> None:
+    """Test listen with invalid JSON in follow-up message."""
+    start_message = {"op": "start", "data": "test"}
+
+    task_runner.websocket.receive_text.side_effect = [
+        json.dumps(start_message),
+        "invalid json",  # Invalid follow-up message
+        WebSocketDisconnect(),  # Disconnect to exit loop
+    ]
+
+    await task_runner.listen()
+
+    # Should handle the error and continue
+    assert task_runner.engine.start_called
+    assert (
+        len(task_runner.engine.handle_client_calls) == 0
+    )  # Invalid message ignored
+    assert task_runner.engine.shutdown_called
+
+    # Should send error for invalid message
+    expected_calls: list[Any] = [
+        {
+            "type": "error",
+            "data": {"message": "invalid message"},
+        }
+    ]
+    # Check that error was sent
+    assert any(
+        call.args[0] == expected_calls[0]
+        for call in task_runner.websocket.send_json.call_args_list
+    )
+
+
+@pytest.mark.asyncio
+async def test_listen_websocket_disconnect_early(
+    task_runner: TaskRunner,
+) -> None:
+    """Test listen when websocket disconnects before start message."""
+    task_runner.websocket.receive_text.side_effect = WebSocketDisconnect()
+
+    # Should not raise exception
+    await task_runner.listen()
+
+    assert not task_runner.engine.start_called
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_engine_start_exception(task_runner: TaskRunner) -> None:
+    """Test listen when engine.start raises exception."""
+    start_message = {"op": "start", "data": "test"}
+    task_runner.websocket.receive_text.return_value = json.dumps(start_message)
+    task_runner.engine.start_exception = ValueError("Engine start failed")
+
+    await task_runner.listen()
+
+    assert task_runner.engine.start_called
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_engine_handle_client_exception(
+    task_runner: TaskRunner,
+) -> None:
+    """Test listen when engine.handle_client raises exception."""
+    start_message = {"op": "start", "data": "test"}
+    follow_up_message = {"op": "stdin", "data": "input"}
+
+    task_runner.websocket.receive_text.side_effect = [
+        json.dumps(start_message),
+        json.dumps(follow_up_message),
+        WebSocketDisconnect(),
+    ]
+    task_runner.engine.handle_client_exception = ValueError(
+        "Handle client failed"
+    )
+
+    await task_runner.listen()
+
+    assert task_runner.engine.start_called
+    assert len(task_runner.engine.handle_client_calls) == 1
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_engine_shutdown_exception(
+    task_runner: TaskRunner,
+) -> None:
+    """Test listen when engine.shutdown raises exception."""
+    start_message = {"op": "start", "data": "test"}
+    task_runner.websocket.receive_text.side_effect = [
+        json.dumps(start_message),
+        WebSocketDisconnect(),
+    ]
+    task_runner.engine.shutdown_exception = ValueError("Shutdown failed")
+
+    # Should not raise exception even if shutdown fails
+    await task_runner.listen()
+
+    assert task_runner.engine.start_called
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_cancellation(task_runner: TaskRunner) -> None:
+    """Test listen handles cancellation properly."""
+    start_message = {"op": "start", "data": "test"}
+
+    async def mock_receive_text() -> str:
+        # First call returns start message
+        if not hasattr(mock_receive_text, "called"):
+            mock_receive_text.called = True  # pyright: ignore
+            return json.dumps(start_message)
+        # Subsequent calls should raise CancelledError
+        raise asyncio.CancelledError()
+
+    task_runner.websocket.receive_text.side_effect = mock_receive_text
+
+    with pytest.raises(asyncio.CancelledError):
+        await task_runner.listen()
+
+    assert task_runner.engine.start_called
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_send_successful(task_runner: TaskRunner) -> None:
+    """Test successful send method."""
+    payload = {"type": "test", "data": {"message": "hello"}}
+
+    await task_runner.send(payload)
+
+    task_runner.websocket.send_json.assert_called_once_with(payload)
+
+
+@pytest.mark.asyncio
+async def test_send_exception_suppressed(task_runner: TaskRunner) -> None:
+    """Test send method suppresses exceptions."""
+    payload = {"type": "test", "data": {"message": "hello"}}
+    task_runner.websocket.send_json.side_effect = Exception("Send failed")
+
+    # Should not raise exception
+    await task_runner.send(payload)
+
+    task_runner.websocket.send_json.assert_called_once_with(payload)
+
+
+@pytest.mark.asyncio
+async def test_listen_multiple_messages_flow(task_runner: TaskRunner) -> None:
+    """Test listen with multiple follow-up messages."""
+    start_message = {"op": "start", "data": "test"}
+    messages = [
+        {"op": "stdin", "data": "input1"},
+        {"op": "stdin", "data": "input2"},
+        {"op": "interrupt"},
+        {"op": "stdin", "data": "input3"},
+    ]
+
+    task_runner.websocket.receive_text.side_effect = [
+        json.dumps(start_message),
+        *[json.dumps(msg) for msg in messages],
+        WebSocketDisconnect(),
+    ]
+
+    await task_runner.listen()
+
+    assert task_runner.engine.start_called
+    assert len(task_runner.engine.handle_client_calls) == len(messages)
+    assert task_runner.engine.handle_client_calls == messages
+    assert task_runner.engine.shutdown_called
+
+
+@pytest.mark.asyncio
+async def test_listen_with_logging(task_runner: TaskRunner) -> None:
+    """Test that logging occurs appropriately."""
+    with patch("waldiez_studio.utils.task_runner.LOG") as mock_log:
+        # Test websocket disconnect logging
+        task_runner.websocket.receive_text.side_effect = [
+            json.dumps({"op": "start"}),
+            WebSocketDisconnect(),
         ]
-    )
-    return ws
+
+        await task_runner.listen()
+
+        # Should log disconnect
+        mock_log.debug.assert_called_with("WS disconnected")
 
 
 @pytest.mark.asyncio
-async def test_task_runner_listen_handles_actions(
-    fake_websocket: MagicMock,
-) -> None:
-    task_runner = TaskRunner(task_id="test-id", websocket=fake_websocket)
-
-    with (
-        patch.object(
-            task_runner, "_handle_start", new=AsyncMock()
-        ) as mock_start,
-        patch.object(task_runner, "_handle_stop", new=AsyncMock()) as mock_stop,
-        patch.object(task_runner, "send_message", new=AsyncMock()),
-    ):
-        with pytest.raises(asyncio.CancelledError):
-            await task_runner.listen()
-
-        assert mock_start.call_count == 1
-        assert mock_stop.call_count == 1
-        task_runner.send_message.assert_called_with(  # type: ignore
-            "status", "NOT_STARTED"
-        )
-
-
-@pytest.mark.asyncio
-async def test_task_runner_handle_start_sets_state(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _handle_start sets the task state correctly."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.task_state = TaskState.NOT_STARTED
-
-    with patch.object(task_runner, "run", new=AsyncMock()) as mock_run:
-        await task_runner._handle_start()
-        mock_run.assert_called_once()
-        assert (
-            task_runner.task_state == TaskState.NOT_STARTED
-        )  # Set right before run()
-
-
-@pytest.mark.asyncio
-async def test_task_runner_handle_stop_when_running(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _handle_stop stops the task when it is running."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.task_state = TaskState.RUNNING
-
-    dummy_task = asyncio.create_task(asyncio.sleep(5))
-    task_runner.running_task = dummy_task
-    task_runner.comm_handler_task = asyncio.create_task(asyncio.sleep(5))
-
-    with patch.object(task_runner, "send_message", new=AsyncMock()):
-        await task_runner.stop_task()
-
-        assert task_runner.task_state == TaskState.COMPLETED
-        task_runner.send_message.assert_called_with(  # type: ignore
-            "info", "Task stopped."
-        )
-
-
-@pytest.mark.asyncio
-async def test_run_task_and_cleanup_called(fake_websocket: MagicMock) -> None:
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.task_state = TaskState.NOT_STARTED
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.run_task", return_value=["result"]
-        ) as mock_run_task,
-        patch(
-            "waldiez_studio.utils.task_runner.serialize_results",
-            return_value={"ok": True},
-        ),
-        patch.object(
-            task_runner, "_handle_thread_communication", new=AsyncMock()
-        ),
-        patch.object(fake_websocket, "send_json", new=AsyncMock()),
-    ):
-        await task_runner.run()
-        mock_run_task.assert_called_once()
-        assert task_runner.task_state == TaskState.COMPLETED
-
-
-@pytest.mark.asyncio
-async def test_handle_user_response_sets_future_result(
-    fake_websocket: MagicMock,
-    tmp_path: Path,
-) -> None:
-    """Test that a valid user response sets the future result."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    future = task_runner.loop.create_future()
-    task_runner.pending_inputs["abc"] = future
-
-    response_data: dict[str, Any] = {
-        "request_id": "abc",
-        "data": [{"type": "text", "text": "hello"}],
-        "password": False,
-    }
+async def test_semaphore_context_manager() -> None:
+    """Test that semaphore is properly used as context manager."""
+    # This test ensures the semaphore is acquired and released properly
     with patch(
-        "waldiez_studio.utils.task_runner.id_to_path", return_value=tmp_path
-    ):
-        task_runner._handle_user_response(response_data)
+        "waldiez_studio.utils.task_runner._active_tasks"
+    ) as mock_semaphore:
+        mock_semaphore.__aenter__ = AsyncMock()
+        mock_semaphore.__aexit__ = AsyncMock()
 
-    assert future.done()
-    assert future.result() == "hello"
+        websocket = AsyncMock(spec=WebSocket)
+        engine = MockEngine()
+        task_runner = TaskRunner("test", websocket, engine)
 
+        # Mock early disconnect to exit quickly
+        websocket.receive_text.side_effect = WebSocketDisconnect()
 
-@pytest.mark.asyncio
-async def test_handle_start_when_running_sends_info(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _handle_start sends info when task is already running."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.task_state = TaskState.RUNNING
+        await task_runner.listen()
 
-    with patch.object(task_runner, "send_message", new=AsyncMock()) as mock_msg:
-        await task_runner._handle_start()
-        mock_msg.assert_called_once_with("info", "Task is already running.")
-
-
-@pytest.mark.asyncio
-async def test_handle_stop_when_not_running_sends_info(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _handle_stop sends info if task is not running."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.task_state = TaskState.NOT_STARTED  # or COMPLETED
-
-    with (
-        patch.object(task_runner, "send_message", new=AsyncMock()) as mock_msg,
-        patch.object(task_runner, "stop_task", new=AsyncMock()) as mock_stop,
-    ):
-        await task_runner._handle_stop()
-
-        mock_stop.assert_not_called()
-        mock_msg.assert_called_once_with("info", "No running task to stop.")
-
-
-@pytest.mark.asyncio
-async def test_run_early_exits_if_already_running_or_completed(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that run() exits early if task is already running or completed."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-
-    # Already running
-    task_runner.task_state = TaskState.RUNNING
-    with patch.object(task_runner, "send_message", new=AsyncMock()) as mock_msg:
-        await task_runner.run()
-        mock_msg.assert_called_once_with("info", "Task is already running.")
-
-    # Already completed
-    task_runner.task_state = TaskState.COMPLETED
-    with patch.object(task_runner, "send_message", new=AsyncMock()) as mock_msg:
-        await task_runner.run()
-        mock_msg.assert_called_once_with("info", "Task is already completed.")
-
-
-@pytest.mark.asyncio
-async def test_handle_user_response_invalid_data_logs_error(
-    fake_websocket: MagicMock,
-    tmp_path: Path,
-) -> None:
-    """Test that invalid user response logs validation error."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.id_to_path",
-            return_value=tmp_path,
-        ),
-        patch("waldiez_studio.utils.task_runner.LOG.error") as mock_error,
-    ):
-        task_runner._handle_user_response({"type": "other", "other": {}})
-        expected = "Validation error for user response"
-        captured = mock_error.call_args[0][0]
-        assert expected in captured, f"Expected '{expected}' in '{captured}'"
-
-
-@pytest.mark.asyncio
-async def test_send_input_request_returns_user_input(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _send_input_request returns the user input."""
-    fake_websocket.send_json = AsyncMock()
-
-    task_runner = TaskRunner("task-id", fake_websocket)
-
-    # Start task — allow coroutine to run up to await
-    coro = asyncio.create_task(
-        task_runner._send_input_request("What's your name?")
-    )
-
-    # Wait until pending_inputs has been populated
-    await asyncio.sleep(0)
-
-    assert len(task_runner.pending_inputs) == 1
-    request_id, future = next(iter(task_runner.pending_inputs.items()))
-
-    future.set_result("Waldo")
-    result = await coro
-
-    assert result == "Waldo"
-    assert request_id not in task_runner.pending_inputs
-
-
-@pytest.mark.asyncio
-async def test_send_input_request_timeout_logs_and_returns_empty(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _send_input_request handles timeout gracefully."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.input_timeout = 0.01  # fast timeout
-
-    fake_websocket.send_json = AsyncMock()
-    with patch("waldiez_studio.utils.task_runner.LOG.warning") as mock_warning:
-        result = await task_runner._send_input_request("What's your name?")
-        assert result == ""
-        mock_warning.assert_called_once_with(
-            "Input request timed out after %.1f seconds.",
-            task_runner.input_timeout,
-        )
-
-
-@pytest.mark.asyncio
-async def test_send_output_replaces_placeholders(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that _send_output replaces image placeholders."""
-    task_runner = TaskRunner("abc123", fake_websocket)
-    task_runner.latest_request_id = "imagefile"
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.get_root_dir",
-            return_value="/workspace",
-        ),
-        patch(
-            "waldiez_studio.utils.task_runner.id_to_path",
-            return_value=Path("/workspace/abc123.json"),
-        ),
-    ):
-        await task_runner._send_output("hello <image>!")
-
-    fake_websocket.send_json.assert_called_once()
-    result = fake_websocket.send_json.call_args[0][0]
-    assert result["type"] == "print"
-    assert "/download?path=" in result["data"]
-
-
-@pytest.mark.asyncio
-async def test_thread_safe_callbacks_send_output_and_input(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test on_output and on_input triggers callbacks."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-
-    with patch.object(
-        task_runner, "_send_input_request", new=AsyncMock(return_value="yes!")
-    ):
-        on_input, on_output = task_runner._create_thread_safe_callbacks()
-
-        # run input from thread
-        result = await asyncio.to_thread(on_input, "prompt")
-        assert result == "yes!"
-
-        # output gets queued
-        on_output("A", "B", sep="-", end="!")
-        queued = await task_runner.output_messages.get()
-        assert queued == "A-B!"
-
-
-@pytest.mark.asyncio
-async def test_thread_communication_sends_output(
-    fake_websocket: MagicMock,
-) -> None:
-    """Test that messages are sent if queue is not empty."""
-    task_runner = TaskRunner("task-id", fake_websocket)
-    task_runner.stop_event.clear()
-
-    task_runner.output_messages.put_nowait("from queue")
-    fake_websocket.send_json = AsyncMock()
-
-    async def stop_soon() -> None:
-        """Stop the task runner after a short delay."""
-        await asyncio.sleep(0.02)
-        task_runner.stop_event.set()
-
-    await asyncio.gather(
-        task_runner._handle_thread_communication(),
-        stop_soon(),
-    )
-
-    fake_websocket.send_json.assert_called_once()
-    assert fake_websocket.send_json.call_args[0][0]["data"].startswith(
-        "from queue"
-    )
-
-
-def test_run_task_success(tmp_path: Path) -> None:
-    """Test run_task completes successfully with mocked runner."""
-    mock_runner = MagicMock()
-    mock_runner.is_async = False
-    mock_runner.run.return_value = "done"
-
-    file_path = tmp_path / "abc123.json"
-    file_path.write_text("{}")  # just to exist
-
-    # noinspection PyUnusedLocal
-    def mock_on_input(prompt: str, **kwargs: Any) -> str:
-        return "yes"
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.id_to_path",
-            return_value=file_path,
-        ),
-        patch(
-            "waldiez_studio.utils.task_runner.WaldiezRunner.load",
-            return_value=mock_runner,
-        ),
-    ):
-        result = run_task(
-            "abc123",
-            on_input=mock_on_input,
-            on_output=lambda *a, **kw: None,
-        )
-
-    assert result == "done"
-    mock_runner.run.assert_called_once()
-
-
-def test_run_task_fails_to_load_raises(tmp_path: Path) -> None:
-    """Test run_task raises if task loading fails."""
-    file_path = tmp_path / "abc123.json"
-    file_path.write_text("{}")
-
-    # noinspection PyUnusedLocal
-    def mock_on_input(prompt: str, **kwargs: Any) -> str:
-        return "ok"
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.id_to_path",
-            return_value=file_path,
-        ),
-        patch(
-            "waldiez_studio.utils.task_runner.WaldiezRunner.load",
-            side_effect=OSError("Boom"),
-        ),
-        patch("waldiez_studio.utils.task_runner.LOG.error") as mock_log,
-        pytest.raises(RuntimeError, match="Failed to load task file"),
-    ):
-        run_task("abc123", on_input=mock_on_input, on_output=print)
-
-    mock_log.assert_called_once()
-
-
-def test_run_task_fails_to_run_raises(tmp_path: Path) -> None:
-    """Test run_task raises if task execution fails."""
-    file_path = tmp_path / "abc123.json"
-    file_path.write_text("{}")
-
-    mock_runner = MagicMock()
-    mock_runner.is_async = False
-    mock_runner.run.side_effect = RuntimeError("Execution failed")
-
-    # noinspection PyUnusedLocal
-    def mock_on_input(prompt: str, **kwargs: Any) -> str:
-        return "yes"
-
-    with (
-        patch(
-            "waldiez_studio.utils.task_runner.id_to_path",
-            return_value=file_path,
-        ),
-        patch(
-            "waldiez_studio.utils.task_runner.WaldiezRunner.load",
-            return_value=mock_runner,
-        ),
-        pytest.raises(RuntimeError, match="Failed to run task"),
-    ):
-        run_task("abc123", on_input=mock_on_input, on_output=print)
+        # Verify semaphore was entered and exited
+        mock_semaphore.__aenter__.assert_called_once()
+        mock_semaphore.__aexit__.assert_called_once()

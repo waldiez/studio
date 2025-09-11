@@ -3,12 +3,13 @@
 # pylint: disable=broad-exception-caught
 """Websocket routes."""
 
-import asyncio
+import contextlib
 import logging
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, WebSocket
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
+from waldiez_studio.engines import SUPPORTED_EXTS, Engine, make_engine
 from waldiez_studio.utils.paths import path_to_id
 from waldiez_studio.utils.task_runner import TaskRunner
 
@@ -39,33 +40,45 @@ async def websocket_endpoint(
         The root directory of the workspace
     """
     try:
-        flow_path = check_path(
+        file_path = check_path(
             path,
             root_dir,
             path_type="File",
             must_exist=True,
             must_be_file=True,
             must_be_dir=False,
-            must_have_extension=".waldiez",
+            must_have_extension=SUPPORTED_EXTS,
         )
     except BaseException as exc:
         LOG.error("Error: %s", exc)
         await websocket.close(code=1008, reason="Invalid path")
         return
-    await websocket.accept()
-    task_id = path_to_id(flow_path)
-    task_runner = TaskRunner(
-        task_id=task_id,
-        websocket=websocket,
-    )
+    engine: Engine | None = None
+    error: Exception | None = None
+    # pylint: disable=too-many-try-statements
     try:
-        await asyncio.gather(
-            task_runner.listen(),
+        await websocket.accept()
+        engine = await make_engine(
+            file_path=file_path, root_dir=root_dir, websocket=websocket
         )
-    except BaseException as exc:
-        LOG.warning("WebSocket connection error: %s", exc)
+        task_id = path_to_id(file_path)
+        runner = TaskRunner(
+            task_id=task_id,
+            websocket=websocket,
+            engine=engine,
+        )
+        await runner.listen()
+    except WebSocketDisconnect as exc:
+        error = exc
+        LOG.info("WebSocket disconnected: %s", file_path)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        error = exc  # pylint: disable=redefined-variable-type
+        LOG.warning("WebSocket error for %s: %s", file_path, exc)
     finally:
-        try:
-            await websocket.close(code=1006, reason="Connection error")
-        except BaseException:
-            pass
+        # if engine:
+        #     with contextlib.suppress(Exception):
+        #         await engine.shutdown()
+        with contextlib.suppress(Exception):
+            code = 1000 if not error else 1006
+            reason = str(error) if error else None
+            await websocket.close(code=code, reason=reason)

@@ -6,7 +6,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from hatchling.metadata.plugin.interface import MetadataHookInterface
 
@@ -16,7 +16,7 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 class JSONMetaDataHook(MetadataHookInterface):
     """Hook that reads metadata from package.json."""
 
-    def update(self, metadata: Dict[str, Any]) -> None:
+    def update(self, metadata: dict[str, Any]) -> None:
         """Update metadata with data from package.json.
 
         Parameters

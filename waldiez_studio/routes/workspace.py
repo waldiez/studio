@@ -7,9 +7,10 @@ import logging
 import shutil
 import tempfile
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Optional
 
 import aiofiles
+import aiosqlite
 import puremagic
 from aiofiles import os
 from fastapi import (
@@ -31,6 +32,7 @@ from waldiez_studio.models import (
     PathItemListResponse,
     PathItemRenameRequest,
     PathItemType,
+    SaveRequest,
 )
 from waldiez_studio.utils.sync import sync_to_async
 
@@ -49,6 +51,7 @@ LOG = logging.getLogger(__name__)
 CHUNK_SIZE = 1024 * 1024  # 1 MB chunks
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB maximum file size
 MAX_FILE_SIZE_MB = f"{MAX_FILE_SIZE / 1024 / 1024:.1f}"
+SQLITE_EXTS = {".db", ".sqlite", ".sqlite3"}
 
 
 @api.get("/workspace", response_model=PathItemListResponse)
@@ -89,7 +92,7 @@ async def list_items(
         else check_path(parent, root_dir=root_dir, must_be_dir=True)
     )
 
-    def sync_list_items(directory: Path) -> List[PathItem]:
+    def sync_list_items(directory: Path) -> list[PathItem]:
         """List files and folders in a given directory.
 
         Parameters
@@ -99,7 +102,7 @@ async def list_items(
 
         Returns
         -------
-        List[PathItem]
+        list[PathItem]
             A list of files and folders in the specified directory.
         """
         items = [
@@ -110,7 +113,7 @@ async def list_items(
             )
             for item in directory.iterdir()
         ]
-        return items
+        return sorted(items, key=lambda p: (p.type == "file", p.name.lower()))
 
     entries = await sync_to_async(sync_list_items)(target_dir)
     return PathItemListResponse(items=entries)
@@ -224,6 +227,71 @@ async def rename_file_or_folder(
         path=str(new_target.relative_to(root_dir)),
         type="folder" if new_target.is_dir() else "file",
     )
+
+
+@api.post(
+    "/workspace/save",
+    response_model=MessageResponse,
+    responses={
+        "200": {"description": "The file was saved"},
+        "400": {"description": "Error: Invalid request"},
+        "404": {"description": "Error: File not found"},
+        "415": {"description": "Error: Unsupported file type"},
+        "500": {"description": "Failed to save file"},
+    },
+)
+async def save_text_file(
+    payload: SaveRequest,
+    root_dir: Path = Depends(get_root_directory),
+) -> MessageResponse:
+    """
+    Save a textual file (UTF-8).
+
+    Parameters
+    ----------
+    payload : SaveRequest
+        The file contents to store.
+    root_dir : Path
+        The root directory to use.
+
+    Returns
+    -------
+    MessageResponse
+        A success message.
+
+    Raises
+    ------
+    HTTPException
+        If the path does not exist,
+        the file type is not supported
+        or saving the file fails.
+    """
+    try:
+        file_path = check_path(
+            payload.path,
+            root_dir,
+            path_type="File",
+            must_exist=True,
+            must_be_file=True,
+            must_be_dir=False,
+        )
+    except BaseException as exc:
+        raise HTTPException(status_code=404, detail="File not found") from exc
+
+    ext = file_path.suffix.lower()
+    mime = ALLOWED_EXTENSIONS.get(ext)
+    if not mime or ext not in TEXTUAL_EXTS:
+        raise HTTPException(status_code=415, detail="Unsupported file type")
+
+    try:
+        # write text (replace invalids if ever present in content)
+        file_path.write_text(payload.content, encoding="utf-8", errors="strict")
+    except BaseException as exc:
+        raise HTTPException(
+            status_code=500, detail="Failed to save file"
+        ) from exc
+
+    return MessageResponse(message="Saved")
 
 
 @api.post(
@@ -392,16 +460,19 @@ async def get_file(
     except BaseException as exc:
         LOG.error("Error: %s", exc)
         raise HTTPException(status_code=404, detail="Invalid request") from exc
+
     ext = file_path.suffix.lower()
     mime = ALLOWED_EXTENSIONS.get(ext)
     if not mime:
         try:
-            ext = puremagic.from_file(file_path)  # pyright: ignore
+            guessed = puremagic.from_file(str(file_path))  # pyright: ignore
+            ext = _norm_ext(guessed)
+            mime = ALLOWED_EXTENSIONS.get(ext)
         except BaseException as exc:
             raise HTTPException(
-                status_code=404, detail="Unsupported file type"
+                status_code=415, detail="Unsupported file type"
             ) from exc
-        mime = ALLOWED_EXTENSIONS.get(ext)
+
     if not mime:
         raise HTTPException(status_code=415, detail="Unsupported file type")
 
@@ -415,8 +486,13 @@ async def get_file(
             }
         )
 
-    # Media: stream the file
-    return FileResponse(file_path, filename=file_path.name, media_type=mime)
+    headers = {"Content-Disposition": f'inline; filename="{file_path.name}"'}
+    return FileResponse(
+        file_path,
+        filename=file_path.name,
+        media_type=mime,
+        headers=headers,
+    )
 
 
 @api.delete(
@@ -470,6 +546,156 @@ async def delete_file_or_folder(
         ) from error
 
     return MessageResponse(message=f"{thing} deleted successfully")
+
+
+@api.get("/workspace/sqlite-tables")
+async def sqlite_tables(
+    path: str,
+    root_dir: Path = Depends(get_root_directory),
+) -> dict[str, Any]:
+    """Get sqlite tables.
+
+    Parameters
+    ----------
+    path : str
+        The path to the sqlite db.
+    root_dir : Path
+        The root directory to use.
+
+    Returns
+    -------
+    dict[str, Any]
+        The tables in the db file.
+    """
+    file_path = check_path(path, root_dir, must_be_file=True)
+    _ensure_sqlite(file_path)
+    q = (
+        "SELECT name FROM sqlite_master WHERE type='table' "
+        "AND name NOT LIKE 'sqlite_%' ORDER BY name"
+    )
+    async with aiosqlite.connect(f"file:{file_path}?mode=ro", uri=True) as db:
+        async with db.execute(q) as cur:
+            tables = [r[0] async for r in cur]
+    return {"tables": tables}
+
+
+@api.get("/workspace/sqlite-rows")
+async def sqlite_rows(  # pylint: disable=too-many-locals
+    path: str,
+    table: str = Query(..., description="Table name (must exist)"),
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+    order_by: str | None = Query(None, description="Column name to order by"),
+    order_dir: str | None = Query(None, pattern="^(?i)(asc|desc)$"),
+    search: str | None = Query(None, description="Simple substring filter"),
+    root_dir: Path = Depends(get_root_directory),
+) -> dict[str, Any]:
+    """Get a table's rows.
+
+    Parameters
+    ----------
+    path : str
+        The path of the sqlite db file.
+    table : str
+        The table name.
+    limit : int
+        Optional limit for the number of rows. Defaults to 50
+    offset : int
+        Optional offset to use for fetching the rows. Defaults to 0
+    order_by : str | None
+        Optional ordering for the rows.
+    order_dir : str
+        Ordering direction (arc/desc).
+    search : str
+        Optional substring filter to search for.
+    root_dir : Path
+        The root directory to use.
+
+    Returns
+    -------
+    dict[str, Any]
+        The query results.
+
+    Raises
+    ------
+    HTTPException
+        If the table is not found.
+    """
+    file_path = check_path(path, root_dir, must_be_file=True)
+    _ensure_sqlite(file_path)
+
+    async with aiosqlite.connect(f"file:{file_path}?mode=ro", uri=True) as db:
+        # verify table
+        async with db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            (table,),
+        ) as cur:
+            if not await cur.fetchone():
+                raise HTTPException(status_code=404, detail="Table not found")
+
+        # columns + types
+        async with db.execute(
+            f"PRAGMA table_info({_quote_ident(table)})"
+        ) as cur:
+            info: list[aiosqlite.Row] = [row async for row in cur]
+        columns: list[str] = [r[1] for r in info]
+        types = {r[1]: (r[2] or "").upper() for r in info}  # name -> decl type
+
+        # build WHERE for search (LIKE across text-ish columns)
+        where_sql = ""
+        where_args: list[object] = []
+        if search:
+            like = f"%{search}%"
+            text_cols = [
+                column
+                for column in columns
+                if "CHAR" in types[column]
+                # cspell: disable-next-line
+                or "CLOB" in types[column]
+                or "TEXT" in types[column]
+                or types[column] == ""
+            ]
+            if text_cols:
+                clauses = [f"{_quote_ident(c)} LIKE ?" for c in text_cols]
+                where_sql = "WHERE " + " OR ".join(clauses)
+                where_args = [like] * len(text_cols)
+
+        # order by (validate column)
+        order_sql = ""
+        if order_by and order_by in columns:
+            dir_sql = "DESC" if (order_dir or "").lower() == "desc" else "ASC"
+            order_sql = f"ORDER BY {_quote_ident(order_by)} {dir_sql}"
+
+        # total
+        q = (
+            "SELECT COUNT(*) FROM "  # nosemgrep # nosec
+            f"{_quote_ident(table)} {where_sql}"
+        )
+        async with db.execute(
+            q,
+            where_args,
+        ) as cur:
+            total: aiosqlite.Row | None = await cur.fetchone()
+
+        # rows
+        q = (
+            f"SELECT * FROM {_quote_ident(table)} "  # nosemgrep # nosec
+            f"{where_sql} {order_sql} LIMIT ? OFFSET ?"
+        )
+        async with db.execute(
+            q,
+            [*where_args, limit, offset],
+        ) as cur:
+            rows = [r async for r in cur]
+
+    return {
+        "table": table,
+        "columns": columns,
+        "rows": rows,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 async def create_new_path_item(
@@ -567,3 +793,18 @@ def download_zip_sync(
         raise HTTPException(
             status_code=500, detail="Error: Failed to download folder"
         ) from error
+
+
+def _norm_ext(x: str) -> str:
+    x = x.strip().lower()
+    return x if x.startswith(".") else f".{x}"
+
+
+def _ensure_sqlite(path: Path) -> None:
+    if path.suffix.lower() not in SQLITE_EXTS:
+        raise HTTPException(status_code=415, detail="Not a SQLite file")
+
+
+def _quote_ident(name: str) -> str:
+    # very simple quoting (escape double quotes)
+    return '"' + name.replace('"', '""') + '"'

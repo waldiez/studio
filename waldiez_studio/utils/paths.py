@@ -3,6 +3,7 @@
 
 """Directories to use for user uploads and flow outputs."""
 
+import base64
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -68,7 +69,7 @@ def path_to_id(path: Path) -> str:
     str
         Base64-encoded string identifier.
     """
-    return path.as_posix().encode("utf-8").hex()
+    return base64.urlsafe_b64encode(path.as_posix().encode()).decode()
 
 
 def id_to_path(identifier: str) -> Path:
@@ -84,4 +85,4 @@ def id_to_path(identifier: str) -> Path:
     Path
         Reconstructed Path object.
     """
-    return Path(bytes.fromhex(identifier).decode("utf-8"))
+    return Path(base64.urlsafe_b64decode(identifier).decode())

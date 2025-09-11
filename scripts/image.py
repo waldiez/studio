@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+# pyright: reportConstantRedefinition=false
+
 """Build container image."""
 
 import argparse
@@ -262,10 +264,10 @@ def check_other_platform(container_command: str, platform_arg: str) -> bool:
                     "run",
                     "--rm",
                     "--privileged",
-                    "multiarch/qemu-user-static",
-                    "reset",
-                    "-p",
-                    "yes",
+                    # cspell: disable-next-line
+                    "tonistiigi/binfmt",
+                    "--install",
+                    "all",
                 ]
             )
         except BaseException:  # pylint: disable=broad-except
@@ -286,7 +288,7 @@ def main() -> None:
         If an error occurs.
     """
     args, _ = cli().parse_known_args()
-    build_args = args.build_args or []
+    build_args: list[str] = args.build_args or []
     container_file = "Containerfile"
     platform_arg = args.platform
     container_command = args.container_command

@@ -9,8 +9,6 @@ waldiez_studio/files/
 .env
 uv.lock
 **/.yarn/
-public/*
-!public/files/
 **/node_modules
 **/reports/
 **/coverage/

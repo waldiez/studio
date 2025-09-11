@@ -5,6 +5,8 @@
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long
 
+import io
+import sqlite3
 from pathlib import Path
 from typing import Any, AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -541,3 +543,364 @@ async def test_get_unsupported_file(
 
     assert response.status_code == 415
     assert "Unsupported file type" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_save_text_file(client: AsyncClient, tmp_path: Path) -> None:
+    """Test saving content to a text file."""
+    test_file = tmp_path / "test.py"
+    test_file.write_text("# Original content")
+
+    new_content = "print('Hello, World!')"
+    response = await client.post(
+        "/workspace/save", json={"path": "test.py", "content": new_content}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Saved"
+    assert test_file.read_text() == new_content
+
+
+@pytest.mark.asyncio
+async def test_save_nonexistent_file(client: AsyncClient) -> None:
+    """Test saving to a nonexistent file returns 404."""
+    response = await client.post(
+        "/workspace/save",
+        json={"path": "nonexistent.py", "content": "print('test')"},
+    )
+
+    assert response.status_code == 404
+    assert "File not found" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_save_unsupported_file_type(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test saving to an unsupported file type returns 415."""
+    test_file = tmp_path / "test.unsupported"
+    test_file.write_text("original content")
+
+    response = await client.post(
+        "/workspace/save",
+        json={"path": "test.unsupported", "content": "new content"},
+    )
+
+    assert response.status_code == 415
+    assert "Unsupported file type" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_save_file_write_error(
+    client: AsyncClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test saving when a write error occurs."""
+    test_file = tmp_path / "test.py"
+    test_file.write_text("original content")
+
+    # Mock Path.write_text to raise an exception
+    def mock_write_text(*args: Any, **kwargs: Any) -> None:
+        raise PermissionError("Mocked write error")
+
+    monkeypatch.setattr(Path, "write_text", mock_write_text)
+
+    response = await client.post(
+        "/workspace/save", json={"path": "test.py", "content": "new content"}
+    )
+
+    assert response.status_code == 500
+    assert "Failed to save file" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_sqlite_tables_nonexistent_file(client: AsyncClient) -> None:
+    """Test getting tables from a nonexistent file."""
+    response = await client.get(
+        "/workspace/sqlite-tables", params={"path": "nonexistent.db"}
+    )
+
+    assert response.status_code == 404
+    assert "File not found" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_sqlite_tables_non_sqlite_file(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting tables from a non-SQLite file."""
+    test_file = tmp_path / "test.txt"
+    test_file.write_text("This is not a SQLite file")
+
+    response = await client.get(
+        "/workspace/sqlite-tables", params={"path": "test.txt"}
+    )
+
+    assert response.status_code == 415
+    assert "Not a SQLite file" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows(client: AsyncClient, tmp_path: Path) -> None:
+    """Test getting rows from a SQLite table."""
+    # Create a test SQLite database with data
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)"
+    )
+
+    # Insert test data
+    test_data = [
+        (1, "Alice", "alice@example.com"),
+        (2, "Bob", "bob@example.com"),
+        (3, "Charlie", "charlie@example.com"),
+    ]
+    cursor.executemany(
+        "INSERT INTO users (id, name, email) VALUES (?, ?, ?)", test_data
+    )
+
+    conn.commit()
+    conn.close()
+
+    response = await client.get(
+        "/workspace/sqlite-rows", params={"path": "test.db", "table": "users"}
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["table"] == "users"
+    assert data["columns"] == ["id", "name", "email"]
+    assert len(data["rows"]) == 3
+    assert data["total"][0] == 3  # Total count
+    assert data["limit"] == 50
+    assert data["offset"] == 0
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows_with_pagination(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting rows with pagination parameters."""
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE numbers (id INTEGER PRIMARY KEY, value TEXT)")
+
+    # Insert many rows for pagination testing
+    test_data = [(i, f"value_{i}") for i in range(1, 101)]  # 100 rows
+    cursor.executemany(
+        "INSERT INTO numbers (id, value) VALUES (?, ?)", test_data
+    )
+
+    conn.commit()
+    conn.close()
+
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={
+            "path": "test.db",
+            "table": "numbers",
+            "limit": 10,
+            "offset": 20,
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["rows"]) == 10
+    assert data["limit"] == 10
+    assert data["offset"] == 20
+    assert data["total"][0] == 100
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows_with_ordering(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting rows with ordering."""
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE items (id INTEGER, name TEXT)")
+
+    # Insert data in random order
+    test_data = [(3, "Charlie"), (1, "Alice"), (2, "Bob")]
+    cursor.executemany("INSERT INTO items (id, name) VALUES (?, ?)", test_data)
+
+    conn.commit()
+    conn.close()
+
+    # Test ascending order
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={
+            "path": "test.db",
+            "table": "items",
+            "order_by": "name",
+            "order_dir": "asc",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    names = [row[1] for row in data["rows"]]  # name is the second column
+    assert names == ["Alice", "Bob", "Charlie"]
+
+    # Test descending order
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={
+            "path": "test.db",
+            "table": "items",
+            "order_by": "name",
+            "order_dir": "desc",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    names = [row[1] for row in data["rows"]]
+    assert names == ["Charlie", "Bob", "Alice"]
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows_with_search(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting rows with search filter."""
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "CREATE TABLE products (id INTEGER, name TEXT, description TEXT)"
+    )
+
+    test_data = [
+        (1, "Laptop", "Gaming laptop with high performance"),
+        (2, "Mouse", "Wireless gaming mouse"),
+        (3, "Keyboard", "Mechanical keyboard for programming"),
+        (4, "Monitor", "4K gaming monitor"),
+    ]
+    cursor.executemany(
+        "INSERT INTO products (id, name, description) VALUES (?, ?, ?)",
+        test_data,
+    )
+
+    conn.commit()
+    conn.close()
+
+    # Search for "gaming" - should match laptop, mouse, and monitor
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={"path": "test.db", "table": "products", "search": "gaming"},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["rows"]) == 3  # laptop, mouse, monitor
+
+    # Search for "programming" - should match only keyboard
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={
+            "path": "test.db",
+            "table": "products",
+            "search": "programming",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["rows"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows_nonexistent_table(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test getting rows from a nonexistent table."""
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    conn.close()  # Create empty database
+
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={"path": "test.db", "table": "nonexistent"},
+    )
+
+    assert response.status_code == 404
+    assert "Table not found" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_sqlite_rows_invalid_order_column(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test that invalid order_by column is ignored."""
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute("CREATE TABLE simple (id INTEGER, name TEXT)")
+    cursor.execute("INSERT INTO simple (id, name) VALUES (1, 'test')")
+
+    conn.commit()
+    conn.close()
+
+    # Use invalid column name - should be ignored and not cause error
+    response = await client.get(
+        "/workspace/sqlite-rows",
+        params={
+            "path": "test.db",
+            "table": "simple",
+            "order_by": "invalid_column",
+        },
+    )
+
+    # Should still work, just without ordering
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["rows"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_upload_to_nonexistent_directory(client: AsyncClient) -> None:
+    """Test uploading to a nonexistent directory."""
+    file_content = b"test content"
+    file_obj = io.BytesIO(file_content)
+
+    response = await client.post(
+        "/workspace/upload",
+        data={"path": "nonexistent_dir"},
+        files={"file": ("test.txt", file_obj, "text/plain")},
+    )
+
+    assert response.status_code == 404
+    assert "Directory not found" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_get_file_not_found(client: AsyncClient) -> None:
+    """Test getting a file that doesn't exist."""
+    response = await client.get(
+        "/workspace/get", params={"path": "nonexistent.txt"}
+    )
+
+    assert response.status_code == 404
+    assert "Invalid request" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_create_file_in_nonexistent_parent(client: AsyncClient) -> None:
+    """Test creating a file in a nonexistent parent directory."""
+    response = await client.post(
+        "/workspace", json={"parent": "nonexistent_dir", "type": "file"}
+    )
+
+    assert response.status_code == 404
+    assert "Directory not found" in response.json()["detail"]

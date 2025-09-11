@@ -22,3 +22,4 @@ exclude =
     dist,
     examples,
     waldiez_out,
+    waldiez_studio/files

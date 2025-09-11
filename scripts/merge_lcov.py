@@ -3,22 +3,22 @@
 
 """Merge lcov files from multiple directories."""
 
+import os
 import shutil
 import subprocess  # nosemgrep # nosec
 import sys
 from pathlib import Path
-from typing import List
 
 # pylint: disable=duplicate-code  # also in ./lint.py, ./format.py
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
-def run_command(args: List[str]) -> None:
+def run_command(args: list[str]) -> None:
     """Run a command.
 
     Parameters
     ----------
-    args : List[str]
+    args : list[str]
         List of arguments to pass to the command.
     """
     args_str = " ".join(args)
@@ -29,15 +29,16 @@ def run_command(args: List[str]) -> None:
         stdout=sys.stdout,
         stderr=subprocess.STDOUT,
         check=True,
+        env=os.environ,
     )
 
 
-def is_lcov_2(lcov_cmd: List[str]) -> bool:
+def is_lcov_2(lcov_cmd: list[str]) -> bool:
     """Check if lcov is version 2 or later.
 
     Parameters
     ----------
-    lcov_cmd : List[str]
+    lcov_cmd : list[str]
         The lcov command.
 
     Returns
@@ -58,73 +59,83 @@ def is_lcov_2(lcov_cmd: List[str]) -> bool:
     return False
 
 
-def keep_any_lcov(frontend_lcov: Path, backend_lcov: Path) -> None:
+def keep_any_lcov(react_lcov: Path, python_lcov: Path) -> None:
     """Keep any lcov file found and copy it to the coverage directory.
 
     Parameters
     ----------
-    frontend_lcov : Path
-        The frontend lcov file.
-    backend_lcov : Path
-        The backend lcov file.
+    react_lcov : Path
+        The react lcov file.
+    python_lcov : Path
+        The python lcov file.
     """
     destination = ROOT_DIR / "coverage" / "lcov.info"
     if destination.is_file():
         return
-    if frontend_lcov.is_file():
-        shutil.copyfile(frontend_lcov, ROOT_DIR / "coverage" / "lcov.info")
-    elif backend_lcov.is_file():
-        shutil.copyfile(backend_lcov, ROOT_DIR / "coverage" / "lcov.info")
+    if react_lcov.is_file():
+        shutil.copyfile(react_lcov, ROOT_DIR / "coverage" / "lcov.info")
+    elif python_lcov.is_file():
+        shutil.copyfile(python_lcov, ROOT_DIR / "coverage" / "lcov.info")
 
 
-def merge_lcov(lcov_cmd: List[str]) -> None:
+def merge_lcov(lcov_cmd: list[str]) -> None:
     """Merge lcov files.
 
     Parameters
     ----------
-    lcov_cmd : List[str]
-        The lcov command.
+    lcov_cmd : list[str]
+        The resolved lcov command.
     """
-    frontend_lcov = ROOT_DIR / "coverage" / "frontend" / "lcov.info"
-    backend_lcov = ROOT_DIR / "coverage" / "backend" / "lcov.info"
-    if not frontend_lcov.is_file() or not backend_lcov.is_file():
-        print("not all lcov files found. Skipping.")
-        keep_any_lcov(frontend_lcov, backend_lcov)
-        return
-    if is_lcov_2(lcov_cmd):
-        branch_coverage = "branch_coverage=1"
-    else:
-        branch_coverage = "lcov_branch_coverage=1"
+    react_lcov = ROOT_DIR / "coverage" / "frontend" / "lcov.info"
+    python_lcov = ROOT_DIR / "coverage" / "backend" / "lcov.info"
     merged_lcov = ROOT_DIR / "coverage" / "lcov.info"
+
+    if not react_lcov.is_file() or not python_lcov.is_file():
+        print("Not all lcov files found. Skipping merge.")
+        keep_any_lcov(react_lcov, python_lcov)
+        return
+
+    # Only merge if Python LCOV is newer
+    if python_lcov.stat().st_mtime <= react_lcov.stat().st_mtime:
+        print("Python lcov is not newer than React lcov. Skipping merge.")
+        return
+
+    print("Merging LCOV: Python is newer.")
     if merged_lcov.is_file():
         merged_lcov.unlink()
+
+    branch_coverage = (
+        "branch_coverage=1" if is_lcov_2(lcov_cmd) else "lcov_branch_coverage=1"
+    )
     run_command(
         lcov_cmd
         + [
             "--add-tracefile",
-            str(frontend_lcov),
+            str(react_lcov),
             "--add-tracefile",
-            str(backend_lcov),
+            str(python_lcov),
             "--rc",
             branch_coverage,
             "--rc",
             "geninfo_auto_base=1",
             "--ignore-errors",
-            "inconsistent",
+            "inconsistent,inconsistent",
             "--ignore-errors",
             "corrupt",
+            "--ignore-errors",
+            "count",
             "-o",
             str(merged_lcov),
         ]
     )
 
 
-def get_windows_lcov_cmd() -> List[str]:
+def get_windows_lcov_cmd() -> list[str]:
     """Return the lcov command for Windows.
 
     Returns
     -------
-    List[str]
+    list[str]
         The lcov command for Windows if found, otherwise an empty list.
     """
     perl_path = Path("C:/Strawberry/perl/bin/perl.exe")
@@ -142,12 +153,12 @@ def get_windows_lcov_cmd() -> List[str]:
     return [str(perl_path), str(lcov_path)]
 
 
-def get_macos_lcov_cmd() -> List[str]:
+def get_macos_lcov_cmd() -> list[str]:
     """Return the lcov command for macOS.
 
     Returns
     -------
-    List[str]
+    list[str]
         The lcov command for macOS if found, otherwise an empty list.
     """
     if not shutil.which("lcov"):
@@ -158,12 +169,12 @@ def get_macos_lcov_cmd() -> List[str]:
     return ["lcov"]
 
 
-def get_linux_lcov_cmd() -> List[str]:
+def get_linux_lcov_cmd() -> list[str]:
     """Return the lcov command for Linux.
 
     Returns
     -------
-    List[str]
+    list[str]
         The lcov command for Linux if found, otherwise an empty list
     """
     if not shutil.which("lcov"):
@@ -176,12 +187,12 @@ def get_linux_lcov_cmd() -> List[str]:
     return ["lcov"]
 
 
-def get_lcov_cmd() -> List[str]:
+def get_lcov_cmd() -> list[str]:
     """Return the lcov command.
 
     Returns
     -------
-    List[str]
+    list[str]
         The lcov command if found, otherwise an empty list.
     """
     if shutil.which("lcov"):
@@ -205,6 +216,8 @@ def main() -> None:
     if not lcov_cmd:
         return
     merge_lcov(lcov_cmd)
+    if shutil.which("bun"):
+        run_command(["bun", "lcov:html"])
 
 
 if __name__ == "__main__":

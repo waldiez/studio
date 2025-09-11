@@ -11,6 +11,7 @@ from .workspace import (
     PathItemListResponse,
     PathItemRenameRequest,
     PathItemType,
+    SaveRequest,
 )
 
 __all__ = [
@@ -20,5 +21,6 @@ __all__ = [
     "PathItemRenameRequest",
     "PathItemListResponse",
     "MessageResponse",
+    "SaveRequest",
     "SaveFlowRequest",
 ]

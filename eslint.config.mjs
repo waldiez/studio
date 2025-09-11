@@ -1,3 +1,7 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 import cspellPlugin from "@cspell/eslint-plugin";
 import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
@@ -47,7 +51,7 @@ const customBaseConfig = {
 // noinspection JSCheckFunctionSignatures
 const defaultConfig = eslintTs.config({
     ignores: ["node_modules", "dist", ".local", "coverage"],
-    files: ["frontend/src/**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}", "scripts/**/*.{ts,tsx}"],
     extends: [
         customBaseConfig,
         ...eslintTs.configs.recommended,
@@ -174,15 +178,28 @@ const defaultConfig = eslintTs.config({
 });
 
 export default [
+    {
+        ignores: [
+            "node_modules",
+            "dist",
+            "out",
+            "lib",
+            "public",
+            ".local",
+            "**/assets/**",
+            "**/.venv/**",
+            "**/*.js",
+        ],
+    },
     ...defaultConfig.map(config => ({
         ...config,
-        files: ["frontend/**/*.{ts,tsx}"],
+        files: ["src/**/*.{ts,tsx}", "scripts/**/*.{ts,tsx}", "__mocks__/**/*.{ts,tsx}"],
         ignores: ["node_modules", "dist", ".local", "coverage"],
     })),
     // overrides
     ...defaultConfig.map(config => ({
         ...config,
-        files: ["frontend/tests/**/*.{ts,tsx}"],
+        files: ["src/tests/**/*.{ts,tsx}"],
         ignores: ["node_modules", "dist", ".local", "coverage"],
         rules: {
             ...config.rules,

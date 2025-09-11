@@ -23,8 +23,8 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "paths": {
-            "@waldiez/studio/*": ["./frontend/src/*"]
+            "@/*": ["./src/*"]
         }
     },
-    "include": ["frontend/vite.config.ts"]
+    "include": ["vite.config.ts"]
 }

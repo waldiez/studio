@@ -12,7 +12,6 @@ import { readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 import * as url from "url";
 
-// @ts-expect-error import.meta.url
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -21,6 +20,7 @@ const showHelp = (status: number = 1): void => {
     process.exit(status);
 };
 
+// eslint-disable-next-line max-statements
 const validateArgs = (): void => {
     if (process.argv.length < 3) {
         console.error("Error: No arguments provided");

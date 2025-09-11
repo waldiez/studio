@@ -3,6 +3,6 @@
 
 """Custom middlewares for the waldiez_studio project."""
 
-from .csp import SecurityHeadersMiddleware
+from .extra_headers import ExtraHeadersMiddleware
 
-__all__ = ["SecurityHeadersMiddleware"]
+__all__ = ["ExtraHeadersMiddleware"]

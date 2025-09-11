@@ -1,15 +1,19 @@
 # ignore everything
 **/*
 # but not these ...
-!frontend/
-!public/files/*
+!src/
+!scripts/
+!public/*
 !waldiez_studio
+waldiez_studio/static/*
 waldiez_studio/files/*
-!scripts/hooks/*
 **/__pycache__/
 !package.json
 !bun.lockb
 !bun.lock
+!eslint.config.mjs
+!vite.config.ts
+!vitest.setup.tsx
 !tsconfig.json
 !tsconfig.app.json
 !tsconfig.node.json

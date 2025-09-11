@@ -21,8 +21,8 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from waldiez_studio._version import __version__
 from waldiez_studio.config.settings import get_settings
-from waldiez_studio.middleware import SecurityHeadersMiddleware
-from waldiez_studio.routes import api_router, ws_router
+from waldiez_studio.middleware import ExtraHeadersMiddleware
+from waldiez_studio.routes import api_router, ws_router, ws_term_router
 from waldiez_studio.utils.extra_static import ensure_extra_static_files
 from waldiez_studio.utils.paths import get_static_dir
 
@@ -33,10 +33,12 @@ settings = get_settings()
 STATIC_DIR = get_static_dir()
 FRONTEND_DIR = STATIC_DIR / "frontend"
 MONACO_DIR = STATIC_DIR / "monaco"
+MONACO_VS = MONACO_DIR / "vs"
 MONACO_MIN_MAPS = MONACO_DIR / "min-maps"
 SWAGGER_DIR = STATIC_DIR / "swagger"
 FRONTEND_DIR.mkdir(parents=True, exist_ok=True)
 MONACO_DIR.mkdir(parents=True, exist_ok=True)
+MONACO_VS.mkdir(parents=True, exist_ok=True)
 MONACO_MIN_MAPS.mkdir(parents=True, exist_ok=True)
 SWAGGER_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -91,7 +93,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(
-    ProxyHeadersMiddleware,  # type: ignore
+    ProxyHeadersMiddleware,  # type: ignore[arg-type,unused-ignore]
     trusted_hosts=settings.trusted_hosts,
 )
 app.add_middleware(
@@ -101,7 +103,7 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
-    SecurityHeadersMiddleware,
+    ExtraHeadersMiddleware,
     csp=True,
     exclude_patterns=[
         "^/docs",
@@ -150,7 +152,7 @@ async def redirect_docs() -> Response:
 
 
 @app.get(swagger_ui_oauth2_redirect_url, include_in_schema=False)
-async def swagger_ui_redirect() -> HTMLResponse:
+async def swagger_ui_redirect() -> HTMLResponse:  # pragma: no cover
     """Redirect to the Swagger UI OAuth2 page.
 
     Returns
@@ -162,7 +164,7 @@ async def swagger_ui_redirect() -> HTMLResponse:
 
 
 # mount static files
-app.mount("/monaco", StaticFiles(directory=MONACO_DIR), name="monaco")
+app.mount("/vs", StaticFiles(directory=MONACO_VS), name="vs")
 app.mount(
     "/min-maps",
     StaticFiles(directory=MONACO_MIN_MAPS),
@@ -178,6 +180,7 @@ app.mount(
 # include api routes
 app.include_router(api_router, prefix="/api")
 app.include_router(ws_router)
+app.include_router(ws_term_router)
 
 
 # common routes
