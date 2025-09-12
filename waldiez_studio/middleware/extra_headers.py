@@ -21,7 +21,7 @@ CSP: dict[str, str | list[str]] = {
         "https://drag-drop-touch-js.github.io/",
         "https://cdn.jsdelivr.net/npm/",
     ],
-    "img-src": ["'self'", "data:"],
+    "img-src": "*",
     "worker-src": ["'self'", "blob:"],
     "connect-src": "*",
     "font-src": ["'self'", "https://cdn.jsdelivr.net/npm/", "data:"],
