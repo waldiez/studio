@@ -59,21 +59,31 @@ export default function FileExplorer({ onOpenFile }: Props) {
     return (
         <div className="h-full flex flex-col bg-[var(--background-color)]">
             {/* Toolbar */}
-            <div className="h-10 px-2 flex items-center gap-1 border-b border-[var(--border-color)]">
-                <Button size="sm" variant="outline" onClick={() => fs.goUp()} title="Up one folder">
+            <div className="studio-explorer-top h-10 px-2 flex items-center gap-1 border-b border-[var(--border-color)]">
+                <Button size="sm" className="btn-outline" onClick={() => fs.goUp()} title="Up one folder">
                     <ArrowUp className="size-4" />
                 </Button>
                 {/* <div className="text-xs opacity-70 truncate">{fs.cwd}</div> */}
-                <div className="flex items-center gap-1">
-                    <Button size="sm" variant="outline" onClick={() => fs.createFolder()} title="New folder">
+                <div className="flex items-center gap-1" id="studio-explorer-top">
+                    <Button
+                        size="sm"
+                        className="btn-outline"
+                        onClick={() => fs.createFolder()}
+                        title="New folder"
+                    >
                         <Folder className="size-4 mr-1" /> New
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => fs.createFile()} title="New file">
+                    <Button
+                        size="sm"
+                        className="btn-outline"
+                        onClick={() => fs.createFile()}
+                        title="New file"
+                    >
                         <Plus className="size-4 mr-1" /> File
                     </Button>
                     <Button
                         size="sm"
-                        variant="outline"
+                        className="btn-outline"
                         onClick={() => fileInputRef.current?.click()}
                         title="Upload"
                     >

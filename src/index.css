@@ -269,3 +269,23 @@ input[type="search"] {
   margin-left: -0.1em;
   margin-right: -0.1em;
 }
+
+body.waldiez-light .studio-explorer-top .btn-outline {
+  background: oklab(0.922 0 0 / 0.3);
+  color: var(--text-color);
+  border: 1px solid oklch(0.922 0 0);
+}
+
+body.waldiez-light .studio-explorer-top .btn-outline:hover {
+  background: oklab(0.922 0 0 / 0.5);
+}
+
+body.waldiez-dark .studio-explorer-top .btn-outline {
+  background: oklab(1 0 0 / 0.045);
+  color: var(--text-color);
+  border: 1px solid oklch(1 0 0 / 0.15);
+}
+
+body.waldiez-dark .studio-explorer-top .btn-outline:hover {
+  background: oklab(1 0 0 / 0.075);
+}

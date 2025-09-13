@@ -28,11 +28,26 @@ const getDefaultInitialTheme = (storageKey: string, defaultTheme: Theme | undefi
 export function ThemeProvider({
     children,
     defaultTheme,
-    storageKey = "waldiez-ui-theme",
+    storageKey = "waldiez-theme",
     ...props
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(getDefaultInitialTheme(storageKey, defaultTheme));
 
+    const updateTheme = useCallback(
+        (newTheme: Theme) => {
+            try {
+                localStorage.setItem(storageKey, newTheme);
+            } catch {
+                //
+            }
+            setTheme(newTheme);
+            document.body.classList.remove("waldiez-dark", "waldiez-light");
+            document.body.classList.add(`waldiez-${newTheme}`);
+            document.documentElement.classList.remove("dark", "light");
+            document.documentElement.classList.add(newTheme);
+        },
+        [storageKey],
+    );
     useEffect(() => {
         const root = window.document.documentElement;
 
@@ -46,23 +61,37 @@ export function ThemeProvider({
         }
 
         root.classList.add(theme);
-    }, [theme]);
+        // Observer to detect external theme changes
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === "attributes" && mutation.attributeName === "class") {
+                    const bodyClassList = document.body.classList;
+                    const externalIsDark =
+                        bodyClassList.contains("waldiez-dark") ||
+                        bodyClassList.contains("dark-theme") ||
+                        (!bodyClassList.contains("waldiez-light") && !bodyClassList.contains("light-theme"));
 
-    const updateTheme = useCallback(
-        (newTheme: Theme) => {
-            try {
-                localStorage.setItem(storageKey, newTheme);
-            } catch {
-                //
-            }
-            setTheme(newTheme);
-            document.body.classList.toggle("waldiez-dark", newTheme === "dark");
-            document.body.classList.toggle("waldiez-light", newTheme === "light");
-            document.documentElement.classList.toggle("dark", newTheme === "dark");
-            document.documentElement.classList.toggle("light", newTheme === "light");
-        },
-        [storageKey],
-    );
+                    // Only update if there's a mismatch
+                    setTheme(prev => {
+                        if (externalIsDark && prev !== "dark") {
+                            return "dark";
+                        }
+                        if (!externalIsDark && prev !== "light") {
+                            return "light";
+                        }
+                        return prev;
+                    });
+                }
+            });
+        });
+
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+
+        return () => observer.disconnect();
+    }, [theme]);
 
     const value = {
         theme,
