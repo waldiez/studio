@@ -26,6 +26,7 @@ export default function TitleBar({
     onToggleSidebar,
     onToggleDock,
     currentPath,
+    skipThemeToggle = false,
 }: {
     running: boolean;
     startedAt: number | null;
@@ -35,6 +36,7 @@ export default function TitleBar({
     onToggleSidebar?: () => void;
     onToggleDock?: () => void;
     currentPath?: string | null;
+    skipThemeToggle?: boolean;
 }) {
     const [now, setNow] = useState<number>(Date.now());
     useEffect(() => {
@@ -88,7 +90,7 @@ export default function TitleBar({
                         </Button>
                     )
                 )}
-                <ThemeToggle />
+                {!skipThemeToggle && <ThemeToggle />}
             </div>
         </header>
     );

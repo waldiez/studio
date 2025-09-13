@@ -96,6 +96,7 @@ export default function Layout({
                 // onStep={() => handleRun("step"))}
                 onToggleSidebar={toggleSidebar}
                 onToggleDock={toggleDock}
+                skipThemeToggle
             />
             <ResizablePanelGroup
                 direction="horizontal"

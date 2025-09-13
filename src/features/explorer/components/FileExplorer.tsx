@@ -11,10 +11,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { findFileIcon } from "@/components/ui/fileIcon";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { PathItem } from "@/types/api";
-import { ArrowUp, File as FileIcon, Folder, MoreVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowUp, Folder, MoreVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
 
 import * as React from "react";
 
@@ -135,7 +136,7 @@ export default function FileExplorer({ onOpenFile }: Props) {
                                     {it.type === "folder" ? (
                                         <Folder className="size-4" />
                                     ) : (
-                                        <FileIcon className="size-4" />
+                                        findFileIcon(it.path)
                                     )}
                                 </span>
 
