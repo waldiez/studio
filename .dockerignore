@@ -3,6 +3,7 @@
 # but not these ...
 !src/
 !scripts/
+!.husky/install.mjs
 !public/*
 !waldiez_studio
 waldiez_studio/static/*
