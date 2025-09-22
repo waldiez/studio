@@ -5,6 +5,7 @@
 
 import base64
 import os
+import sys
 from functools import lru_cache
 from pathlib import Path
 
@@ -23,6 +24,12 @@ def get_root_dir(user_id: str = "default") -> Path:
     Path
         The root waldiez directory
     """
+    is_frozen = bool(getattr(sys, "frozen", False))
+    if is_frozen:  # pragma: no cover
+        if user_id == "default":
+            root_dir = Path.home() / "waldiez" / "workspace"
+            root_dir.mkdir(parents=True, exist_ok=True)
+            return root_dir
     files_root = Path(__file__).parent.parent / "files"
     root_dir = files_root / user_id
     is_testing = (
