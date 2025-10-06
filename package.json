@@ -121,7 +121,7 @@
         "dev:front": "bun monaco && vite -c vite.config.ts",
         "dev:back": "bun python -m waldiez_studio --log-level debug",
         "dev": "npm-run-all --parallel dev:front dev:back",
-        "check-types": "tsc --noEmit",
+        "check-types": "tsc -b --noEmit",
         "python": "bun scripts/python.ts",
         "monaco": "bun scripts/monaco.ts",
         "before:build": "bun monaco",
