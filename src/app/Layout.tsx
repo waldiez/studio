@@ -33,9 +33,9 @@ export default function Layout({
         setBottomCollapsed,
     } = useLayout();
     const { running, taskPath, startedAt } = useExec();
-    const sel = useWorkspace(s => s.selected);
-    const currentPath = taskPath ?? sel?.path ?? null;
-    const runnable = isRunnable(sel?.path);
+    const activeTab = useWorkspace(s => s.getActiveTab());
+    const currentPath = taskPath ?? activeTab?.item.path ?? null;
+    const runnable = isRunnable(activeTab?.item.path);
 
     // refs to control collapse/expand programmatically
     const leftRef = useRef<ImperativePanelHandle | null>(null);

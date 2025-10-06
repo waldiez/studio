@@ -6,13 +6,13 @@ import Layout from "@/app/Layout";
 import BottomPanel from "@/components/layout/BottomPanel";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import MainView from "@/components/layout/MainView";
+import GlobalRunListener from "@/hooks/GlobalRunListener";
+import KeyboardListener from "@/hooks/KeyboardListener";
 import { ThemeProvider } from "@/theme/provider";
 
 import { useEffect } from "react";
 
 import { loader } from "@monaco-editor/react";
-
-import GlobalRunListener from "./GlobalRunListener";
 
 export function App() {
     useEffect(() => {
@@ -21,6 +21,7 @@ export function App() {
     return (
         <ThemeProvider defaultTheme="dark">
             <GlobalRunListener />
+            <KeyboardListener />
             <Layout left={<LeftSidebar />} main={<MainView />} bottom={<BottomPanel />} />{" "}
         </ThemeProvider>
     );

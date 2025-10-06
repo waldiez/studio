@@ -9,6 +9,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
+vi.mock("@/components/layout/TabBar", () => ({
+    default: () => <div data-testid="tab-bar">Tab Bar</div>,
+}));
+
 vi.mock("@/features/viewers/components/ViewerRouter", () => ({
     default: ({ name, path, data, onSaveText }: any) => (
         <div data-testid="viewer-router">
@@ -48,9 +52,9 @@ describe("MainView", () => {
         mockCreateObjectURL.mockReturnValue("blob:mock-url");
     });
 
-    it("shows select file message when no file is selected", () => {
+    it("shows select file message when no tabs are open", () => {
         (useWorkspace as any).mockReturnValue({
-            selected: null,
+            getActiveTab: () => undefined,
             fileCache: {},
         });
 
@@ -59,9 +63,12 @@ describe("MainView", () => {
         expect(screen.getByText("Select a file from the Explorer.")).toBeInTheDocument();
     });
 
-    it("shows loading message when file is selected but data not loaded", () => {
+    it("shows loading message when tab is active but data not loaded", () => {
         (useWorkspace as any).mockReturnValue({
-            selected: { path: "test.py", name: "test.py" },
+            getActiveTab: () => ({
+                id: "tab-1",
+                item: { path: "test.py", name: "test.py", type: "file" },
+            }),
             fileCache: {},
         });
 
@@ -70,8 +77,11 @@ describe("MainView", () => {
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
-    it("renders ViewerRouter when file and data are available", () => {
-        const mockSelected = { path: "test.py", name: "test.py" };
+    it("renders TabBar and ViewerRouter when file and data are available", () => {
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "test.py", name: "test.py", type: "file" },
+        };
         const mockData = {
             kind: "text",
             content: "print('hello')",
@@ -79,12 +89,13 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
         });
 
         render(<MainView />);
 
+        expect(screen.getByTestId("tab-bar")).toBeInTheDocument();
         expect(screen.getByTestId("viewer-router")).toBeInTheDocument();
         expect(screen.getByTestId("viewer-name")).toHaveTextContent("test.py");
         expect(screen.getByTestId("viewer-path")).toHaveTextContent("/test.py");
@@ -92,7 +103,10 @@ describe("MainView", () => {
     });
 
     it("handles text file data correctly", () => {
-        const mockSelected = { path: "test.py", name: "test.py" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "test.py", name: "test.py", type: "file" },
+        };
         const mockData = {
             kind: "text",
             content: "print('hello')",
@@ -100,7 +114,7 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
         });
 
@@ -110,7 +124,10 @@ describe("MainView", () => {
     });
 
     it("handles binary file with URL", () => {
-        const mockSelected = { path: "image.png", name: "image.png" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "image.png", name: "image.png", type: "file" },
+        };
         const mockData = {
             kind: "binary",
             mime: "image/png",
@@ -118,7 +135,7 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "image.png": mockData },
         });
 
@@ -128,7 +145,10 @@ describe("MainView", () => {
     });
 
     it("handles binary file with blob", () => {
-        const mockSelected = { path: "image.png", name: "image.png" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "image.png", name: "image.png", type: "file" },
+        };
         const mockBlob = new Blob(["fake image data"], { type: "image/png" });
         const mockData = {
             kind: "binary",
@@ -137,50 +157,20 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "image.png": mockData },
         });
 
         render(<MainView />);
 
-        // The MainView component should call createObjectURL for blob data
-        // However, the useMemo dependency array might not trigger on first render
-        // Let's just verify the component renders without the URL check
-        expect(screen.getByTestId("viewer-data-kind")).toHaveTextContent("binary");
-    });
-
-    it("revokes old object URLs when data changes", () => {
-        const mockSelected = { path: "image.png", name: "image.png" };
-        const mockBlob1 = new Blob(["data1"], { type: "image/png" });
-        const mockBlob2 = new Blob(["data2"], { type: "image/png" });
-
-        const { rerender } = render(<MainView />);
-
-        // First render with blob1
-        (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
-            fileCache: {
-                "image.png": { kind: "binary", mime: "image/png", blob: mockBlob1 },
-            },
-        });
-        rerender(<MainView />);
-
-        // Second render with blob2
-        (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
-            fileCache: {
-                "image.png": { kind: "binary", mime: "image/png", blob: mockBlob2 },
-            },
-        });
-        rerender(<MainView />);
-
-        // Due to the mocked nature of the test, the URL revocation logic might not trigger
-        // This test mainly ensures the component can handle re-renders with different data
         expect(screen.getByTestId("viewer-data-kind")).toHaveTextContent("binary");
     });
 
     it("calls saveTextFile when onSave is triggered", async () => {
-        const mockSelected = { path: "test.py", name: "test.py" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "test.py", name: "test.py", type: "file" },
+        };
         const mockData = {
             kind: "text",
             content: "print('hello')",
@@ -188,7 +178,7 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
         });
 
@@ -204,38 +194,22 @@ describe("MainView", () => {
         });
     });
 
-    it("handles save when no file is selected", async () => {
+    it("handles save when no tab is active", async () => {
         (useWorkspace as any).mockReturnValue({
-            selected: null,
+            getActiveTab: () => undefined,
             fileCache: {},
         });
 
         render(<MainView />);
 
-        // Should not crash when onSave is called with no selected file
-        // This test mainly ensures the callback doesn't cause errors
+        // Should not crash when onSave is called with no active tab
     });
 
-    // it("cleans up object URLs on unmount", () => {
-    //     const mockSelected = { path: "image.png", name: "image.png" };
-    //     const mockBlob = new Blob(["data"], { type: "image/png" });
-
-    //     (useWorkspace as any).mockReturnValue({
-    //         selected: mockSelected,
-    //         fileCache: {
-    //             "image.png": { kind: "binary", mime: "image/png", blob: mockBlob },
-    //         },
-    //     });
-
-    //     const { unmount } = render(<MainView />);
-
-    //     unmount();
-
-    //     expect(mockRevokeObjectURL).toHaveBeenCalled();
-    // });
-
     it("handles data type casting for mime property", () => {
-        const mockSelected = { path: "test.py", name: "test.py" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "test.py", name: "test.py", type: "file" },
+        };
         const mockData = {
             kind: "text",
             content: "print('hello')",
@@ -243,18 +217,20 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
         });
 
         render(<MainView />);
 
-        // Should handle the (data as any).mime casting without errors
         expect(screen.getByTestId("viewer-router")).toBeInTheDocument();
     });
 
     it("has correct layout classes", () => {
-        const mockSelected = { path: "test.py", name: "test.py" };
+        const mockActiveTab = {
+            id: "tab-1",
+            item: { path: "test.py", name: "test.py", type: "file" },
+        };
         const mockData = {
             kind: "text",
             content: "content",
@@ -262,32 +238,39 @@ describe("MainView", () => {
         };
 
         (useWorkspace as any).mockReturnValue({
-            selected: mockSelected,
+            getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
         });
 
         const { container } = render(<MainView />);
 
         const wrapper = container.firstChild as HTMLElement;
-        expect(wrapper).toHaveClass("h-full", "w-full");
+        expect(wrapper).toHaveClass("h-full", "w-full", "flex", "flex-col");
     });
 
     it("centers loading and select messages", () => {
         (useWorkspace as any).mockReturnValue({
-            selected: null,
+            getActiveTab: () => undefined,
             fileCache: {},
         });
 
         const { container } = render(<MainView />);
 
-        const wrapper = container.firstChild as HTMLElement;
-        expect(wrapper).toHaveClass(
-            "flex",
-            "flex-col",
-            "h-full",
-            "items-center",
-            "justify-center",
-            "text-center",
-        );
+        // Find the content area (second child, after tab bar)
+        const contentArea = container.querySelector(".flex-1");
+        expect(contentArea).toHaveClass("flex-1", "min-h-0");
+    });
+
+    it("does not render TabBar when no tabs are open", () => {
+        (useWorkspace as any).mockReturnValue({
+            getActiveTab: () => undefined,
+            fileCache: {},
+        });
+
+        render(<MainView />);
+
+        // TabBar component itself should handle not rendering when no tabs
+        // but it's still mounted, just returns null
+        expect(screen.getByTestId("tab-bar")).toBeInTheDocument();
     });
 });

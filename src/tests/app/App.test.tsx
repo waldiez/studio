@@ -37,8 +37,12 @@ vi.mock("@/theme/provider", () => ({
     ),
 }));
 
-vi.mock("@/app/GlobalRunListener", () => ({
+vi.mock("@/hooks/GlobalRunListener", () => ({
     default: () => <div data-testid="global-run-listener">Global Run Listener</div>,
+}));
+
+vi.mock("@/hooks/KeyboardListener", () => ({
+    default: () => <div data-testid="keyboard-listener">Keyboard Listener</div>,
 }));
 
 describe("App", () => {
@@ -47,6 +51,7 @@ describe("App", () => {
 
         expect(screen.getByTestId("theme-provider")).toBeInTheDocument();
         expect(screen.getByTestId("global-run-listener")).toBeInTheDocument();
+        expect(screen.getByTestId("keyboard-listener")).toBeInTheDocument();
         expect(screen.getByTestId("layout")).toBeInTheDocument();
         expect(screen.getByTestId("left-sidebar")).toBeInTheDocument();
         expect(screen.getByTestId("main-view")).toBeInTheDocument();

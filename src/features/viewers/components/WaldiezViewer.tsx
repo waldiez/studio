@@ -16,10 +16,11 @@ type Props = { source: string };
 
 // eslint-disable-next-line complexity
 export default function WaldiezViewer({ source }: Props) {
-    const sel = useWorkspace(s => s.selected);
+    // const sel = useWorkspace(s => s.selected);
+    const activeTab = useWorkspace(s => s.getActiveTab());
+    const path = activeTab?.item.path ?? null;
     const flowProps = useMemo(() => importFlow(source), [source]);
 
-    const path = sel?.path ?? null;
     const { state, actions } = useWaldiezSession(path);
 
     useEffect(() => {

@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-import { findFileIcon } from "@/components/ui/fileIcon";
+import { FileIcon } from "@/components/ui/fileIcon";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -31,7 +31,7 @@ describe("findFileIcon", () => {
     ];
     testCases.forEach(({ fileName, expectedTitle }) => {
         it(`should render correct icon for ${fileName} with title "${expectedTitle}"`, () => {
-            const { container } = render(findFileIcon(fileName));
+            const { container } = render(<FileIcon name={fileName} />);
             const icon = container.querySelector(`.${className}`);
             expect(icon).toBeTruthy();
             const titleElement = screen.getByTitle(expectedTitle);

@@ -5,6 +5,7 @@
 /* stylelint-disable */
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./features/viewers/components/markdown-viewer.css";
 
 :root {
   --app-height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));

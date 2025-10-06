@@ -45,7 +45,17 @@ vi.mock("@/features/waldiez/useWaldiezSession", () => ({
 }));
 
 vi.mock("@/store/workspace", () => ({
-    useWorkspace: vi.fn(),
+    useWorkspace: vi.fn(selector => {
+        const mockState = {
+            openTabs: [],
+            activeTabId: null,
+            getActiveTab: () => ({
+                id: "tab-1",
+                item: { path: "/test/flow.waldiez", type: "file", name: "flow.waldiez" },
+            }),
+        };
+        return selector ? selector(mockState) : mockState;
+    }),
 }));
 
 vi.mock("@/lib/events", () => ({
@@ -101,9 +111,22 @@ describe("WaldiezViewer", () => {
             actions: mockActions,
         });
 
-        (useWorkspace as any).mockImplementation((selector: any) =>
-            selector({ selected: { path: "/test/flow.waldiez" } }),
-        );
+        (useWorkspace as any).mockImplementation((selector: any) => {
+            const mockState = {
+                openTabs: [
+                    {
+                        id: "tab-1",
+                        item: { path: "/test/flow.waldiez", type: "file", name: "flow.waldiez" },
+                    },
+                ],
+                activeTabId: "tab-1",
+                getActiveTab: () => ({
+                    id: "tab-1",
+                    item: { path: "/test/flow.waldiez", type: "file", name: "flow.waldiez" },
+                }),
+            };
+            return selector ? selector(mockState) : mockState;
+        });
 
         (extOf as any).mockReturnValue(".waldiez");
     });
@@ -254,7 +277,14 @@ describe("WaldiezViewer", () => {
     });
 
     it("handles missing path in workspace", () => {
-        (useWorkspace as any).mockImplementation((selector: any) => selector({ selected: null }));
+        (useWorkspace as any).mockImplementation((selector: any) => {
+            const mockState = {
+                openTabs: [],
+                activeTabId: null,
+                getActiveTab: () => undefined,
+            };
+            return selector ? selector(mockState) : mockState;
+        });
 
         render(<WaldiezViewer source="test flow content" />);
 

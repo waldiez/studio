@@ -24,12 +24,12 @@ import { VscJson } from "react-icons/vsc";
 import logo from "@waldiez/react/dist/icon.svg";
 
 /* eslint-disable complexity */
-export const findFileIcon = (fileName: string) => {
+const findFileIcon = (fileName: string, className?: string) => {
     const extension = fileName.split(".").pop();
-    const className = "path-item-icon size-4";
+    const cls = `path-item-icon size-4 ${className || ""}`;
     const dataTestId = "file-icon";
     if (!extension) {
-        return <FaFile className={className} />;
+        return <FaFile className={cls} />;
     }
     switch (extension) {
         case "waldiez":
@@ -45,13 +45,13 @@ export const findFileIcon = (fileName: string) => {
                 />
             );
         case "xml":
-            return <LuCodeXml data-testid={dataTestId} className={className} title="XML" />;
+            return <LuCodeXml data-testid={dataTestId} className={cls} title="XML" />;
         case "txt":
         case "doc":
         case "docx":
-            return <FaFileAlt data-testid={dataTestId} className={className} title="Text" />;
+            return <FaFileAlt data-testid={dataTestId} className={cls} title="Text" />;
         case "pdf":
-            return <FaFilePdf data-testid={dataTestId} className={className} title="PDF" />;
+            return <FaFilePdf data-testid={dataTestId} className={cls} title="PDF" />;
         case "jpg":
         case "jpeg":
         case "png":
@@ -61,7 +61,7 @@ export const findFileIcon = (fileName: string) => {
         case "svg":
         case "ico":
         case "tiff":
-            return <FaFileImage data-testid={dataTestId} className={className} title="Image" />;
+            return <FaFileImage data-testid={dataTestId} className={cls} title="Image" />;
         case "mp3":
         case "wav":
         case "ogg":
@@ -71,7 +71,7 @@ export const findFileIcon = (fileName: string) => {
         case "m4a":
         case "aiff":
         case "alac":
-            return <FaFileAudio data-testid={dataTestId} className={className} title="Audio" />;
+            return <FaFileAudio data-testid={dataTestId} className={cls} title="Audio" />;
         case "mp4":
         case "avi":
         case "mov":
@@ -81,7 +81,7 @@ export const findFileIcon = (fileName: string) => {
         case "webm":
         case "mpeg":
         case "3gp":
-            return <FaFileVideo data-testid={dataTestId} className={className} title="Video" />;
+            return <FaFileVideo data-testid={dataTestId} className={cls} title="Video" />;
         case "zip":
         case "rar":
         case "tar":
@@ -89,34 +89,34 @@ export const findFileIcon = (fileName: string) => {
         case "bz2":
         case "7z":
         case "xz":
-            return <FaFileArchive data-testid={dataTestId} className={className} title="Archive" />;
+            return <FaFileArchive data-testid={dataTestId} className={cls} title="Archive" />;
         case "py":
         case "pyc":
         case "pyo":
         case "pyd":
-            return <FaPython data-testid={dataTestId} className={className} title="Python" />;
+            return <FaPython data-testid={dataTestId} className={cls} title="Python" />;
         case "php":
-            return <FaPhp data-testid={dataTestId} className={className} title="PHP" />;
+            return <FaPhp data-testid={dataTestId} className={cls} title="PHP" />;
         case "java":
         case "jar":
-            return <FaJava data-testid={dataTestId} className={className} title="Java" />;
+            return <FaJava data-testid={dataTestId} className={cls} title="Java" />;
         case "ipynb":
-            return <SiJupyter data-testid={dataTestId} className={className} title="Jupyter Notebook" />;
+            return <SiJupyter data-testid={dataTestId} className={cls} title="Jupyter Notebook" />;
         case "json":
-            return <VscJson data-testid={dataTestId} className={className} title="JSON" />;
+            return <VscJson data-testid={dataTestId} className={cls} title="JSON" />;
         case "yaml":
         case "yml":
-            return <SiYaml data-testid={dataTestId} className={className} title="YAML" />;
+            return <SiYaml data-testid={dataTestId} className={cls} title="YAML" />;
         case "md":
-            return <DiMarkdown data-testid={dataTestId} className={className} title="Markdown" />;
+            return <DiMarkdown data-testid={dataTestId} className={cls} title="Markdown" />;
         case "sqlite":
         case "db":
-            return <SiSqlite data-testid={dataTestId} className={className} title="SQLite" />;
+            return <SiSqlite data-testid={dataTestId} className={cls} title="SQLite" />;
         case "js":
         case "jsx":
         case "mjs":
         case "cjs":
-            return <FaJs data-testid={dataTestId} className={className} title="JavaScript" />;
+            return <FaJs data-testid={dataTestId} className={cls} title="JavaScript" />;
         case "ts":
         case "tsx":
         case "html":
@@ -150,8 +150,12 @@ export const findFileIcon = (fileName: string) => {
         case "groovy":
         case "pl":
         case "pm":
-            return <FaFileCode data-testid={dataTestId} className={className} title="Code" />;
+            return <FaFileCode data-testid={dataTestId} className={cls} title="Code" />;
         default:
-            return <FaFile data-testid={dataTestId} className={className} title="File" />;
+            return <FaFile data-testid={dataTestId} className={cls} title="File" />;
     }
 };
+
+export function FileIcon({ name, className }: { name: string; className?: string }) {
+    return findFileIcon(name, className);
+}

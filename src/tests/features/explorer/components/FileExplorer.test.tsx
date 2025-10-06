@@ -157,18 +157,6 @@ describe("FileExplorer", () => {
         expect(mockFileSystem.goTo).toHaveBeenCalledWith("/src");
     });
 
-    it("handles file double-click with callback", () => {
-        const onOpenFile = vi.fn();
-        const file = { type: "file", name: "test.txt", path: "test.txt" };
-        mockFileSystem.items = [file];
-
-        render(<FileExplorer onOpenFile={onOpenFile} />);
-
-        fireEvent.doubleClick(screen.getByText("test.txt"));
-
-        expect(onOpenFile).toHaveBeenCalledWith(file);
-    });
-
     it("renders breadcrumbs", () => {
         mockFileSystem.breadcrumbs = [
             { label: "root", path: "/" },

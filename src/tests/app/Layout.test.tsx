@@ -100,7 +100,17 @@ vi.mock("@/store/layout", () => ({
 }));
 
 vi.mock("@/store/workspace", () => ({
-    useWorkspace: vi.fn(),
+    useWorkspace: vi.fn(selector => {
+        const mockState = {
+            openTabs: [],
+            activeTabId: null,
+            getActiveTab: () => ({
+                id: "tab-1",
+                item: { path: "/test/file.py", type: "file", name: "file.py" },
+            }),
+        };
+        return selector ? selector(mockState) : mockState;
+    }),
 }));
 
 vi.mock("@/utils/paths", () => ({
@@ -141,9 +151,22 @@ describe("Layout", () => {
             startedAt: null,
         });
 
-        (useWorkspace as any).mockImplementation((selector: any) =>
-            selector({ selected: { path: "/test/file.py" } }),
-        );
+        (useWorkspace as any).mockImplementation((selector: any) => {
+            const mockState = {
+                openTabs: [
+                    {
+                        id: "tab-1",
+                        item: { path: "/test/file.py", type: "file", name: "file.py" },
+                    },
+                ],
+                activeTabId: "tab-1",
+                getActiveTab: () => ({
+                    id: "tab-1",
+                    item: { path: "/test/file.py", type: "file", name: "file.py" },
+                }),
+            };
+            return selector ? selector(mockState) : mockState;
+        });
 
         (isRunnable as any).mockReturnValue(true);
     });
@@ -209,7 +232,14 @@ describe("Layout", () => {
     });
 
     it("handles missing current path gracefully", () => {
-        (useWorkspace as any).mockImplementation((selector: any) => selector({ selected: null }));
+        (useWorkspace as any).mockImplementation((selector: any) => {
+            const mockState = {
+                openTabs: [],
+                activeTabId: null,
+                getActiveTab: () => undefined,
+            };
+            return selector ? selector(mockState) : mockState;
+        });
 
         render(<Layout {...defaultProps} />);
 

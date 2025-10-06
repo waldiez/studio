@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-import GlobalRunListener from "@/app/GlobalRunListener";
+import GlobalRunListener from "@/hooks/GlobalRunListener";
 import { onRunRequested, onRunStopRequested } from "@/lib/events";
 import { extOf, isRunnable, isWaldiez } from "@/utils/paths";
 import { render } from "@testing-library/react";

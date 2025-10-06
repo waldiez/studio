@@ -11,9 +11,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { findFileIcon } from "@/components/ui/fileIcon";
+import { FileIcon } from "@/components/ui/fileIcon";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useWorkspace } from "@/store/workspace";
 import type { PathItem } from "@/types/api";
 import { ArrowUp, Folder, MoreVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
 
@@ -21,13 +22,9 @@ import * as React from "react";
 
 import { useFileSystem } from "../hooks/useFileSystem";
 
-type Props = {
-    /** called when user wants to open a file */
-    onOpenFile?: (item: PathItem) => void;
-};
-
-export default function FileExplorer({ onOpenFile }: Props) {
+export default function FileExplorer() {
     const fs = useFileSystem();
+    const { openTab } = useWorkspace();
     const [renaming, setRenaming] = React.useState<string | null>(null);
     const [renameValue, setRenameValue] = React.useState("");
 
@@ -35,7 +32,8 @@ export default function FileExplorer({ onOpenFile }: Props) {
         if (it.type === "folder") {
             fs.goTo(`/${it.path}`.replace(/^\/\/+/, "/"));
         } else {
-            onOpenFile?.(it);
+            // Open file in new tab
+            void openTab(it);
         }
     };
 
@@ -43,6 +41,7 @@ export default function FileExplorer({ onOpenFile }: Props) {
         setRenaming(it.path);
         setRenameValue(it.name);
     };
+
     const commitRename = async (it: PathItem) => {
         if (!renameValue || renameValue === it.name) {
             setRenaming(null);
@@ -63,7 +62,6 @@ export default function FileExplorer({ onOpenFile }: Props) {
                 <Button size="sm" className="btn-outline" onClick={() => fs.goUp()} title="Up one folder">
                     <ArrowUp className="size-4" />
                 </Button>
-                {/* <div className="text-xs opacity-70 truncate">{fs.cwd}</div> */}
                 <div className="flex items-center gap-1" id="studio-explorer-top">
                     <Button
                         size="sm"
@@ -107,7 +105,7 @@ export default function FileExplorer({ onOpenFile }: Props) {
             {/* Breadcrumbs */}
             <div className="px-2 py-1 text-xs flex gap-1 flex-wrap border-b border-[var(--border-color)]">
                 {fs.breadcrumbs.map((b, i) => (
-                    <span key={b.path} className="flex items-center gap-1">
+                    <span key={`bread-${b.path}`} className="flex items-center gap-1">
                         <button className="hover:underline" onClick={() => fs.goTo(b.path)}>
                             {b.label}
                         </button>
@@ -134,7 +132,7 @@ export default function FileExplorer({ onOpenFile }: Props) {
                         const selected = fs.selection?.path === it.path;
                         return (
                             <li
-                                key={it.path}
+                                key={`fs-${it.path}`}
                                 className={cn(
                                     "group px-2 py-1 flex items-center gap-2 hover:bg-[var(--primary-alt-color-hover)] cursor-default",
                                     selected && "bg-[var(--primary-alt-color-hover)]",
@@ -146,7 +144,7 @@ export default function FileExplorer({ onOpenFile }: Props) {
                                     {it.type === "folder" ? (
                                         <Folder className="size-4" />
                                     ) : (
-                                        findFileIcon(it.path)
+                                        <FileIcon name={it.path} />
                                     )}
                                 </span>
 
