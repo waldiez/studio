@@ -4,13 +4,13 @@ bandit==1.8.6
 black==25.9.0
 flake8==7.3.0
 hatchling==1.27.0
-isort==6.0.1
+isort==6.1.0
 mypy==1.18.2
 pre-commit==4.3.0
 pydocstyle==6.3.0
-pylint==3.3.8
+pylint==3.3.9
 python-dotenv>=1.1.1
-ruff==0.13.1
+ruff==0.13.3
 toml==0.10.2; python_version <= '3.10'
 types-PyYAML==6.0.12.20250915
 types-aiofiles==24.1.0.20250822
