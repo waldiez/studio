@@ -19,6 +19,7 @@
         "autohiding",
         "automl",
         "autouse",
+        "callto",
         "caplog",
         "Chatzigeorgiou",
         "choco",
@@ -173,6 +174,7 @@
         "workerinput",
         "xdist",
         "xlib",
+        "xmpp",
         "xunit",
         "xyflow"
     ],
