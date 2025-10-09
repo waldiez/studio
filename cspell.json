@@ -126,6 +126,7 @@
         "pylint",
         "pypi",
         "pyproject",
+        "pyright",
         "pytest",
         "PYTHONDONTWRITEBYTECODE",
         "PYTHONIOENCODING",

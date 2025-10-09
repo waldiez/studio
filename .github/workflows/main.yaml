@@ -20,12 +20,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5.0.0
       - name: install lcov
         run: sudo apt update && sudo apt install -y lcov
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Display Python version
@@ -35,7 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements/all.txt
       - name: Setup bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2.0.2
       - name: Install frontend dependencies
         run: bun install
       - name: lint
@@ -48,7 +48,7 @@ jobs:
         run: python scripts/test.py
       - name: Report to Coveralls
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage/lcov.info

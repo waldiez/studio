@@ -100,6 +100,21 @@ def run_mypy() -> None:
     )
 
 
+def run_pyright() -> None:
+    """Run pyright."""
+    ensure_command_exists("pyright")
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "pyright",
+            "-p",
+            "pyproject.toml",
+            ".",
+        ]
+    )
+
+
 def run_flake8() -> None:
     """Run flake8."""
     ensure_command_exists("flake8")
@@ -182,6 +197,7 @@ def main() -> None:
     run_isort()
     run_black()
     run_mypy()
+    run_pyright()
     run_flake8()
     run_pydocstyle()
     run_bandit()

@@ -16,13 +16,13 @@ jobs:
     name: Package Python 🐍 distribution 📦
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: "3.12"
       - name: Setup bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2.0.2
       - name: Install dependencies
         run: |
           bun install
@@ -33,7 +33,7 @@ jobs:
           bun run build
           python scripts/build.py
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: waldiez-studio
           path: dist/*
@@ -47,13 +47,13 @@ jobs:
       url: https://pypi.org/p/waldiez-studio
     steps:
       - name: Download the distribution packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5.0.0
         with:
           name: waldiez-studio
           path: dist
       - name: Upload to PyPI
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           packages-dir: dist
       - name: List generated files
