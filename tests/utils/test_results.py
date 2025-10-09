@@ -159,14 +159,28 @@ def test_serialize_chat_results() -> None:
             chat_id=1,
             chat_history=[{"role": "user", "content": "Hello!"}],
             summary="Summary 1",
-            cost={"total": {"amount": 5.0, "currency": "USD"}},
+            cost={
+                "usage_including_cached_inference": {
+                    "total": {"amount": 5.0, "currency": "USD"}
+                },
+                "usage_excluding_cached_inference": {
+                    "total": {"amount": 6.0, "currency": "USD"}
+                },
+            },
             human_input=["Hello!"],
         ),
         2: ChatResult(
             chat_id=2,
             chat_history=[{"role": "user", "content": "Hi!"}],
             summary="Summary 2",
-            cost={"total": {"amount": 7.0, "currency": "USD"}},
+            cost={
+                "usage_including_cached_inference": {
+                    "total": {"amount": 7.0, "currency": "USD"}
+                },
+                "usage_excluding_cached_inference": {
+                    "total": {"amount": 8.0, "currency": "USD"}
+                },
+            },
             human_input=["Hi!"],
         ),
     }
@@ -184,5 +198,9 @@ def test_serialize_chat_results() -> None:
     assert first_dict["summary"] == "Summary 1"
     assert "cost" in first_dict
     assert isinstance(first_dict["cost"], dict)
-    assert "total" in first_dict["cost"]
-    assert first_dict["cost"]["total"]["amount"] == 5.0
+    assert (
+        first_dict["cost"]["usage_including_cached_inference"]["total"][
+            "amount"
+        ]
+        == 5.0
+    )
