@@ -90,6 +90,20 @@ class PreBuildHook(BuildHookInterface):  # type: ignore
         print("Building frontend...")
         try:
             subprocess.run(  # nosemgrep # nosec
+                [str(package_manager), "install"],
+                cwd=self.root,
+                check=True,
+                stdout=sys.stdout,
+                stderr=subprocess.PIPE,
+            )
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(
+                f"Frontend build failed: {e.stderr.decode()}"
+            ) from e
+        except BaseException as e:
+            raise RuntimeError(f"Frontend build failed: {e}") from e
+        try:
+            subprocess.run(  # nosemgrep # nosec
                 [str(package_manager), "run", "build"],
                 cwd=self.root,
                 check=True,
@@ -136,9 +150,11 @@ class PreBuildHook(BuildHookInterface):  # type: ignore
             # check ./node_modules/.bin/{manager}
             node_modules = Path(self.root) / "node_modules"
             if node_modules.exists():
-                manager_path = node_modules / ".bin" / manager_name
-                if sys.platform == "win32" and not manager_path.exists():
-                    manager_path = manager_path.with_suffix(".exe")
+                possible_path: Path = node_modules / ".bin" / manager_name
+                if sys.platform == "win32" and not possible_path.exists():
+                    possible_path = possible_path.with_suffix(".exe")
+                if possible_path.exists():
+                    manager_path = str(possible_path)
         if not manager_path:
             raise RuntimeError(
                 f"{manager_name} is required to build the frontend."

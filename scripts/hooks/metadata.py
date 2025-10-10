@@ -63,7 +63,7 @@ Dev:
     See ../scripts/hooks/metadata.py for more information.
 """
 
-__version__ = "{version}"
+__version__ = VERSION = "{version}"
 '''  # nosemgrep # nosec
     with open(
         version_path,
