@@ -12,9 +12,10 @@ import logging
 import os
 import shutil
 import tarfile
+from collections.abc import Generator
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, Generator
+from typing import Any
 
 import httpx
 import pytest
@@ -70,7 +71,7 @@ def static_root_fixture(root_dir: Path) -> Generator[Path, None, None]:
 
 
 @pytest.fixture(name="registry_response")
-def registry_response_fixture() -> Dict[str, Any]:
+def registry_response_fixture() -> dict[str, Any]:
     """Mock response for the npm registry API."""
     return {
         "dist-tags": {"latest": "1.2.3"},
@@ -108,7 +109,7 @@ def mock_swagger_assets(
 
 def mock_monaco_tarball(
     httpx_mock: pytest_httpx.HTTPXMock,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
     valid_tarball: bool = True,
     valid_checksum: bool = True,
     tarball_status_code: int = 200,
@@ -159,7 +160,7 @@ def mock_monaco_tarball(
 async def test_download_monaco_editor(
     static_root: Path,
     httpx_mock: pytest_httpx.HTTPXMock,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
 ) -> None:
     """Test downloading and extracting the monaco editor."""
     mock_monaco_tarball(httpx_mock, registry_response)
@@ -174,7 +175,7 @@ async def test_download_monaco_editor(
 async def test_ensure_extra_static_files(
     httpx_mock: pytest_httpx.HTTPXMock,
     static_root: Path,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
 ) -> None:
     """Test ensuring that extra static files are downloaded."""
     # Create a valid tar archive in memory
@@ -223,7 +224,7 @@ async def test_get_package_details_error(
 async def test_download_monaco_editor_checksum_error(
     httpx_mock: pytest_httpx.HTTPXMock,
     static_root: Path,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
 ) -> None:
     """Test for a checksum mismatch in download_monaco_editor."""
     mock_monaco_tarball(httpx_mock, registry_response, valid_checksum=False)
@@ -236,7 +237,7 @@ async def test_download_monaco_editor_checksum_error(
 async def test_download_monaco_editor_download_error(
     httpx_mock: pytest_httpx.HTTPXMock,
     static_root: Path,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
 ) -> None:
     """Test for a DownloadError when tarball download fails."""
 
@@ -423,7 +424,7 @@ async def test_check_cached_details_parsing_error(
 async def test_download_monaco_editor_extraction_error(
     httpx_mock: pytest_httpx.HTTPXMock,
     static_root: Path,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
 ) -> None:
     """Test for extraction failure in download_monaco_editor."""
 
@@ -436,7 +437,7 @@ async def test_download_monaco_editor_extraction_error(
 @pytest.mark.asyncio
 async def test_ensure_extra_static_files_error(
     httpx_mock: pytest_httpx.HTTPXMock,
-    registry_response: Dict[str, Any],
+    registry_response: dict[str, Any],
     static_root: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:

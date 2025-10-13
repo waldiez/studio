@@ -95,7 +95,7 @@ export default function TabBar() {
                         <MoreHorizontal className="w-4 h-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="border border-[var(--border)]">
                     <DropdownMenuItem
                         onClick={() => activeTabId && closeOtherTabs(activeTabId)}
                         disabled={openTabs.length <= 1}

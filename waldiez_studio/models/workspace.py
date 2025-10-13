@@ -4,8 +4,6 @@
 """Models for the workspace API."""
 # mypy: disable-error-code="unused-ignore,assignment"
 
-from typing import Optional
-
 from pydantic import BaseModel
 
 try:
@@ -30,7 +28,7 @@ class PathItemCreateRequest(BaseModel):
     """Request for creating a new file or folder."""
 
     type: PathItemType
-    parent: Annotated[Optional[str], "The parent folder path."] = None
+    parent: Annotated[str | None, "The parent folder path."] = None
 
 
 class PathItemRenameRequest(BaseModel):

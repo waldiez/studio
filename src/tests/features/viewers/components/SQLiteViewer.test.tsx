@@ -133,7 +133,7 @@ describe("SQLiteViewer", () => {
         expect(urls).toContain("/workspace/sqlite-tables");
         expect(urls).toContain("/workspace/sqlite-rows");
     });
-    it("changing table via SelectItem refetches rows and keeps page at 1", async () => {
+    it("changing table via SelectItem re-fetches rows and keeps page at 1", async () => {
         const mockAxios = axiosInstance as unknown as { get: ReturnType<typeof vi.fn> };
 
         mockAxios.get.mockReset();

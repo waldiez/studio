@@ -56,7 +56,7 @@ describe("MarkdownViewer", () => {
         expect(strong).toHaveTextContent("bold");
     });
 
-    it("renders blockquotes", () => {
+    it("renders blockquote", () => {
         render(<MarkdownViewer source="> quote" />);
 
         const content = screen.getByTestId("markdown-content");

@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
 # pyright: reportConstantRedefinition=false
+# pylint: disable=invalid-name
 
 """Build container image."""
 
@@ -12,7 +13,6 @@ import shutil
 import subprocess  # nosemgrep # nosec
 import sys
 from pathlib import Path
-from typing import List
 
 try:
     from dotenv import load_dotenv
@@ -148,7 +148,7 @@ def get_container_cmd() -> str:
     return "docker"
 
 
-def run_command(command: List[str]) -> None:
+def run_command(command: list[str]) -> None:
     """Run a command.
 
     Parameters
@@ -181,7 +181,7 @@ def build_image(
     image_platform: str,
     container_command: str,
     no_cache: bool,
-    build_args: List[str],
+    build_args: list[str],
 ) -> None:
     """Build the container image.
 

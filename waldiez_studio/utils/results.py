@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
 # pylint: disable=broad-exception-caught
+# pyright: reportUnknownArgumentType=false,reportArgumentType=false
 
 """Module for serializing results into a JSON-compatible format."""
 
@@ -31,11 +32,9 @@ def serialize_dict(data: dict[Any, Any]) -> list[dict[Any, Any]]:
                 asdict(value)
             )  # Serialize dataclass object
         elif isinstance(value, dict):  # If it's a nested dict, serialize it
-            serialized[key] = serialize_dict(value)[  # pyright: ignore
-                0
-            ]  # Ensure it’s wrapped in a list
+            serialized[key] = serialize_dict(value)[0]
         elif isinstance(value, list):  # If it’s a list, serialize it
-            serialized[key] = serialize_list(value)  # pyright: ignore
+            serialized[key] = serialize_list(value)
         else:
             # Primitive types (str, int, float, etc.) are already serializable
             serialized[key] = value
@@ -67,11 +66,11 @@ def serialize_list(data: list[Any]) -> list[dict[Any, Any]]:
             item, dict
         ):  # If the item is a dictionary, serialize it
             serialized.append(
-                serialize_dict(item)[0]  # pyright: ignore
+                serialize_dict(item)[0]
             )  # Ensure it’s wrapped in a list
         elif isinstance(item, list):  # If the item is a list, serialize it
             # Flatten the result
-            serialized.extend(serialize_list(item))  # pyright: ignore
+            serialized.extend(serialize_list(item))
         elif isinstance(item, (str, int, float, bool)):
             # Primitive types (str, int, float, bool) are already serializable
             # noinspection PyTypeChecker
@@ -99,9 +98,9 @@ def serialize_results(results: Any) -> list[dict[Any, Any]]:
         The json serializable results.
     """
     if isinstance(results, dict):
-        return serialize_dict(results)  # pyright: ignore
+        return serialize_dict(results)
     if isinstance(results, list):
-        return serialize_list(results)  # pyright: ignore
+        return serialize_list(results)
     if is_dataclass_instance(results):
         return serialize_dict(asdict(results))
     return serialize_results([results])  # pragma: no cover

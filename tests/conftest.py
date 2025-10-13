@@ -4,8 +4,8 @@
 """Pytest configuration file."""
 
 import os
+from collections.abc import Generator
 from shutil import copyfile
-from typing import Generator, List
 
 import pytest
 from filelock import FileLock
@@ -88,12 +88,12 @@ def backup_and_restore_dot_env(
             os.environ.pop("WALDIEZ_STUDIO_TESTING")
 
 
-def pytest_collection_modifyitems(items: List[pytest.Item]) -> None:
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     """Run all async tests in the same event loop.
 
     Parameters
     ----------
-    items : List[pytest.Item]
+    items : list[pytest.Item]
         List of pytest items
     """
     pytest_asyncio_tests = (item for item in items if is_async_test(item))

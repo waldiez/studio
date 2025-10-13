@@ -151,10 +151,14 @@ export default defineConfig(({ command }) => {
             emptyOutDir: true,
             minify: "terser",
             terserOptions: {
+                format: {
+                    comments: false,
+                },
                 compress: {
                     drop_console: true,
                     drop_debugger: true,
                 },
+                mangle: true,
             },
             target: "esnext",
             outDir: normalizedResolve("waldiez_studio", "static", "frontend"),
@@ -162,13 +166,10 @@ export default defineConfig(({ command }) => {
                 output: {
                     manualChunks: (id: string) => {
                         if (id.includes("node_modules")) {
-                            // Split the path to get the package name
                             const parts = id.split("node_modules/");
                             if (parts.length > 0 && parts[1]) {
-                                // Return the package name, which is the first part after "node_modules/"
                                 return parts[1].split("/")[0];
                             }
-                            // return id.toString().split("node_modules/")[1].split("/")[0].toString();
                         }
                     },
                 },

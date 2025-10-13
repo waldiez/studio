@@ -7,7 +7,8 @@
 
 """Tests for the CSP middleware."""
 
-from typing import Any, AsyncGenerator, Dict
+from collections.abc import AsyncGenerator
+from typing import Any
 
 import pytest
 from fastapi import FastAPI
@@ -46,7 +47,7 @@ async def get_client() -> AsyncGenerator[AsyncClient, None]:
 @pytest.mark.anyio
 async def test_parse_policy_dict() -> None:
     """Test parsing of a policy dictionary into a string."""
-    policy_dict: Dict[str, Any] = {
+    policy_dict: dict[str, Any] = {
         "default-src": "'self'",
         "style-src": ["'self'", "'unsafe-inline'"],
     }

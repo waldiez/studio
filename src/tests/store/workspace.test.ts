@@ -112,9 +112,6 @@ describe("useWorkspace store", () => {
             await act(async () => {
                 await result.current.openTab(folderItem);
             });
-
-            console.log("Open tabs:", result.current.openTabs);
-            console.log("Folder item type:", folderItem.type);
             expect(result.current.openTabs).toHaveLength(0);
             expect(mockGetFile).not.toHaveBeenCalled();
         });

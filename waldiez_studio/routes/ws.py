@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 # pylint: disable=broad-exception-caught
+# pyright: reportCallInDefaultInitializer=false
 """Websocket routes."""
 
 import contextlib

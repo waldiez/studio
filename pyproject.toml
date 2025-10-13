@@ -74,15 +74,15 @@ exclude = [ "**/example.py", ".gitignore" ]
 dev = [
     "autoflake==2.3.1",
     "bandit==1.8.6",
+    "basedpyright==1.31.7",
     "black==25.9.0",
     "flake8==7.3.0",
     "hatchling==1.27.0",
-    "isort==6.1.0",
+    "isort==7.0.0",
     "mypy==1.18.2",
-    "pre-commit==4.3.0",
+    "prek==0.2.5",
     "pydocstyle==6.3.0",
-    "pylint==3.3.9",
-    "pyright==1.1.406",
+    "pylint==4.0.0",
     "python-dotenv>=1.1.1",
     "ruff==0.14.0",
     "toml==0.10.2; python_version <= '3.10'",
@@ -125,6 +125,7 @@ exclude = '''
   | \.hg
   | \.mypy_cache
   | \.tox
+  | \.hatch
   | \.venv
   | .local
   | _build
@@ -132,7 +133,7 @@ exclude = '''
   | .local
   | examples
   | node_modules
-  | waldiez_our
+  | waldiez_out
   | waldiez_studio/files
 )/
 '''
@@ -163,9 +164,11 @@ plugins = [
 exclude = [
     '.venv',
     '.local',
+    '.tox',
+    '.hatch',
     'examples',
     'node_modules',
-    'frontend',
+    'src',
     "waldiez_out",
     'waldiez_studio/files',
 ]
@@ -175,9 +178,32 @@ init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = false
 
-[tool.pyright]
+[tool.basedpyright]
 include = ["waldiez_studio", "tests", "scripts"]
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "src",
+    ".tox",
+    ".hatch",
+    ".venv",
+    ".local",
+    "examples",
+    "docs",
+    "waldiez_out",
+    "waldiez_studio/files"
+]
+extraPaths = ["."]
 reportCallIssue = false
+reportUnusedCallResult = false
+reportExplicitAny = false
+reportUnannotatedClassAttribute = false
+reportAny = false
+reportImplicitOverride = false
+
+executionEnvironments = [
+    {root = "tests",  reportPrivateUsage=false, reportUninitializedInstanceVariable=false, reportArgumentType=false, reportUnusedParameter=false, reportAssignmentType=false }
+]
 
 # isort
 [tool.isort]
@@ -185,6 +211,8 @@ profile ='black'
 skip=[
     '.venv',
     '.local',
+    ".tox",
+    ".hatch",
     "build",
     "dist",
     'examples',
@@ -218,6 +246,8 @@ ignore=["CVS"]
 ignore-paths = [
     ".venv",
     ".local*",
+    ".tox",
+    ".hatch",
     "examples",
     "node_modules",
     "waldiez_out",
@@ -256,6 +286,8 @@ default-docstring-type = "numpy"
 exclude_dirs = [
     ".venv",
     ".local",
+    ".tox",
+    ".hatch",
     "examples",
     "node_modules",
     'waldiez_studio/files'
@@ -274,6 +306,8 @@ line-length = 80
 extend-exclude = [
     ".venv",
     ".local",
+    ".tox",
+    ".hatch",
     "examples",
     "node_modules",
     'waldiez_studio/files',
@@ -327,6 +361,8 @@ addopts = """
 omit = [
     ".venv/*",
     ".local/*",
+    ".tox/*",
+    ".hatch/*",
     "examples/*",
     "node_modules/*",
     'waldiez_studio/files/*',

@@ -1,20 +1,21 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-# pyright: reportUnnecessaryIsInstance=false
+# pyright: reportUnnecessaryIsInstance=false, reportUnreachable=false
+
 """Config related helper functions.
+
 To get configuration values from
 environment variables or command line arguments.
 """
 
 import os
 import sys
-from typing import List
 
 ENV_PREFIX = "WALDIEZ_STUDIO_"
 
 
-def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
+def get_trusted_hosts(domain_name: str, host: str) -> list[str]:
     """Get the trusted hosts.
 
     Parameters
@@ -27,7 +28,7 @@ def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
 
     Returns
     -------
-    List[str]
+    list[str]
         The trusted hosts
     """
     from_env = os.environ.get(f"{ENV_PREFIX}TRUSTED_HOSTS", "")
@@ -57,7 +58,7 @@ def get_trusted_hosts(domain_name: str, host: str) -> List[str]:
 
 def get_trusted_origins(
     domain_name: str, port: int, force_ssl: bool, host: str
-) -> List[str]:
+) -> list[str]:
     """Get the trusted origins.
 
     Parameters

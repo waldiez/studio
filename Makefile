@@ -68,7 +68,7 @@ lint-back:
 	isort --check-only .
 	black --check --config pyproject.toml .
 	mypy --config pyproject.toml .
-	pyright -p pyproject.toml .
+	$(PYTHON) scripts/lint.py --pyright
 	flake8 --config=.flake8
 	pydocstyle --config pyproject.toml .
 	bandit -r -c pyproject.toml .

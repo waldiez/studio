@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+# pyright: reportArgumentType=false,reportUnusedParameter=false
+
 """Application entry point."""
 
 import logging
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware

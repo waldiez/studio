@@ -3,6 +3,8 @@
 
 # pylint: disable=broad-exception-caught,missing-class-docstring
 # pylint: disable=missing-function-docstring,unused-argument
+# pyright: reportMissingTypeStubs=false
+
 """Test waldiez_runner.tasks.results_serialization.*."""
 
 from dataclasses import dataclass

@@ -6,8 +6,8 @@
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-param-doc,missing-yield-doc,unused-argument
 
 import os
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 

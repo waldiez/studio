@@ -1,13 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
+# pyright: reportCallInDefaultInitializer=false,reportUnknownMemberType=false
+
 """Workspace API routes."""
 
 import logging
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import aiofiles
 import aiosqlite
@@ -56,7 +58,7 @@ SQLITE_EXTS = {".db", ".sqlite", ".sqlite3"}
 
 @api.get("/workspace", response_model=PathItemListResponse)
 async def list_items(
-    parent: Optional[str] = Query(
+    parent: str | None = Query(
         default=None,
         description=(
             "The directory path to list. "
@@ -465,7 +467,7 @@ async def get_file(
     mime = ALLOWED_EXTENSIONS.get(ext)
     if not mime:
         try:
-            guessed = puremagic.from_file(str(file_path))  # pyright: ignore
+            guessed = puremagic.from_file(str(file_path))
             ext = _norm_ext(guessed)
             mime = ALLOWED_EXTENSIONS.get(ext)
         except BaseException as exc:

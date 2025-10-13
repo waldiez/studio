@@ -6,9 +6,10 @@
 import asyncio
 import concurrent.futures
 import contextvars
+from collections.abc import Coroutine
 from concurrent.futures import Executor
 from functools import partial, wraps
-from typing import Any, Callable, Coroutine, TypeVar
+from typing import Any, Callable, TypeVar
 
 try:
     from typing import ParamSpec  # type: ignore[unused-ignore,assignment]

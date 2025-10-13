@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
+
+# pyright: reportUnusedParameter=false
+
 """Base abstract terminal session to inherit."""
 
 import abc

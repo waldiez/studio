@@ -7,7 +7,6 @@
 
 import re
 from collections import OrderedDict
-from typing import Optional
 
 from starlette.datastructures import MutableHeaders
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -72,7 +71,7 @@ class ExtraHeadersMiddleware:
     def __init__(
         self,
         app: ASGIApp,
-        exclude_patterns: Optional[list[str]] = None,
+        exclude_patterns: list[str] | None = None,
         csp: bool = True,
         force_ssl: bool = True,
         max_age: int = 31556926,

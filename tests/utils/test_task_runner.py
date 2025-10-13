@@ -8,6 +8,7 @@
 # pylint: disable=missing-raises-doc,line-too-long,raising-bad-type
 # pyright: reportAttributeAccessIssue=false,reportUnknownMemberType=false
 # pyright: reportUnknownArgumentType=false,reportUnknownVariableType=false
+# pyright: reportFunctionMemberAccess=false
 
 import asyncio
 import json
@@ -266,7 +267,7 @@ async def test_listen_cancellation(task_runner: TaskRunner) -> None:
     async def mock_receive_text() -> str:
         # First call returns start message
         if not hasattr(mock_receive_text, "called"):
-            mock_receive_text.called = True  # pyright: ignore
+            mock_receive_text.called = True
             return json.dumps(start_message)
         # Subsequent calls should raise CancelledError
         raise asyncio.CancelledError()

@@ -4,17 +4,19 @@
 """Command line interface module."""
 
 # pylint: disable=missing-param-doc,missing-return-doc,missing-raises-doc
+# pylint: disable=invalid-name
+
+# pyright: reportCallInDefaultInitializer=false,reportConstantRedefinition=false
+
 import logging
 import logging.config
 import os
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import List
 
 import typer
 import uvicorn
-import uvicorn.config  # pyright: ignore
 
 try:
     # noinspection PyUnresolvedReferences
@@ -52,7 +54,7 @@ class LogLevel(str, Enum):
 DEFAULT_LOG_LEVEL = os.environ.get("WALDIEZ_STUDIO_LOG_LEVEL", "INFO")
 LOG_LEVELS = {level.value for level in LogLevel}
 if DEFAULT_LOG_LEVEL not in LOG_LEVELS:  # pragma: no cover
-    DEFAULT_LOG_LEVEL = "INFO"  # pyright: ignore
+    DEFAULT_LOG_LEVEL = "INFO"
 
 
 app = typer.Typer(
@@ -91,10 +93,10 @@ def run(
         case_sensitive=False,
     ),
     domain_name: str = get_default_domain_name(),
-    trusted_hosts: List[str] = typer.Option(
+    trusted_hosts: list[str] = typer.Option(
         default_factory=list,
     ),
-    trusted_origins: List[str] = typer.Option(
+    trusted_origins: list[str] = typer.Option(
         default_factory=list,
     ),
     force_ssl: bool = typer.Option(

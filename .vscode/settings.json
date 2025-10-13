@@ -65,5 +65,6 @@
     "cSpell.configFile": "cspell.json",
     "vitest.disableWorkspaceWarning": true,
     "prettier.configPath": "package.json",
-    "mypy-type-checker.importStrategy": "fromEnvironment"
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "python.analysis.typeCheckingMode": "off"
 }

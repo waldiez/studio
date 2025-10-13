@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-# pyright: reportUnknownVariableType=false
+# pyright: reportUnknownVariableType=false,reportUnusedParameter=false
+# pyright: reportUnknownArgumentType=false
+
 """Waldiez Studio settings module."""
 
 import os
-from typing import Any, List, Optional, Tuple, Type
+from typing import Any
 
 from pydantic import ValidationInfo, field_validator
 from pydantic_settings import (
@@ -48,16 +50,16 @@ class Settings(BaseSettings):
     port: int = get_default_port()
     domain_name: str = get_default_domain_name()
     force_ssl: bool = False
-    trusted_hosts: str | List[str] = get_trusted_hosts(
+    trusted_hosts: str | list[str] = get_trusted_hosts(
         domain_name=domain_name, host=host
     )
-    trusted_origins: str | List[str] = get_trusted_origins(
+    trusted_origins: str | list[str] = get_trusted_origins(
         domain_name=domain_name,
         port=port,
         force_ssl=force_ssl,
         host=host,
     )
-    trusted_origin_regex: Optional[str] = None
+    trusted_origin_regex: str | None = None
 
     model_config = SettingsConfigDict(
         alias_generator=to_kebab,
@@ -74,12 +76,12 @@ class Settings(BaseSettings):
     @classmethod
     def settings_customise_sources(
         cls,
-        settings_cls: Type[BaseSettings],
+        settings_cls: type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
-    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
         """Customize the sources.
 
         Parameters
@@ -121,7 +123,7 @@ class Settings(BaseSettings):
                 env_value = (
                     str(value)
                     if not isinstance(value, list)
-                    else ",".join(value)  # pyright: ignore
+                    else ",".join(value)
                 )
                 os.environ[env_key] = env_value
 
@@ -129,7 +131,7 @@ class Settings(BaseSettings):
     # noinspection PyUnusedLocal,PyNestedDecorators
     @field_validator("trusted_hosts", "trusted_origins", mode="before")
     @classmethod
-    def split_value(cls, value: Any, info: ValidationInfo) -> List[str]:
+    def split_value(cls, value: Any, info: ValidationInfo) -> list[str]:
         """Split the value if it is a string.
 
         Parameters
@@ -141,7 +143,7 @@ class Settings(BaseSettings):
 
         Returns
         -------
-        List[str]
+        list[str]
             The value as a list
         """
         if isinstance(value, str):

@@ -2,7 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 """Notebook engine implementation."""
 
-# pyright: reportUnknownMemberType=false
+# pyright: reportUnknownMemberType=false,reportUnknownArgumentType=false
 # pylint: disable=broad-exception-caught,too-many-try-statements
 
 from __future__ import annotations
@@ -231,7 +231,7 @@ class NotebookEngine(Engine):
                     if "text/html" in data:
                         html = data["text/html"]
                         if isinstance(html, list):
-                            html = "".join(html)  # pyright: ignore
+                            html = "".join(html)
                         await self._enqueue(
                             {
                                 "type": "cell_output",

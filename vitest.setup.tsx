@@ -97,7 +97,64 @@ export const mockReactFlow = () => {
         height: 30,
     });
 };
+vi.mock("@monaco-editor/react", () => {
+    const Textarea = (props: any) => (
+        // @ts-ignore
+        <textarea
+            placeholder="mocked-monaco-editor"
+            data-testid={props["data-testid"] ?? "mocked-monaco-editor"}
+            value={props.value}
+            onChange={e => props.onChange?.(e.target.value)}
+            className={props.className ?? ""}
+        />
+    );
 
+    return {
+        __esModule: true,
+        default: Textarea,
+        Editor: Textarea,
+        loader: {
+            init: vi.fn(),
+            config: vi.fn(),
+        },
+    };
+});
+vi.mock("@monaco-editor/loader", () => ({
+    __esModule: true,
+    default: {
+        init: vi.fn(),
+        config: vi.fn(),
+    },
+}));
+vi.mock("@waldiez/react", () => ({
+    __esModule: true,
+    default: ({ onRun, onStepRun, onConvert, onSave, chat, stepByStep }: any) => (
+        <div data-testid="waldiez-component">
+            <button onClick={onRun} data-testid="run-button">
+                Run
+            </button>
+            <button onClick={onStepRun} data-testid="step-run-button">
+                Step Run
+            </button>
+            <button onClick={onConvert} data-testid="convert-button">
+                Convert
+            </button>
+            <button onClick={onSave} data-testid="save-button">
+                Save
+            </button>
+            <div data-testid="chat-show">{chat?.show?.toString()}</div>
+            <div data-testid="step-show">{stepByStep?.show?.toString()}</div>
+        </div>
+    ),
+    importFlow: vi.fn().mockReturnValue({
+        id: "test-flow",
+        name: "Test Flow",
+        agents: [],
+        skills: [],
+        models: [],
+        chats: [],
+    }),
+}));
 beforeEach(() => {
     mockReactFlow();
     vi.useFakeTimers({ shouldAdvanceTime: true });

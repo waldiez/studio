@@ -7,7 +7,7 @@
 # pylint: disable=missing-raises-doc,line-too-long,import-outside-toplevel
 # pyright: reportUnknownLambdaType=false,reportUnknownArgumentType=false
 # pyright: reportUnknownVariableType=false,reportUnknownMemberType=false
-# pyright: reportAttributeAccessIssue=false
+# pyright: reportAttributeAccessIssue=false,reportPrivateLocalImportUsage=false
 
 import signal
 import sys

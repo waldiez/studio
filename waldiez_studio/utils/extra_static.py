@@ -2,7 +2,7 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
 """Utilities for managing extra static files."""
-# pylint: disable=broad-except, too-many-try-statements
+# pylint: disable=broad-except,too-many-try-statements,invalid-name
 
 import asyncio
 import hashlib
@@ -14,7 +14,6 @@ import sys
 import tarfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional, Tuple
 
 import httpx
 from packaging import version
@@ -29,7 +28,7 @@ PACKAGE_NAME = "monaco-editor"
 
 # 0.53.0 does not seem to play well with @monaco-editor/react
 # let's check periodically and change it to None when we are good.
-PINNED_VERSION: str | None = "0.52.2"
+PINNED_VERSION: str | None = "0.54.0"
 SWAGGER_DIST = (
     "https://raw.githubusercontent.com/swagger-api/swagger-ui/master/dist"
 )
@@ -53,7 +52,7 @@ class DownloadError(Exception):
     """Custom exception for download errors."""
 
 
-def check_cached_details(file_path: Path) -> Optional[Tuple[str, str, str]]:
+def check_cached_details(file_path: Path) -> tuple[str, str, str] | None:
     """Check if the cached package details are recent.
 
     Parameters
@@ -63,7 +62,7 @@ def check_cached_details(file_path: Path) -> Optional[Tuple[str, str, str]]:
 
     Returns
     -------
-    Optional[Tuple[str, str, str]]
+    tuple[str, str, str] | None
         The cached package details if they are recent, None otherwise.
     """
     if not file_path.exists():
@@ -89,7 +88,7 @@ def check_cached_details(file_path: Path) -> Optional[Tuple[str, str, str]]:
     return None
 
 
-async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
+async def get_package_details(static_root: Path) -> tuple[str, str, str]:
     """Fetch details about the latest version of the monaco editor.
 
     Parameters
@@ -99,7 +98,7 @@ async def get_package_details(static_root: Path) -> Tuple[str, str, str]:
 
     Returns
     -------
-    Tuple[str, str, str]
+    tuple[str, str, str]
         A tuple containing the latest version, tarball URL, and SHA-1 checksum.
 
     Raises

@@ -3,7 +3,7 @@
 
 """Models for the flow API."""
 
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -13,4 +13,4 @@ from pydantic import BaseModel
 class SaveFlowRequest(BaseModel):
     """Represents a flow in the workspace."""
 
-    contents: Dict[str, Any] | str
+    contents: dict[str, Any] | str

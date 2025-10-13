@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 # pylint: disable=broad-exception-caught,too-many-try-statements
+# pyright: reportCallInDefaultInitializer=false
+
 """Terminal websocket route."""
 
 import asyncio
@@ -8,7 +11,6 @@ import contextlib
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 from fastapi import (
     APIRouter,
@@ -25,7 +27,7 @@ from .common import get_root_directory
 router = APIRouter()
 
 
-def _safe_workdir(root: Path, rel: Optional[str]) -> Path:
+def _safe_workdir(root: Path, rel: str | None) -> Path:
     base = root.resolve()
     target = (base / (rel or "")).resolve()
     if base == target or str(target).startswith(str(base) + os.sep):

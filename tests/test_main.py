@@ -8,9 +8,9 @@
 
 import json
 import os
+from collections.abc import AsyncGenerator, Generator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import AsyncGenerator, Generator
 
 import pytest
 from asgi_lifespan import LifespanManager

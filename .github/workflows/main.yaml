@@ -38,8 +38,10 @@ jobs:
         uses: oven-sh/setup-bun@v2.0.2
       - name: Install frontend dependencies
         run: bun install
-      - name: lint
+      - name: lint js
         run: bun run lint
+      - name: lint py
+        run: python scriots/lint.py
       - name: Prepare Playwright
         run: npx playwright install --with-deps chromium
       - name: Run frontend tests

@@ -4,11 +4,12 @@
 """Flow API routes."""
 # mypy: disable-error-code="unused-ignore,assignment"
 # pylint: disable=broad-except,wrong-import-order,ungrouped-imports
+# pyright: reportUnreachable=false,reportCallInDefaultInitializer=false
 
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any
 
 try:
     from typing import Literal  # noqa
@@ -31,7 +32,7 @@ def export_flow_sync(
     flow_path: Path,
     extension: Literal["py", "ipynb"],
     root_dir: Path,
-) -> Tuple[bool, int, str]:
+) -> tuple[bool, int, str]:
     """Export flow synchronously.
 
     Parameters
@@ -45,7 +46,7 @@ def export_flow_sync(
 
     Returns
     -------
-    Tuple[bool, int str]
+    tuple[bool, int str]
         Whether the export was successful and the destination or
         an error message with the status code.
     """
@@ -77,7 +78,7 @@ def export_flow_sync(
 )
 async def get_flow_contents(
     flow_path: Path = Depends(check_flow_path),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get the contents of a flow.
 
     Parameters
@@ -119,12 +120,12 @@ async def save_flow_contents(
     ----------
     flow_path : Path
         The path to the flow.
-    data : Dict[str, Any]
+    data : dict[str, Any]
         The content of the flow.
 
     Returns
     -------
-    Dict[str, str]
+    dict[str, str]
         Whether the save was successful or an error message.
 
     Raises
@@ -181,7 +182,7 @@ async def export_flow(
 
     Returns
     -------
-    Dict[str, str]
+    dict[str, str]
         Whether the export was successful and the destination or error message.
 
     Raises
@@ -202,7 +203,7 @@ async def export_flow(
     )
 
 
-def get_flow_contents_sync(flow_path: Path) -> Dict[str, Any]:
+def get_flow_contents_sync(flow_path: Path) -> dict[str, Any]:
     """Get the contents of a flow synchronously.
 
     Parameters
@@ -212,7 +213,7 @@ def get_flow_contents_sync(flow_path: Path) -> Dict[str, Any]:
 
     Returns
     -------
-    WaldiezFlow | Dict[str, Any]
+    WaldiezFlow | dict[str, Any]
         The content of the flow.
 
     Raises

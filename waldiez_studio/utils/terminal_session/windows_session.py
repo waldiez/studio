@@ -4,7 +4,7 @@
 # pyright: reportUnknownMemberType=false,reportAttributeAccessIssue=false
 # pyright: reportPossiblyUnboundVariable=false,reportUnknownVariableType=false
 # pyright: reportUnknownArgumentType=false,reportUnnecessaryIsInstance=false
-# pyright: reportUnknownParameterType=false
+# pyright: reportUnknownParameterType=false,reportMissingImports=false
 """Windows terminal session implementation."""
 
 import asyncio
@@ -19,7 +19,7 @@ try:
 
     _HAVE_PYWINPTY = True
 except (ImportError, ModuleNotFoundError):
-    _HAVE_PYWINPTY = False  # pyright:ignore
+    _HAVE_PYWINPTY = False  # pyright:ignore[reportConstantRedefinition]
 
 
 def _preferred_windows_shell_argv() -> list[str]:
@@ -57,10 +57,11 @@ class WindowsSession(BaseSession):
 
     def __init__(self, workdir: Path):
         if not _HAVE_PYWINPTY:
-            raise RuntimeError(
+            msg = (
                 "pywinpty is required for terminal on Windows. "
                 "Install with: pip install pywinpty"
             )
+            raise RuntimeError(msg)
 
         cwd = str(workdir)
         argv = _preferred_windows_shell_argv()

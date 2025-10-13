@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-import cspellPlugin from "@cspell/eslint-plugin";
+import cspellESLintPluginRecommended from "@cspell/eslint-plugin/recommended";
 import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
@@ -57,6 +57,7 @@ const defaultConfig = eslintTs.config({
         ...eslintTs.configs.recommended,
         ...compat.extends("plugin:import/typescript"),
         eslintPluginPrettierRecommended,
+        cspellESLintPluginRecommended,
     ],
     settings: {
         "import/resolver": {
@@ -71,7 +72,6 @@ const defaultConfig = eslintTs.config({
         "@stylistic": stylistic,
         "react-refresh": eslintPluginReactRefresh,
         import: legacyPlugin("eslint-plugin-import", "import"),
-        "@cspell": cspellPlugin,
         "react-hooks": reactHooks,
         tsdoc: eslintPluginTsDoc,
         headers,
@@ -174,6 +174,12 @@ const defaultConfig = eslintTs.config({
                 },
             },
         ],
+        "@cspell/spellchecker": [
+            "warn",
+            {
+                configFile: "cspell.json",
+            },
+        ],
     },
 });
 
@@ -188,6 +194,8 @@ export default [
             ".local",
             "**/assets/**",
             "**/.venv/**",
+            "**/.tox/**",
+            "**/.hatch/**",
             "**/*.js",
         ],
     },
