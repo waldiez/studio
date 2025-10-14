@@ -67,7 +67,11 @@ def get_root_dir(user_id: str = "default") -> Path:
     if user_id == "default" and (
         is_frozen() or is_installed_package()
     ):  # pragma: no cover
-        root_dir = Path.home() / "waldiez" / "workspace"
+        # root_dir = Path.home() / "waldiez" / "workspace"
+        root_dir = Path.home()
+        if root_dir.name.lower() != "waldiez":
+            root_dir = root_dir / "waldiez"
+        root_dir = root_dir / "workspace"
         root_dir.mkdir(parents=True, exist_ok=True)
         return root_dir
     files_root = Path(__file__).parent.parent / "files"

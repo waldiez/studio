@@ -216,6 +216,10 @@ ENV WALDIEZ_STUDIO_TRUSTED_HOSTS=0.0.0.0,127.0.0.1,localhost
 ENV TINI_SUBREAPER=true
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-WORKDIR /home/waldiez
+COPY --chown=waldiez:waldiez scripts/start.sh /home/waldiez/start.sh
+RUN mkdir -p /home/waldiez/workspace
+RUN chmod +x /home/waldiez/start.sh
 
-CMD ["waldiez-studio"]
+WORKDIR /home/waldiez/workspace
+
+CMD ["/home/waldiez/start.sh"]

@@ -147,9 +147,10 @@ ARG USER_ID=1000
 ENV USER_ID=${USER_ID}
 RUN adduser --disabled-password --gecos '' --shell /bin/bash --uid ${USER_ID} --gid ${GROUP_ID} waldiez
 RUN mkdir -p /etc/sudoers.d && echo "waldiez ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-waldiez
-RUN mkdir -p /home/waldiez/tmp /home/waldiez/.local/bin && \
-    chown -R waldiez:waldiez /home/waldiez
+RUN mkdir -p /home/waldiez/tmp /home/waldiez/.local/bin
 ENV PATH=/home/waldiez/.local/bin:${PATH}
+RUN echo "export PATH=\"/home/waldiez/.local/bin:\$PATH\"" >> /home/waldiez/.bashrc && \
+    chown -R waldiez:waldiez /home/waldiez
 
 USER waldiez
 
@@ -191,7 +192,7 @@ RUN echo "Building waldiez/studio with the following parameters:" \
 RUN bash /home/waldiez/tmp/package/scripts/build_dev.sh --react-branch ${REACT_BRANCH} --python-branch ${PYTHON_BRANCH} --api-url-base ${API_URL_BASE}
 
 RUN pip install --user --force /home/waldiez/tmp/studio/*.whl && \
-    pip install --user /home/waldiez/tmp/python/*.whl && \
+    pip install --user --force /home/waldiez/tmp/python/*.whl && \
     rm -rf /home/waldiez/tmp
 
 ARG WALDIEZ_STUDIO_PORT=8000
@@ -202,8 +203,14 @@ EXPOSE ${WALDIEZ_STUDIO_PORT}
 ENV WALDIEZ_STUDIO_HOST=0.0.0.0
 ENV WALDIEZ_STUDIO_TRUSTED_HOSTS=0.0.0.0,127.0.0.1,localhost
 ENV TINI_SUBREAPER=true
+ENV TERM=xterm-256color
+
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-WORKDIR /home/waldiez
+COPY --chown=waldiez:waldiez scripts/start.sh /home/waldiez/start.sh
+RUN mkdir -p /home/waldiez/workspace
+RUN chmod +x /home/waldiez/start.sh
 
-CMD ["waldiez-studio"]
+WORKDIR /home/waldiez/workspace
+
+CMD ["/home/waldiez/start.sh"]
