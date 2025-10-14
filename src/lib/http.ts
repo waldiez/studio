@@ -223,9 +223,10 @@ const guessMimeType = (ext: string): string => {
   return mimeMap[ext] || "application/octet-stream";
 };
 
-// Textual extensions (should match your backend TEXTUAL_EXTS)
+// Textual extensions
 const TEXTUAL_EXTS = new Set([
   ".txt", ".py", ".js", ".csv", ".ts", ".md", ".mmd",
   ".rst", ".css", ".html", ".xml", ".json", ".yaml",
-  ".yml", ".toml", ".ini", ".ipynb", ".waldiez"
+  ".yml", ".toml", ".ini", ".ipynb", ".sh", ".bash",
+  ".bsh", ".sh", ".zsh", ".ps1", ".bat", ".waldiez"
 ]);

@@ -18,6 +18,11 @@ LOG = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS: dict[str, str] = {
     ".waldiez": "application/x-waldiez",
+    ".bash": "text/x-shellscript",
+    ".sh": "text/x-shellscript",
+    ".zsh": "text/x-shellscript",
+    ".ps1": "text/x-shellscript",
+    ".bat": "text/x-shellscript",
     ".txt": "text/plain",
     ".py": "text/x-python",
     ".js": "application/javascript",
@@ -49,6 +54,12 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
     ".oga": "audio/ogg",
 }
 TEXTUAL_EXTS = {
+    ".sh",
+    ".bash",
+    ".bsh",
+    ".zsh",
+    ".ps1",
+    ".bat",
     ".txt",
     ".py",
     ".js",

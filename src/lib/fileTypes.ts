@@ -15,6 +15,10 @@ export const routeByExt: Record<string, FileRoute> = {
   ".ipynb": { kind: "notebook" },
   ".html": { kind: "code", language: "html" },
   ".css": { kind: "code", language: "css" },
+  ".sh": { kind: "code", language: "bash" },
+  ".bsh": { kind: "code", language: "bash" },
+  ".zsh": { kind: "code", language: "bash" },
+  ".ps1": { kind: "code", language: "pwsh" },
   ".png": { kind: "media" },
   ".jpg": { kind: "media" },
   ".jpeg": { kind: "media" },
@@ -28,7 +32,7 @@ export const routeByExt: Record<string, FileRoute> = {
   ".waldiez": { kind: "code", language: "waldiez" }
 };
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements, complexity
 export const guessLanguage = (name: string): string => {
   const n = name.toLowerCase();
   if (n.endsWith(".py")) {return "python";}
@@ -45,11 +49,18 @@ export const guessLanguage = (name: string): string => {
   if (n.endsWith(".yml") || n.endsWith(".yaml")) {return "yaml";}
   if (n.endsWith(".toml")) {return "toml";}
   if (n.endsWith(".ini")) {return "ini";}
+  if (n.endsWith(".sh")) {return "bash";}
+  if (n.endsWith(".bash")) {return "bash";}
+  if (n.endsWith(".bsh")) {return "bash";}
+  if (n.endsWith(".zsh")) {return "bash";}
+  if (n.endsWith(".bsh")) {return "bash";}
+  if (n.endsWith(".ps1")) {return "pwsh";}
   if (n.endsWith(".waldiez")) {return "waldiez";}
   return "plaintext";
 };
 
 export function routeFile(name: string): FileRoute {
   const ext = name.toLowerCase().slice(name.lastIndexOf("."));
+  console.log(ext, routeByExt[ext]);
   return routeByExt[ext] ?? { kind: "binary" };
 }

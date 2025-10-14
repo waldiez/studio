@@ -27,6 +27,7 @@ export default function FileExplorer() {
     const { openTab } = useWorkspace();
     const [renaming, setRenaming] = React.useState<string | null>(null);
     const [renameValue, setRenameValue] = React.useState("");
+    const [isDragging, setIsDragging] = React.useState(false);
 
     const onItemDoubleClick = (it: PathItem) => {
         if (it.type === "folder") {
@@ -53,10 +54,44 @@ export default function FileExplorer() {
         setRenaming(null);
     };
 
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Only set to false if we're leaving the main container
+        if (e.currentTarget === e.target) {
+            setIsDragging(false);
+        }
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            await fs.upload(files[0]);
+        }
+    };
+
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
     return (
-        <div className="h-full flex flex-col bg-[var(--background-color)]">
+        <div
+            className={cn(
+                "h-full flex flex-col bg-[var(--background-color)]",
+                isDragging && "ring-2 ring-blue-500 ring-inset",
+            )}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
             {/* Toolbar */}
             <div className="studio-explorer-top h-10 px-2 flex items-center gap-1 border-b border-[var(--border-color)]">
                 <Button size="sm" className="btn-outline" onClick={() => fs.goUp()} title="Up one folder">

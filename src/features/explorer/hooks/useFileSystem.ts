@@ -28,7 +28,7 @@ export function useFileSystem() {
         return r.json();
     }
 
-    // STABLE list(): reads default target from cwdRef, not from closure
+    // list(): reads default target from cwdRef, not from closure
     const list = useCallback(
         async (parent?: string) => {
             const target = parent ?? cwdRef.current ?? "/";
@@ -49,7 +49,7 @@ export function useFileSystem() {
                 setLoading(false);
             }
         },
-        [], // ← stable
+        [], //
     );
 
     const goTo = useCallback(async (path: string) => list(path), [list]);
@@ -177,7 +177,7 @@ export function useFileSystem() {
         void list("/");
     }, [list]);
 
-    // 🔔 Workspace change subscription — refresh only the indicated parent,
+    // Workspace change subscription — refresh only the indicated parent,
     // and only if it matches the *current* folder (from ref).
     useEffect(() => {
         const off = onWorkspaceChanged(({ parent }) => {
