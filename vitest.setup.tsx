@@ -97,35 +97,6 @@ export const mockReactFlow = () => {
         height: 30,
     });
 };
-vi.mock("@monaco-editor/react", () => {
-    const Textarea = (props: any) => (
-        // @ts-ignore
-        <textarea
-            placeholder="mocked-monaco-editor"
-            data-testid={props["data-testid"] ?? "mocked-monaco-editor"}
-            value={props.value}
-            onChange={e => props.onChange?.(e.target.value)}
-            className={props.className ?? ""}
-        />
-    );
-
-    return {
-        __esModule: true,
-        default: Textarea,
-        Editor: Textarea,
-        loader: {
-            init: vi.fn(),
-            config: vi.fn(),
-        },
-    };
-});
-vi.mock("@monaco-editor/loader", () => ({
-    __esModule: true,
-    default: {
-        init: vi.fn(),
-        config: vi.fn(),
-    },
-}));
 vi.mock("@waldiez/react", () => ({
     __esModule: true,
     default: ({ onRun, onStepRun, onConvert, onSave, chat, stepByStep }: any) => (

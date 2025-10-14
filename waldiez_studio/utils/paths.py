@@ -4,10 +4,50 @@
 """Directories to use for user uploads and flow outputs."""
 
 import base64
+import builtins
 import os
 import sys
 from functools import lru_cache
 from pathlib import Path
+
+
+@lru_cache
+def is_frozen() -> bool:
+    """Check if we are inside a compiled app.
+
+    Returns
+    -------
+    bool
+        True if detected frozen.
+    """
+    try:
+        compiled = getattr(builtins, "__compiled__", False)
+    except Exception:  # pylint: disable=broad-exception-caught
+        compiled = False
+
+    return bool(
+        getattr(sys, "frozen", False)  # PyInstaller, cx_Freeze
+        or hasattr(sys, "_MEIPASS")  # PyInstaller
+        or compiled  # Nuitka/Cython
+    )
+
+
+@lru_cache
+def is_installed_package() -> bool:
+    """Check if running from an installed package (not editable/dev mode).
+
+    Returns
+    -------
+    bool
+        True if detected as installed, False otherwise.
+    """
+    try:
+        # Check if running from site-packages
+        module_path = Path(__file__).resolve()
+        site_packages = any("site-packages" in str(p) for p in sys.path)
+        return site_packages and "site-packages" in str(module_path)
+    except Exception:  # pylint: disable=broad-exception-caught
+        return False
 
 
 @lru_cache
@@ -24,12 +64,12 @@ def get_root_dir(user_id: str = "default") -> Path:
     Path
         The root waldiez directory
     """
-    is_frozen = bool(getattr(sys, "frozen", False))
-    if is_frozen:  # pragma: no cover
-        if user_id == "default":
-            root_dir = Path.home() / "waldiez" / "workspace"
-            root_dir.mkdir(parents=True, exist_ok=True)
-            return root_dir
+    if user_id == "default" and (
+        is_frozen() or is_installed_package()
+    ):  # pragma: no cover
+        root_dir = Path.home() / "waldiez" / "workspace"
+        root_dir.mkdir(parents=True, exist_ok=True)
+        return root_dir
     files_root = Path(__file__).parent.parent / "files"
     root_dir = files_root / user_id
     is_testing = (

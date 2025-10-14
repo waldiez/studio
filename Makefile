@@ -139,6 +139,24 @@ build-back:
 image:
 	$(PYTHON) scripts/image.py
 
+.PHONY: dev-image-no-cache
+dev-image-no-cache:
+	$(PYTHON) scripts/image.py --dev --no-cache
+
+.PHONY: dev-image
+dev-image:
+	$(PYTHON) scripts/image.py --dev --no-cache
+
+.PHONY: dev-dev-image
+dev-dev-image:
+	$(PYTHON) scripts/image.py --dev --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev --dry
+
+
+.PHONY: dev-dev-image-no-cache
+dev-dev-image-no-cache:
+	$(PYTHON) scripts/image.py --dev --no-cache --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev --dry
+
+
 .PHONY: build
 build: build-front build-back
 

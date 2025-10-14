@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 
-# pyright: reportConstantRedefinition=false
 # pylint: disable=invalid-name
+# pyright: reportConstantRedefinition=false
 
 """Build container image."""
 
@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 try:
+    # noinspection PyUnresolvedReferences
     from dotenv import load_dotenv
 except ImportError:
     pass
@@ -22,6 +23,7 @@ else:
     load_dotenv(override=False)
 
 os.environ["PYTHONUNBUFFERED"] = "1"
+
 _MY_ARCH = platform.machine()
 if _MY_ARCH == "x86_64":
     _MY_ARCH = "amd64"
@@ -83,6 +85,16 @@ def cli() -> argparse.ArgumentParser:
         "--push",
         action="store_true",
         help="Push the image.",
+    )
+    parser.add_argument(
+        "--dev",
+        action="store_true",
+        help="Build dev image.",
+    )
+    parser.add_argument(
+        "--dry",
+        action="store_true",
+        help="Just build the command to run.",
     )
     return parser
 
@@ -148,13 +160,16 @@ def get_container_cmd() -> str:
     return "docker"
 
 
-def run_command(command: list[str]) -> None:
+def run_command(command: list[str], dry_run: bool = False) -> None:
     """Run a command.
 
     Parameters
     ----------
     command : List[str]
         The command to run.
+
+    dry_run : bool
+        If True, print the command instead of running it.
 
     Raises
     ------
@@ -163,15 +178,18 @@ def run_command(command: list[str]) -> None:
     """
     # pylint: disable=inconsistent-quotes
     command_string = " ".join(command)
-    print("Running command: \n" + command_string + "\n")
-    subprocess.run(
-        command,
-        check=True,
-        env=os.environ,
-        cwd=_ROOT_DIR,
-        stdout=sys.stdout,
-        stderr=subprocess.STDOUT,
-    )  # nosemgrep # nosec
+    if not dry_run:
+        print("Running command: \n" + command_string + "\n")
+        subprocess.run(
+            command,
+            check=True,
+            env=os.environ,
+            cwd=_ROOT_DIR,
+            stdout=sys.stdout,
+            stderr=subprocess.STDOUT,
+        )  # nosemgrep # nosec
+    else:
+        print("You might need to run this command: \n" + command_string + "\n")
 
 
 def build_image(
@@ -182,6 +200,7 @@ def build_image(
     container_command: str,
     no_cache: bool,
     build_args: list[str],
+    dry: bool,
 ) -> None:
     """Build the container image.
 
@@ -201,6 +220,8 @@ def build_image(
         Do not use cache when building the image.
     build_args : List[str]
         Build arguments.
+    dry : bool
+        Just print the command to call.
 
     Raises
     ------
@@ -224,7 +245,10 @@ def build_image(
     if container_command == "docker":
         cmd.extend(["--progress=plain"])
     cmd.append(".")
-    run_command(cmd)
+    if dry:
+        print(" ".join(cmd))
+    else:
+        run_command(cmd)
 
 
 # pylint: disable=unused-argument
@@ -294,6 +318,8 @@ def check_other_platform(container_command: str, platform_arg: str) -> bool:
     # with rootless podman, multi-platform builds might not work
     # sudo podman build --arch=... might do, but let's not
     if is_other_platform:
+        # pylint: disable=broad-exception-caught
+        # noinspection PyBroadException
         try:
             run_command(
                 [
@@ -301,15 +327,47 @@ def check_other_platform(container_command: str, platform_arg: str) -> bool:
                     "run",
                     "--rm",
                     "--privileged",
-                    # cspell: disable-next-line
-                    "tonistiigi/binfmt",
-                    "--install",
-                    "all",
+                    "multiarch/qemu-user-static",
+                    "reset",
+                    "-p",
+                    "yes",
                 ]
             )
-        except BaseException:  # pylint: disable=broad-except
+        except BaseException:
             pass
     return is_other_platform
+
+
+def _get_build_args(args: argparse.Namespace) -> list[str]:
+    """Get the build arguments from the environment variables.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+
+    Returns
+    -------
+    List[str]
+        The build arguments.
+    """
+    build_args: list[str] = args.build_args or []
+    if args.dev is True:
+        react_branch = os.environ.get("REACT_BRANCH", "main")
+        python_branch = os.environ.get("PYTHON_BRANCH", "main")
+        api_url_base = os.environ.get("API_URL_BASE", "api")
+        for arg in build_args:
+            if arg.startswith("REACT_BRANCH="):
+                react_branch = arg.split("=")[1]
+            elif arg.startswith("PYTHON_BRANCH="):
+                python_branch = arg.split("=")[1]
+            elif arg.startswith("API_URL_BASE="):
+                api_url_base = arg.split("=")[1]
+
+        build_args.append(f"REACT_BRANCH={react_branch}")
+        build_args.append(f"PYTHON_BRANCH={python_branch}")
+        build_args.append(f"API_URL_BASE={api_url_base}")
+        build_args = list(set(build_args))  # remove duplicates
+    return build_args
 
 
 def main() -> None:
@@ -325,8 +383,8 @@ def main() -> None:
         If an error occurs.
     """
     args, _ = cli().parse_known_args()
-    build_args: list[str] = args.build_args or []
-    container_file = "Containerfile"
+    build_args: list[str] = _get_build_args(args)
+    container_file = "Containerfile.dev" if args.dev else "Containerfile"
     platform_arg = args.platform
     container_command = args.container_command
     allow_error = check_other_platform(container_command, platform_arg)
@@ -339,6 +397,7 @@ def main() -> None:
             container_command=container_command,
             no_cache=args.no_cache,
             build_args=build_args,
+            dry=args.dry is True,
         )
         if args.push is True:
             push_image(
