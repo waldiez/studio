@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
+
 # pylint: disable=broad-exception-caught,import-error
 # pyright: reportUnknownMemberType=false,reportAttributeAccessIssue=false
 # pyright: reportPossiblyUnboundVariable=false,reportUnknownVariableType=false
 # pyright: reportUnknownArgumentType=false,reportUnnecessaryIsInstance=false
 # pyright: reportUnknownParameterType=false,reportMissingImports=false
+# pyright: reportMissingTypeStubs=false
+
 """Windows terminal session implementation."""
 
 import asyncio
