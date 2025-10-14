@@ -149,12 +149,12 @@ dev-image:
 
 .PHONY: dev-dev-image
 dev-dev-image:
-	$(PYTHON) scripts/image.py --dev --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev --dry
+	$(PYTHON) scripts/image.py --dev --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev
 
 
 .PHONY: dev-dev-image-no-cache
 dev-dev-image-no-cache:
-	$(PYTHON) scripts/image.py --dev --no-cache --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev --dry
+	$(PYTHON) scripts/image.py --dev --no-cache --build-args REACT_BRANCH=dev --build-args PYTHON_BRANCH=dev
 
 
 .PHONY: build
