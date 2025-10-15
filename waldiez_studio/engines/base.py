@@ -3,6 +3,7 @@
 
 """Abstract execution engine interface."""
 
+import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,7 @@ class Engine(ABC):
         self.file_path = file_path
         self.root_dir = root_dir
         self.websocket = websocket
+        self.log = logging.getLogger(self.__class__.__name__)
 
     @abstractmethod
     async def start(self, start_msg: dict[str, Any] | None = None) -> None:

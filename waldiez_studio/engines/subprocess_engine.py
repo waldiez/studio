@@ -172,6 +172,50 @@ class SubprocessEngine(Engine):
         except ProcessLookupError:
             pass
 
+    async def _handle_stdin(self, msg: dict[str, Any]) -> None:
+        """Handle stdin request."""
+        self.log.debug("Got message: %s", msg)
+        if not self.proc:
+            return
+        # pylint: disable=too-many-try-statements,broad-exception-caught
+        try:
+            text = msg.get("text", "") or ""
+            if not text.endswith("\n"):
+                text += "\n"
+            data = text.encode(errors="replace")
+            if self.proc.stdin and not self.proc.stdin.is_closing():
+                self.proc.stdin.write(data)
+                await self.proc.stdin.drain()
+                if self._queue:
+                    await self._queue.put(
+                        {
+                            "type": "run_stdin_ack",
+                            "data": {
+                                "text": text,
+                                "request_id": msg.get("request_id"),
+                            },
+                        }
+                    )
+            else:
+                if self._queue:
+                    await self._queue.put(
+                        {
+                            "type": "run_stdin_error",
+                            "data": {
+                                "message": msg,
+                                "error": "No active process",
+                            },
+                        }
+                    )
+        except Exception as e:
+            if self._queue:
+                await self._queue.put(
+                    {
+                        "type": "run_stdin_error",
+                        "data": {"message": msg, "error": str(e)},
+                    }
+                )
+
     # pylint: disable=too-complex
     async def handle_client(self, msg: dict[str, Any]) -> None:  # noqa: C901
         """Handle subsequent client control messages (stdin/interrupt/etc.).
@@ -186,14 +230,7 @@ class SubprocessEngine(Engine):
         op = msg.get("op")
 
         if op == "stdin":
-            text = msg.get("text") or ""
-            if not text.endswith("\n"):
-                text += "\n"
-            data = text.encode(errors="replace")
-            if self.proc.stdin and not self.proc.stdin.is_closing():
-                self.proc.stdin.write(data)
-                with contextlib.suppress(Exception):
-                    await self.proc.stdin.drain()
+            await self._handle_stdin(msg)
 
         elif op == "stdin_eof":
             if self.proc.stdin and not self.proc.stdin.is_closing():
