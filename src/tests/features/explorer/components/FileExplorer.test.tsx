@@ -44,13 +44,13 @@ vi.mock("@/components/ui/input", () => ({
 
 vi.mock("lucide-react", () => ({
     ArrowUp: () => <div data-testid="arrow-up-icon" />,
-    File: () => <div data-testid="file-icon" />,
     Folder: () => <div data-testid="folder-icon" />,
     MoreVertical: () => <div data-testid="more-vertical-icon" />,
     Pencil: () => <div data-testid="pencil-icon" />,
     Plus: () => <div data-testid="plus-icon" />,
     Trash2: () => <div data-testid="trash-icon" />,
     Upload: () => <div data-testid="upload-icon" />,
+    RefreshCw: () => <div data-testid="refresh-icon" />,
 }));
 
 vi.mock("@/lib/utils", () => ({
@@ -72,6 +72,7 @@ const mockFileSystem = {
     upload: vi.fn(),
     rename: vi.fn(),
     remove: vi.fn(),
+    list: vi.fn(),
     breadcrumbs: [{ label: "root", path: "/" }],
 };
 
@@ -95,16 +96,16 @@ describe("FileExplorer", () => {
         render(<FileExplorer />);
 
         expect(screen.getByTestId("arrow-up-icon")).toBeInTheDocument();
-        expect(screen.getByText("New")).toBeInTheDocument();
-        expect(screen.getByText("File")).toBeInTheDocument();
-        expect(screen.getByText("Upload")).toBeInTheDocument();
+        expect(screen.getByTestId("folder-icon")).toBeInTheDocument();
+        expect(screen.getByTestId("refresh-icon")).toBeInTheDocument();
+        expect(screen.getByTestId("upload-icon")).toBeInTheDocument();
     });
 
     it("displays loading state", () => {
         mockFileSystem.loading = true;
         render(<FileExplorer />);
 
-        expect(screen.getByText("Loading…")).toBeInTheDocument();
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     it("displays error state", () => {
@@ -132,7 +133,7 @@ describe("FileExplorer", () => {
         expect(screen.getByText("src")).toBeInTheDocument();
         expect(screen.getByText("README.md")).toBeInTheDocument();
         expect(screen.getAllByTestId("folder-icon")).toHaveLength(2);
-        expect(screen.getAllByTestId("file-icon")).toHaveLength(1);
+        expect(screen.getAllByTestId("refresh-icon")).toHaveLength(1);
     });
 
     it("handles item selection", () => {
@@ -196,7 +197,7 @@ describe("FileExplorer", () => {
     it("handles folder creation", () => {
         render(<FileExplorer />);
 
-        fireEvent.click(screen.getByText("New"));
+        fireEvent.click(screen.getByTestId("folder-icon"));
 
         expect(mockFileSystem.createFolder).toHaveBeenCalled();
     });
@@ -204,7 +205,7 @@ describe("FileExplorer", () => {
     it("handles file creation", () => {
         render(<FileExplorer />);
 
-        fireEvent.click(screen.getByText("File"));
+        fireEvent.click(screen.getByTestId("waldiez-icon"));
 
         expect(mockFileSystem.createFile).toHaveBeenCalled();
     });

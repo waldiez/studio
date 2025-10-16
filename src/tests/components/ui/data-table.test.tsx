@@ -76,7 +76,7 @@ describe("DataTable", () => {
     it("displays filter input", () => {
         render(<DataTable {...defaultProps} />);
 
-        const filterInput = screen.getByPlaceholderText("Filter…");
+        const filterInput = screen.getByPlaceholderText("Filter...");
         expect(filterInput).toBeInTheDocument();
     });
 
@@ -84,7 +84,7 @@ describe("DataTable", () => {
         const onFilterChange = vi.fn();
         render(<DataTable {...defaultProps} onFilterChange={onFilterChange} />);
 
-        const filterInput = screen.getByPlaceholderText("Filter…");
+        const filterInput = screen.getByPlaceholderText("Filter...");
         fireEvent.change(filterInput, { target: { value: "Alice" } });
 
         expect(onFilterChange).toHaveBeenCalledWith("Alice");
@@ -99,7 +99,7 @@ describe("DataTable", () => {
     it("shows loading state", () => {
         render(<DataTable {...defaultProps} loading={true} />);
 
-        expect(screen.getByText("Loading…")).toBeInTheDocument();
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     it("displays pagination controls", () => {

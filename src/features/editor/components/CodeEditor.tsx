@@ -86,7 +86,7 @@ export default function CodeEditor({
                 onChange={v => onChange?.(v ?? "")}
                 onMount={handleMount}
                 options={mergedOptions}
-                loading={<div className="p-3 text-sm opacity-70">Loading editor…</div>}
+                loading={<div className="p-3 text-sm opacity-70">Loading editor...</div>}
             />
         </div>
     );

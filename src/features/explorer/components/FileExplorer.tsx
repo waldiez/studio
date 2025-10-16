@@ -16,9 +16,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useWorkspace } from "@/store/workspace";
 import type { PathItem } from "@/types/api";
-import { ArrowUp, Folder, MoreVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowUp, Folder, MoreVertical, Pencil, Plus, RefreshCw, Trash2, Upload } from "lucide-react";
 
 import * as React from "react";
+
+import logo from "@waldiez/react/dist/icon.svg";
 
 import { useFileSystem } from "../hooks/useFileSystem";
 
@@ -104,15 +106,22 @@ export default function FileExplorer() {
                         onClick={() => fs.createFolder()}
                         title="New folder"
                     >
-                        <Folder className="size-4 mr-1" /> New
+                        <Folder className="size-4 mr-1" />
                     </Button>
                     <Button
                         size="sm"
                         className="btn-outline"
+                        data-testid="waldiez-icon"
                         onClick={() => fs.createFile()}
-                        title="New file"
+                        title="New Waldiez Flow"
                     >
-                        <Plus className="size-4 mr-1" /> File
+                        <Plus className="size-4 mr-1" />
+                        <img
+                            src={logo}
+                            className={"path-item-icon size-5 waldiez-file"}
+                            alt="Waldiez Logo"
+                            title="New Waldiez Flow"
+                        />
                     </Button>
                     <Button
                         size="sm"
@@ -120,7 +129,10 @@ export default function FileExplorer() {
                         onClick={() => fileInputRef.current?.click()}
                         title="Upload"
                     >
-                        <Upload className="size-4 mr-1" /> Upload
+                        <Upload className="size-4 mr-1" />
+                    </Button>
+                    <Button size="sm" className="btn-outline" onClick={() => fs.list()} title="Refresh">
+                        <RefreshCw className="size-4 mr-1" />
                     </Button>
                     <input
                         ref={fileInputRef}
@@ -151,7 +163,7 @@ export default function FileExplorer() {
 
             {/* List */}
             <div className="flex-1 min-h-0 overflow-auto text-sm">
-                {fs.loading && <div className="p-3 opacity-70">Loading…</div>}
+                {fs.loading && <div className="p-3 opacity-70">Loading...</div>}
                 {fs.error && <div className="p-3 text-red-500">{fs.error}</div>}
                 {!fs.loading && fs.items.length === 0 && <div className="p-3 opacity-70">Empty folder</div>}
 

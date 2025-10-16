@@ -257,7 +257,7 @@ describe("CodeEditor", () => {
     it("displays loading state", () => {
         render(<CodeEditor value="test" />);
 
-        expect(screen.getByText("Loading editor…")).toBeInTheDocument();
+        expect(screen.getByText("Loading editor...")).toBeInTheDocument();
     });
 
     it("uses default path when not provided", () => {

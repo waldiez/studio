@@ -62,12 +62,12 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center gap-2 p-2 border-b border-[var(--border-color)]">
                 <Input
                     className="h-8 w-64"
-                    placeholder="Filter…"
+                    placeholder="Filter..."
                     value={filter}
                     onChange={e => onFilterChange(e.target.value)}
                 />
                 <div className="ml-auto text-xs opacity-70">
-                    {loading ? "Loading…" : `${total.toLocaleString()} rows`}
+                    {loading ? "Loading..." : `${total.toLocaleString()} rows`}
                 </div>
             </div>
 
