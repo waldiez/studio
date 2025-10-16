@@ -16,7 +16,17 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useWorkspace } from "@/store/workspace";
 import type { PathItem } from "@/types/api";
-import { ArrowUp, Folder, MoreVertical, Pencil, Plus, RefreshCw, Trash2, Upload } from "lucide-react";
+import {
+    ArrowUp,
+    Download,
+    Folder,
+    MoreVertical,
+    Pencil,
+    Plus,
+    RefreshCw,
+    Trash2,
+    Upload,
+} from "lucide-react";
 
 import * as React from "react";
 
@@ -231,9 +241,15 @@ export default function FileExplorer() {
                                             <MoreVertical className="size-4" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="min-w-40">
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="min-w-40 border-[var(--border-color)]"
+                                    >
                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => fs.download(it.path)}>
+                                            <Download className="size-4 mr-2" /> Download
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => beginRename(it)}>
                                             <Pencil className="size-4 mr-2" /> Rename
                                         </DropdownMenuItem>

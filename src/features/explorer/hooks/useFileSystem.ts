@@ -172,6 +172,65 @@ export function useFileSystem() {
         [list],
     );
 
+    const getFIleName = (path: string, r: Response) => {
+        const pathParts = path.split("/");
+        let filename = pathParts[pathParts.length - 1] || "download";
+        const contentDisposition = r.headers.get("Content-Disposition");
+        if (contentDisposition) {
+            const filenameStarMatch = contentDisposition.match(/filename\*=([^;]+)/);
+            if (filenameStarMatch) {
+                const encoded = filenameStarMatch[1];
+                const encodedFilename = encoded.replace(/^[^']*''/, "");
+                filename = decodeURIComponent(encodedFilename);
+            } else {
+                const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                if (match && match[1]) {
+                    filename = match[1].replace(/['"]/g, "");
+                    // Try to decode in case it's URL encoded
+                    try {
+                        filename = decodeURIComponent(filename);
+                    } catch {
+                        // If decoding fails, use as-is
+                    }
+                }
+            }
+        }
+        return filename;
+    };
+    const doDownload = useCallback(async (path: string, r: Response) => {
+        const filename = getFIleName(path, r);
+        const blob = await r.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+    }, []);
+
+    const download = useCallback(
+        async (path: string) => {
+            try {
+                setLoading(true);
+                setError(null);
+                const url = new URL("/api/workspace/download", location.origin);
+                url.searchParams.set("path", path);
+                const r = await fetch(url, { method: "GET" });
+                if (!r.ok) {
+                    throw new Error(await r.text());
+                }
+                await doDownload(path, r);
+            } catch (e: any) {
+                setError(e?.message ?? "Failed to download");
+            } finally {
+                setLoading(false);
+            }
+        },
+        [doDownload],
+    );
+
     // Initial load (stable list)
     useEffect(() => {
         void list("/");
@@ -219,6 +278,7 @@ export function useFileSystem() {
         upload,
         rename,
         remove,
+        download,
         breadcrumbs,
     };
 }
