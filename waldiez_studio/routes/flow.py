@@ -141,6 +141,7 @@ async def save_flow_contents(
     )
     try:
         await sync_to_async(flow_path.write_text)(contents, encoding="utf-8")
+        LOG.debug("Saved flow at %s", flow_path)
     except Exception as e:
         LOG.error("Error writing file: %s", e)
         raise HTTPException(

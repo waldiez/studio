@@ -314,6 +314,11 @@ class SubprocessEngine(Engine):
         self, stream: asyncio.StreamReader | None, kind: str
     ) -> None:
         if not self.proc or not stream:
+            self.log.warning(
+                "No process or stream. no process: %s, no stream: %s",
+                not self.proc,
+                not stream,
+            )
             return
         try:
             while self.proc.returncode is None:
@@ -325,6 +330,7 @@ class SubprocessEngine(Engine):
                         break
                     if len(line) > MAX_LINE:
                         line = line[:MAX_LINE] + b"...[truncated]\n"
+                    self.log.debug("Got: '%s', on %s stream", line, stream)
                     msg: dict[str, Any] = {
                         "type": f"run_{kind}",
                         "data": {"text": line.decode("utf-8", "ignore")},
@@ -337,6 +343,8 @@ class SubprocessEngine(Engine):
                             with contextlib.suppress(asyncio.QueueEmpty):
                                 _ = self._queue.get_nowait()  # drop one
                             await self._queue.put(msg)
+                    else:
+                        self.log.warning("No queue")
                 except asyncio.TimeoutError:
                     continue
         except Exception:  # pylint: disable=broad-exception-caught
