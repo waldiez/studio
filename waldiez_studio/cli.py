@@ -131,6 +131,8 @@ def run(
     this_dir_name = this_dir.name
     chdir_to = str(this_dir.parent)
     app_module_path = f"{this_dir_name}.main"
+    if host in ("localhost", "127.0.0.1"):  # pragma: no cover
+        host = "0.0.0.0"
     uvicorn.run(
         f"{app_module_path}:app",
         host=host,
@@ -140,6 +142,7 @@ def run(
         date_header=False,
         server_header=False,
         reload_dirs=[str(this_dir)] if reload else None,
+        reload_includes=["waldiez_studio/**/*.py"] if reload else None,
         reload_excludes=(
             [
                 "**/waldiez_out/**/*",
@@ -158,6 +161,8 @@ def run(
         proxy_headers=True,
         forwarded_allow_ips="*",
         ws_ping_timeout=None,
+        ws="websockets",
+        # ws="wsproto",
     )
 
 
