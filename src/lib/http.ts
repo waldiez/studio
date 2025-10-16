@@ -225,8 +225,10 @@ const guessMimeType = (ext: string): string => {
 
 // Textual extensions
 const TEXTUAL_EXTS = new Set([
-  ".txt", ".py", ".js", ".csv", ".ts", ".md", ".mmd",
-  ".rst", ".css", ".html", ".xml", ".json", ".yaml",
-  ".yml", ".toml", ".ini", ".ipynb", ".sh", ".bash",
-  ".bsh", ".sh", ".zsh", ".ps1", ".bat", ".waldiez"
+  ".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx",
+  ".env", ".txt", ".py", ".csv", ".json" ,
+  ".md", ".mmd", ".rst", ".css", ".html", ".xml", 
+  ".yaml", ".yml", ".toml", ".ini", ".ipynb", ".sh", 
+  ".bash", ".bsh", ".sh", ".zsh", ".ps1", ".bat",
+  ".rs", ".java", ".waldiez"
 ]);

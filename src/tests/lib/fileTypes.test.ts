@@ -287,7 +287,7 @@ describe("fileTypes", () => {
             });
 
             it("should handle paths", () => {
-                expect(routeFile("src/components/Button.tsx")).toEqual({ kind: "binary" }); // .tsx not in routeByExt
+                expect(routeFile("src/components/Button.bsx")).toEqual({ kind: "binary" });
                 expect(routeFile("/path/to/script.py")).toEqual({ kind: "code", language: "python" });
                 expect(routeFile("../relative/path/image.png")).toEqual({ kind: "media" });
             });

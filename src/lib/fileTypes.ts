@@ -6,9 +6,14 @@ export type ViewerKind = "code" | "notebook" | "mermaid" | "markdown" | "media" 
 export type FileRoute = { kind: ViewerKind; language?: string };
 
 export const routeByExt: Record<string, FileRoute> = {
+  ".env": { kind: "code", language: "bash" },
   ".py": { kind: "code", language: "python" },
   ".ts": { kind: "code", language: "typescript" },
+  ".tsx": { kind: "code", language: "typescript" },
   ".js": { kind: "code", language: "javascript" },
+  ".cjs": { kind: "code", language: "javascript" },
+  ".mjs": { kind: "code", language: "javascript" },
+  ".jsx": { kind: "code", language: "javascript" },
   ".json": { kind: "code", language: "json" },
   ".md": { kind: "markdown" },
   ".mmd": { kind: "mermaid" },
@@ -39,7 +44,11 @@ export const guessLanguage = (name: string): string => {
   if (n.endsWith(".ts")) {return "typescript";}
   if (n.endsWith(".tsx")) {return "typescript";}
   if (n.endsWith(".js")) {return "javascript";}
+  if (n.endsWith(".cjs")) {return "javascript";}
+  if (n.endsWith(".mjs")) {return "javascript";}
   if (n.endsWith(".jsx")) {return "javascript";}
+  if (n.endsWith(".ts")) {return "javascript";}
+  if (n.endsWith(".tsx")) {return "javascript";}
   if (n.endsWith(".json")) {return "json";}
   if (n.endsWith(".md")) {return "markdown";}
   if (n.endsWith(".mmd")) {return "markdown";}
@@ -61,6 +70,5 @@ export const guessLanguage = (name: string): string => {
 
 export function routeFile(name: string): FileRoute {
   const ext = name.toLowerCase().slice(name.lastIndexOf("."));
-  console.log(ext, routeByExt[ext]);
   return routeByExt[ext] ?? { kind: "binary" };
 }
