@@ -94,17 +94,19 @@ class WaldiezEngine(Engine):
         msg : dict[str, Any]
             Message from the client.
         """
-        if self._delegate:
-            the_msg = msg
-            if the_msg.get("op") in (
-                "waldiez_respond",
-                "waldiez_control",
-            ) and the_msg.get("payload", {}):
-                await self._delegate.handle_client(
-                    {"op": "stdin", "text": json.dumps(the_msg.get("payload"))}
-                )
-            else:
-                await self._delegate.handle_client(msg)
+        if not self._delegate:
+            self.log.error("No delegate for the process.")
+            return
+        the_msg = msg
+        if the_msg.get("op") in (
+            "waldiez_respond",
+            "waldiez_control",
+        ) and the_msg.get("payload", {}):
+            await self._delegate.handle_client(
+                {"op": "stdin", "text": json.dumps(the_msg.get("payload"))}
+            )
+        else:
+            await self._delegate.handle_client(msg)
 
     async def shutdown(self) -> None:
         """Finalize the run and emit 'run_end' if appropriate."""

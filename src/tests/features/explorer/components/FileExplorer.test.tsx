@@ -51,6 +51,7 @@ vi.mock("lucide-react", () => ({
     Trash2: () => <div data-testid="trash-icon" />,
     Upload: () => <div data-testid="upload-icon" />,
     RefreshCw: () => <div data-testid="refresh-icon" />,
+    Download: () => <div data-testid="download-icon" />,
 }));
 
 vi.mock("@/lib/utils", () => ({
@@ -253,7 +254,7 @@ describe("FileExplorer", () => {
         fireEvent.click(dropdownTrigger!);
 
         // Click rename option
-        const renameOption = screen.getAllByTestId("dropdown-item")[0];
+        const renameOption = screen.getByTestId("pencil-icon");
         fireEvent.click(renameOption);
 
         expect(screen.getByTestId("rename-input")).toBeInTheDocument();
@@ -269,7 +270,7 @@ describe("FileExplorer", () => {
         // Start rename
         const dropdownTrigger = screen.getByTestId("more-vertical-icon").closest("div");
         fireEvent.click(dropdownTrigger!);
-        const renameOption = screen.getAllByTestId("dropdown-item")[0];
+        const renameOption = screen.getByTestId("pencil-icon");
         fireEvent.click(renameOption);
 
         // Change name and press Enter
@@ -291,7 +292,7 @@ describe("FileExplorer", () => {
         // Start rename
         const dropdownTrigger = screen.getByTestId("more-vertical-icon").closest("div");
         fireEvent.click(dropdownTrigger!);
-        const renameOption = screen.getAllByTestId("dropdown-item")[0];
+        const renameOption = screen.getByTestId("pencil-icon");
         fireEvent.click(renameOption);
 
         // Press Escape
@@ -311,7 +312,7 @@ describe("FileExplorer", () => {
         // Start rename
         const dropdownTrigger = screen.getByTestId("more-vertical-icon").closest("div");
         fireEvent.click(dropdownTrigger!);
-        const renameOption = screen.getAllByTestId("dropdown-item")[0];
+        const renameOption = screen.getByTestId("pencil-icon");
         fireEvent.click(renameOption);
 
         // Change name and blur
@@ -333,7 +334,7 @@ describe("FileExplorer", () => {
         // Start rename
         const dropdownTrigger = screen.getByTestId("more-vertical-icon").closest("div");
         fireEvent.click(dropdownTrigger!);
-        const renameOption = screen.getAllByTestId("dropdown-item")[0];
+        const renameOption = screen.getByTestId("pencil-icon");
         fireEvent.click(renameOption);
 
         // Press Enter without changing name
@@ -355,8 +356,8 @@ describe("FileExplorer", () => {
         const dropdownTrigger = screen.getByTestId("more-vertical-icon").closest("div");
         fireEvent.click(dropdownTrigger!);
 
-        // Click delete option (second item)
-        const deleteOption = screen.getAllByTestId("dropdown-item")[1];
+        // Click delete option
+        const deleteOption = screen.getByTestId("trash-icon");
         fireEvent.click(deleteOption);
 
         expect(mockFileSystem.remove).toHaveBeenCalledWith("test.txt");

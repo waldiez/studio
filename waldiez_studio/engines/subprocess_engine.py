@@ -85,8 +85,7 @@ class SubprocessEngine(Engine):
             creationflags=creationflags,
         )
 
-        # single producer-agnostic sender
-        self._queue = asyncio.Queue(maxsize=1000)
+        self._queue = asyncio.Queue(maxsize=10000)
         await self._queue.put(
             {
                 "type": "run_status",
@@ -225,6 +224,7 @@ class SubprocessEngine(Engine):
         msg : dict[str, Any]
             Message from the client.
         """
+        self.log.debug("Handling client message: %s", msg)
         if not self.proc:
             return
         op = msg.get("op")
@@ -326,11 +326,11 @@ class SubprocessEngine(Engine):
                     line = await asyncio.wait_for(
                         stream.readline(), timeout=1.0
                     )
+                    self.log.debug("Got: '%s', on %s stream", line, kind)
                     if not line:
                         break
                     if len(line) > MAX_LINE:
                         line = line[:MAX_LINE] + b"...[truncated]\n"
-                    self.log.debug("Got: '%s', on %s stream", line, stream)
                     msg: dict[str, Any] = {
                         "type": f"run_{kind}",
                         "data": {"text": line.decode("utf-8", "ignore")},

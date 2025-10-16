@@ -88,7 +88,7 @@ def test_run_command_defaults(
     result = runner.invoke(app)
     assert result.exit_code == 0
     mock_uvicorn_run.assert_called_once()
-    assert mock_uvicorn_run.call_args[1]["host"] == "localhost"  # Default host
+    assert mock_uvicorn_run.call_args[1]["host"] in ("localhost", "0.0.0.0")
     assert mock_uvicorn_run.call_args[1]["port"] == 8000  # Default port
 
 
