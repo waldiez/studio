@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
+
+# pyright: reportUnknownVariableType=false
 """Waldiez engine implementation."""
 
 from __future__ import annotations
@@ -82,8 +84,10 @@ class WaldiezEngine(Engine):
             ],
         }
         cmd_args = start_msg.get("args", [])
-        if cmd_args and isinstance(cmd_args, list) and "--step" in cmd_args:
-            args["args"].append("--step")
+        if cmd_args and isinstance(cmd_args, list):
+            for cmd_arg in cmd_args:
+                if isinstance(cmd_arg, str):
+                    args["args"].append(cmd_arg)
         await self._delegate.start(args)
 
     async def handle_client(self, msg: dict[str, Any]) -> None:

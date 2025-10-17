@@ -18,7 +18,8 @@ from fastapi import WebSocket
 
 from .base import Engine
 
-MAX_LINE = 64 * 1024
+_READ_CHUNK = 16_384  # 16 KB per read; safe and responsive
+_MAX_PENDING_LINE_BYTES = 2_000_000  # safety: split very long lines
 
 
 class SubprocessEngine(Engine):
@@ -311,7 +312,7 @@ class SubprocessEngine(Engine):
 
     # pylint: disable=too-many-try-statements,too-complex
     async def _read_stream(  # noqa: C901
-        self, stream: asyncio.StreamReader | None, kind: str
+        self, stream: asyncio.StreamReader | None, label: str
     ) -> None:
         if not self.proc or not stream:
             self.log.warning(
@@ -320,36 +321,60 @@ class SubprocessEngine(Engine):
                 not stream,
             )
             return
-        try:
-            while self.proc.returncode is None:
-                try:
-                    line = await asyncio.wait_for(
-                        stream.readline(), timeout=1.0
-                    )
-                    self.log.debug("Got: '%s', on %s stream", line, kind)
-                    if not line:
-                        break
-                    if len(line) > MAX_LINE:
-                        line = line[:MAX_LINE] + b"...[truncated]\n"
-                    msg: dict[str, Any] = {
-                        "type": f"run_{kind}",
-                        "data": {"text": line.decode("utf-8", "ignore")},
+        buf = bytearray()
+
+        async def emit(line_bytes: bytes) -> None:
+            # Decode defensively; your downstream can JSON-parse if it wants.
+            text = line_bytes.decode("utf-8", errors="replace")
+            if self._queue:
+                await self._queue.put(
+                    {
+                        "type": f"run_{label}",  # "stdout" or "stderr"
+                        "data": {"text": text},
                     }
-                    # back pressure: drop oldest if queue full
-                    if self._queue:
-                        try:
-                            self._queue.put_nowait(msg)
-                        except asyncio.QueueFull:
-                            with contextlib.suppress(asyncio.QueueEmpty):
-                                _ = self._queue.get_nowait()  # drop one
-                            await self._queue.put(msg)
-                    else:
-                        self.log.warning("No queue")
-                except asyncio.TimeoutError:
-                    continue
-        except Exception:  # pylint: disable=broad-exception-caught
-            # swallow, sender will finish when queue drains / ws closes
-            pass
+                )
+
+        try:
+            while True:
+                chunk = await stream.read(_READ_CHUNK)
+                if not chunk:  # EOF
+                    break
+                buf.extend(chunk)
+
+                # Emit every complete line we have
+                start = 0
+                while True:
+                    nl = buf.find(b"\n", start)
+                    if nl == -1:
+                        # If we’ve buffered a massive no-newline line,
+                        # spill a piece
+                        if len(buf) > _MAX_PENDING_LINE_BYTES:
+                            spill, buf = (
+                                bytes(buf[:_READ_CHUNK]),
+                                buf[_READ_CHUNK:],
+                            )
+                            await emit(spill)
+                        break
+                    line, start = bytes(buf[:nl]), nl + 1
+                    await emit(line)
+                # Keep only the remainder (after last newline)
+                if start:
+                    del buf[:start]
+
+            # Flush any tail without a trailing newline
+            if buf:
+                await emit(bytes(buf))
+        except asyncio.CancelledError as e:
+            raise asyncio.CancelledError(str(e)) from e
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            # Surface stream errors in the queue so callers can react
+            if self._queue:
+                await self._queue.put(
+                    {
+                        "type": f"{label}_error",
+                        "data": f"{type(e).__name__}: {e}",
+                    }
+                )
 
     async def _send_queued(self) -> None:
         if not self._queue:

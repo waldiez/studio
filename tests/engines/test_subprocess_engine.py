@@ -53,9 +53,9 @@ async def test_subprocess_engine_start(
         mock_proc.stderr = AsyncMock()
         mock_proc.returncode = None
 
-        # Mock readline to return empty bytes (EOF)
-        mock_proc.stdout.readline.return_value = b""
-        mock_proc.stderr.readline.return_value = b""
+        # Mock read to return empty bytes (EOF)
+        mock_proc.stdout.read.return_value = b""
+        mock_proc.stderr.read.return_value = b""
 
         mock_subprocess.return_value = mock_proc
         mock_proc.wait.return_value = 0
@@ -134,56 +134,6 @@ async def test_subprocess_engine_handle_interrupt_unix(
         mock_getpgid.assert_called_once_with(mock_proc.pid)
         mock_killpg.assert_called_once()
         mock_proc.terminate.assert_not_called()
-
-
-# @pytest.mark.asyncio
-# async def test_unix_permissionerror_falls_back_to_terminate(
-#     mock_websocket: MagicMock,
-#     temp_python_file: Path,
-#     tmp_path: Path,
-# ) -> None:
-#     engine = SubprocessEngine(
-#         file_path=temp_python_file,
-#         root_dir=tmp_path,
-#         websocket=mock_websocket,
-#     )
-#     mock_proc = AsyncMock()
-#     mock_proc.pid = 12345
-#     engine.proc = mock_proc
-
-#     with (
-#         patch.object(sys, "platform", "linux"),
-#         patch("os.getpgid", create=True) as mock_getpgid,
-#         patch("os.killpg", create=True) as mock_killpg,
-#     ):
-#         mock_getpgid.return_value = 999
-#         mock_killpg.side_effect = PermissionError
-#         await engine.handle_client({"op": "interrupt"})
-
-#         mock_getpgid.assert_called_once_with(mock_proc.pid)
-#         mock_killpg.assert_called_once()
-#         # mock_proc.terminate.assert_called_once()
-
-
-# @pytest.mark.asyncio
-# async def test_windows_calls_terminate(
-#     mock_websocket: MagicMock,
-#     temp_python_file: Path,
-#     tmp_path: Path,
-# ) -> None:
-#     engine = SubprocessEngine(
-#         file_path=temp_python_file,
-#         root_dir=tmp_path,
-#         websocket=mock_websocket,
-#     )
-#     mock_proc = AsyncMock()
-#     mock_proc.pid = 12345
-#     engine.proc = mock_proc
-
-#     with patch.object(sys, "platform", "win32"):
-#         await engine.handle_client({"op": "interrupt"})
-
-#     mock_proc.terminate.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -283,8 +233,8 @@ async def test_subprocess_engine_with_venv(
         mock_proc.pid = 12345
         mock_proc.stdout = AsyncMock()
         mock_proc.stderr = AsyncMock()
-        mock_proc.stdout.readline.return_value = b""
-        mock_proc.stderr.readline.return_value = b""
+        mock_proc.stdout.read.return_value = b""
+        mock_proc.stderr.read.return_value = b""
         mock_subprocess.return_value = mock_proc
 
         # Start with venv
@@ -316,8 +266,8 @@ async def test_subprocess_engine_start_with_module(
         mock_proc.pid = 12345
         mock_proc.stdout = AsyncMock()
         mock_proc.stderr = AsyncMock()
-        mock_proc.stdout.readline.return_value = b""
-        mock_proc.stderr.readline.return_value = b""
+        mock_proc.stdout.read.return_value = b""
+        mock_proc.stderr.read.return_value = b""
         mock_subprocess.return_value = mock_proc
         mock_proc.wait.return_value = 0
 
@@ -355,8 +305,8 @@ async def test_subprocess_engine_start_with_cwd(
         mock_proc.pid = 12345
         mock_proc.stdout = AsyncMock()
         mock_proc.stderr = AsyncMock()
-        mock_proc.stdout.readline.return_value = b""
-        mock_proc.stderr.readline.return_value = b""
+        mock_proc.stdout.read.return_value = b""
+        mock_proc.stderr.read.return_value = b""
         mock_subprocess.return_value = mock_proc
         mock_proc.wait.return_value = 0
 
@@ -483,82 +433,6 @@ async def test_subprocess_engine_handle_kill(
 
         # Should have called killpg with SIGKILL
         mock_killpg.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_subprocess_engine_read_stream_timeout(
-    mock_websocket: MagicMock,
-    temp_python_file: Path,
-    tmp_path: Path,
-) -> None:
-    """Test stream reading with timeout."""
-    engine = SubprocessEngine(
-        file_path=temp_python_file,
-        root_dir=tmp_path,
-        websocket=mock_websocket,
-    )
-
-    mock_proc = AsyncMock()
-    mock_proc.returncode = None
-    mock_stream = AsyncMock()
-
-    # First call times out, second call returns data,
-    # third call returns empty (EOF)
-    mock_stream.readline.side_effect = [
-        asyncio.TimeoutError(),
-        b"test output\n",
-        b"",
-    ]
-
-    engine.proc = mock_proc
-    engine._queue = asyncio.Queue()
-
-    # Run stream reader briefly
-    task = asyncio.create_task(engine._read_stream(mock_stream, "stdout"))
-    await asyncio.sleep(0.1)
-    mock_proc.returncode = 0  # Set return code to exit loop
-    await asyncio.sleep(0.1)
-    task.cancel()
-
-    # Should have handled timeout gracefully
-    assert mock_stream.readline.call_count >= 2
-
-
-@pytest.mark.asyncio
-async def test_subprocess_engine_read_stream_long_line(
-    mock_websocket: MagicMock,
-    temp_python_file: Path,
-    tmp_path: Path,
-) -> None:
-    """Test stream reading with very long lines."""
-    engine = SubprocessEngine(
-        file_path=temp_python_file,
-        root_dir=tmp_path,
-        websocket=mock_websocket,
-    )
-
-    mock_proc = AsyncMock()
-    mock_proc.returncode = None
-    mock_stream = AsyncMock()
-
-    # Create a very long line (exceeds MAX_LINE)
-    long_line = b"x" * (64 * 1024 + 100) + b"\n"
-    mock_stream.readline.side_effect = [long_line, b""]
-
-    engine.proc = mock_proc
-    engine._queue = asyncio.Queue()
-
-    # Run stream reader briefly
-    task = asyncio.create_task(engine._read_stream(mock_stream, "stdout"))
-    await asyncio.sleep(0.1)
-    mock_proc.returncode = 0  # Set return code to exit loop
-    await asyncio.sleep(0.1)
-    task.cancel()
-
-    # Should have truncated the long line
-    assert not engine._queue.empty()
-    msg = await engine._queue.get()
-    assert "[truncated]" in msg["data"]["text"]
 
 
 @pytest.mark.asyncio
