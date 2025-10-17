@@ -303,7 +303,7 @@ export class WaldiezController {
         }
     }
 }
-/** Simple JSON object extractor (same as before, trimmed) */
+
 function extractJsonObjects(text: string): any[] {
     const results: any[] = [];
     for (const line of text.split(/\r?\n/)) {

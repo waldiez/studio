@@ -290,3 +290,11 @@ body.waldiez-dark .studio-explorer-top .btn-outline {
 body.waldiez-dark .studio-explorer-top .btn-outline:hover {
   background: oklab(1 0 0 / 0.075);
 }
+
+.w-select__input,
+.w-select__input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  border: none !important;
+}
