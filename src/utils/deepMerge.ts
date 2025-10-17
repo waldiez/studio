@@ -66,23 +66,35 @@ function validateInputs(base: any, patch: any): void {
     }
 }
 
-function dedupeById<T extends { id?: string | number }>(arr: T[]): T[] {
+function dedupeById<T extends Record<string, any>>(arr: T[]): T[] {
     const seen = new Set<string | number>();
     const result: T[] = [];
 
     for (const item of arr) {
-        if (item && typeof item === "object" && "id" in item) {
-            const id = item.id;
-            if (id !== undefined && id !== null) {
-                if (!seen.has(id)) {
-                    seen.add(id);
-                    result.push(item);
-                }
-                continue;
-            }
+        if (!item || typeof item !== "object") {
+            // Not an object — just keep as-is
+            result.push(item);
+            continue;
         }
-        // No id or invalid id, keep as-is
-        result.push(item);
+
+        // Try several identifier fields in order of priority
+        const idCandidates = [item.id, item.uuid, item.timestamp, item.content?.uuid].filter(
+            v => v !== undefined && v !== null,
+        );
+
+        // Pick the first valid candidate
+        const key = idCandidates.length > 0 ? idCandidates[0] : undefined;
+
+        if (key !== undefined && key !== null) {
+            if (!seen.has(key)) {
+                seen.add(key);
+                result.push(item);
+            }
+            // else duplicate, skip
+        } else {
+            // No valid identifier — keep it
+            result.push(item);
+        }
     }
 
     return result;

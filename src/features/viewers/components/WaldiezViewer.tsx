@@ -34,9 +34,9 @@ export default function WaldiezViewer({ source }: Props) {
             }
             const mode: WaldiezMode = detail.mode ?? "chat";
             if (mode === "step") {
-                actions.stepRun();
+                actions.stepRun(detail.contents);
             } else {
-                actions.run();
+                actions.run(detail.contents);
             }
         });
 

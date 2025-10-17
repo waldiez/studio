@@ -19,7 +19,7 @@ export function onWorkspaceChanged(
 }
 
 export type RunMode = "chat" | "step";
-export type RunRequest = { path: string; mode?: RunMode };
+export type RunRequest = { path: string; mode?: RunMode, contents?: string, args?: string[] };
 
 const RUN_REQUESTED = "run:requested";
 const RUN_STOP_REQUESTED = "run:stop";

@@ -25,7 +25,7 @@ export class WaldiezController {
 
     constructor(private _onState: (patch: Partial<WaldiezState>) => void) {}
 
-    start(path: string, opts: { mode?: WaldiezMode } = {}) {
+    start(path: string, opts: { mode?: WaldiezMode; args?: string[] } = {}) {
         this._mode = opts.mode ?? "chat";
 
         this._onState({
@@ -58,7 +58,16 @@ export class WaldiezController {
 
         this._unsubscribe?.();
         this._unsubscribe = useExec.getState().addListener(this._onExecEvent);
-        useExec.getState().run(path, { args: this._mode === "step" ? ["--step"] : undefined });
+        const cmdArgs = [];
+        if (this._mode === "step") {
+            cmdArgs.push("--step");
+        }
+        if (opts.args) {
+            for (const arg of opts.args) {
+                cmdArgs.push(arg);
+            }
+        }
+        useExec.getState().run(path, { args: cmdArgs.length > 0 ? cmdArgs : undefined });
     }
 
     stop() {
@@ -239,6 +248,8 @@ export class WaldiezController {
             patch.stepByStep!.eventHistory = stateUpdate.eventHistory;
         }
         if (stateUpdate.participants) {
+            patch.stepByStep!.active = true;
+            patch.stepByStep!.show = true;
             patch.stepByStep!.participants = stateUpdate.participants;
         }
         if (stateUpdate.help !== undefined) {
