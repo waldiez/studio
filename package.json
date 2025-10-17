@@ -42,7 +42,7 @@
         "clsx": "^2.1.1",
         "highlight.js": "^11.11.1",
         "lucide-react": "^0.546.0",
-        "marked": "^16.4.0",
+        "marked": "^16.4.1",
         "marked-highlight": "^2.2.2",
         "marked-react": "^3.0.2",
         "mermaid": "^11.12.0",
