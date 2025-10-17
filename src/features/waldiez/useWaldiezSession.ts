@@ -118,7 +118,11 @@ export function useWaldiezSession(path: string | null) {
                     args.push("--breakpoints", arg);
                 }
             }
-            ctrl.start(path, { mode: "step" satisfies WaldiezMode, args });
+            if (args.length > 0) {
+                ctrl.start(path, { mode: "step" satisfies WaldiezMode, args });
+            } else {
+                ctrl.start(path, { mode: "step" satisfies WaldiezMode });
+            }
         },
         [ctrl, path, save],
     );

@@ -235,6 +235,18 @@ export class WaldiezController {
         this._onState(patch);
     }
 
+    private _extractEventId(item: Record<string, unknown>): string | number {
+        const id = item.id ?? item.timestamp ?? item.uuid ?? (item.content as any)?.uuid;
+        if (id !== undefined && id !== null) {
+            return id;
+        }
+        try {
+            return JSON.stringify(item).slice(0, 100);
+        } catch {
+            return Object.keys(item).join(",").slice(0, 100);
+        }
+    }
+
     private _applyStep(res: WaldiezStepByStepProcessingResult) {
         const patch: Partial<WaldiezState> = { stepByStep: {} as any };
         if (!res.stateUpdate) {
@@ -243,6 +255,20 @@ export class WaldiezController {
         const stateUpdate = res.stateUpdate;
         if (stateUpdate.currentEvent !== undefined) {
             patch.stepByStep!.currentEvent = stateUpdate.currentEvent;
+            if (!stateUpdate.eventHistory) {
+                stateUpdate.eventHistory = [stateUpdate.currentEvent];
+            } else {
+                const lastEvent = stateUpdate.eventHistory[stateUpdate.eventHistory.length - 1];
+                if (lastEvent) {
+                    const lastEventId = this._extractEventId(lastEvent);
+                    const currentEventId = this._extractEventId(stateUpdate.currentEvent);
+                    if (lastEventId !== currentEventId) {
+                        stateUpdate.eventHistory.push(stateUpdate.currentEvent);
+                    }
+                } else {
+                    stateUpdate.eventHistory.push(stateUpdate.currentEvent);
+                }
+            }
         }
         if (stateUpdate.eventHistory) {
             patch.stepByStep!.eventHistory = stateUpdate.eventHistory;

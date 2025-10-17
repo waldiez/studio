@@ -359,7 +359,7 @@ describe("WaldiezController", () => {
 
         let patch = onState.mock.calls.at(-1)![0];
         expect(patch.stepByStep.currentEvent).toEqual({ id: "e1" });
-        expect(patch.stepByStep.eventHistory).toEqual([{ id: "h1" }]);
+        expect(patch.stepByStep.eventHistory).toEqual([{ id: "h1" }, { id: "e1" }]);
         expect(patch.stepByStep.participants).toEqual([{ id: "p1" }]);
         expect(patch.stepByStep.help).toBe("help text");
         expect(patch.stepByStep.lastError).toBeNull();
