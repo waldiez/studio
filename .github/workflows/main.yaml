@@ -41,7 +41,7 @@ jobs:
       - name: lint js
         run: bun run lint
       - name: lint py
-        run: python scriots/lint.py
+        run: python scripts/lint.py
       - name: Prepare Playwright
         run: npx playwright install --with-deps chromium
       - name: Run frontend tests
