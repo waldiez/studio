@@ -1,5 +1,5 @@
 aiofiles==25.1.0
-aiohttp==3.13.0
+aiohttp==3.13.1
 click<8.2
 fastapi
 jupyter_client==8.6.3
@@ -12,4 +12,4 @@ tenacity>=9.0.0,<=9.1.2
 trio==0.31.0
 typer>=0.9.0,<1
 uvicorn[standard]==0.37.0
-waldiez @ git+https://github.com/waldiez/waldiez.git@dev
+waldiez==0.6.1

@@ -51,6 +51,7 @@
         "exitfirst",
         "fastapi",
         "fcose",
+        "filelock",
         "filterwarnings",
         "flac",
         "flaml",
