@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
-/* eslint-disable tsdoc/syntax */
+/* eslint-disable tsdoc/syntax,max-statements */
 type PlainObject = Record<string, any>;
 
 export const DEL = Symbol("deepMerge.delete");
@@ -14,6 +14,8 @@ export type DeepMergeOptions = {
     deleteKeys?: string[];
     /** Custom array merge strategies by path */
     arrayStrategies?: Record<string, ArrayMergeStrategy>;
+    /** Paths where recursion should stop (shallow merge only) */
+    shallowPaths?: string[];
 };
 
 export type ArrayMergeStrategy = "replace" | "append" | "prepend";
@@ -28,6 +30,14 @@ const DEFAULT_ARRAY_CONFIGS: Record<string, ArrayConfig> = {
     "chat.messages": { strategy: "append", cap: 2000, dedupe: true },
     "stepByStep.eventHistory": { strategy: "prepend", cap: 5000, dedupe: true },
 };
+
+// Paths where we should stop recursion and do shallow merge
+const DEFAULT_SHALLOW_PATHS = [
+    "stepByStep.currentEvent",
+    "stepByStep.currentEvent.agents",
+    "stepByStep.eventHistory.*", // Each event in the history array
+    "stepByStep.eventHistory.*.agents", // Agents within each history event
+];
 
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 const DEFAULT_MAX_DEPTH = 50;
@@ -66,8 +76,35 @@ function validateInputs(base: any, patch: any): void {
     }
 }
 
+/**
+ * Check if we should do shallow merge at this path
+ */
+function shouldDoShallowMerge(path: string[], shallowPaths?: string[]): boolean {
+    if (!shallowPaths || shallowPaths.length === 0) {
+        shallowPaths = DEFAULT_SHALLOW_PATHS;
+    }
+
+    const currentPath = path.join(".");
+
+    // Check if current path matches or is a child of any shallow path
+    return shallowPaths.some(shallowPath => {
+        // Handle wildcard patterns
+        if (shallowPath.includes("*")) {
+            // Convert wildcard pattern to regex
+            const regexPattern = shallowPath
+                .replace(/\./g, "\\.") // Escape dots
+                .replace(/\*/g, "[^.]+"); // * matches any segment except dot
+            const regex = new RegExp(`^${regexPattern}(\\..*)?$`);
+            return regex.test(currentPath);
+        }
+
+        // Exact match or child path
+        return currentPath === shallowPath || currentPath.startsWith(shallowPath + ".");
+    });
+}
+
 function dedupeById<T extends Record<string, any>>(arr: T[]): T[] {
-    const seen = new Set<string | number>();
+    const seen = new Set<string>();
     const result: T[] = [];
 
     for (const item of arr) {
@@ -77,17 +114,37 @@ function dedupeById<T extends Record<string, any>>(arr: T[]): T[] {
             continue;
         }
 
-        // Try several identifier fields in order of priority
+        // Build a composite key based on multiple fields
+        const keyParts: (string | number)[] = [];
+
+        // Primary ID candidates
         const idCandidates = [item.id, item.uuid, item.timestamp, item.content?.uuid].filter(
             v => v !== undefined && v !== null,
         );
 
-        // Pick the first valid candidate
-        const key = idCandidates.length > 0 ? idCandidates[0] : undefined;
+        if (idCandidates.length > 0) {
+            keyParts.push(idCandidates[0]);
+        }
 
-        if (key !== undefined && key !== null) {
-            if (!seen.has(key)) {
-                seen.add(key);
+        // Add sender/recipient to make the key unique for different message directions
+        if (item.sender !== undefined && item.sender !== null) {
+            keyParts.push(`sender:${item.sender}`);
+        }
+        if (item.recipient !== undefined && item.recipient !== null) {
+            keyParts.push(`recipient:${item.recipient}`);
+        }
+
+        // Add type if it exists (for event differentiation)
+        if (item.type !== undefined && item.type !== null) {
+            keyParts.push(`type:${item.type}`);
+        }
+
+        // If we have any key parts, create a composite key
+        if (keyParts.length > 0) {
+            const compositeKey = keyParts.join("|");
+
+            if (!seen.has(compositeKey)) {
+                seen.add(compositeKey);
                 result.push(item);
             }
             // else duplicate, skip
@@ -144,7 +201,6 @@ function mergeArrays(base: any, patch: any, path: string[], options: DeepMergeOp
     return result;
 }
 
-// eslint-disable-next-line max-statements
 function mergeObjects(
     base: PlainObject,
     patch: PlainObject,
@@ -173,10 +229,16 @@ function mergeObjects(
         }
 
         const baseValue = base[key];
-        const merged = deepMergeRecursive(baseValue, patchValue, currentPath, options, depth + 1);
 
-        // Preserve reference if values are identical
-        result[key] = Object.is(merged, baseValue) ? baseValue : merged;
+        // Check if we should do shallow merge
+        if (shouldDoShallowMerge(currentPath, options.shallowPaths)) {
+            // For shallow merge, just replace the value
+            result[key] = patchValue;
+        } else {
+            const merged = deepMergeRecursive(baseValue, patchValue, currentPath, options, depth + 1);
+            // Preserve reference if values are identical
+            result[key] = Object.is(merged, baseValue) ? baseValue : merged;
+        }
     }
 
     return result;
@@ -217,6 +279,11 @@ function deepMergeRecursive(
     // Skip undefined patches
     if (patch === undefined) {
         return base;
+    }
+
+    // Check if we should do shallow merge at this level
+    if (shouldDoShallowMerge(path, options.shallowPaths)) {
+        return patch;
     }
 
     // Handle arrays
