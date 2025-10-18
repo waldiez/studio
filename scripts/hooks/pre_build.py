@@ -13,7 +13,7 @@ from typing import Any
 
 # pylint: disable=import-error
 # pyright: reportMissingImports=false,reportUnknownVariableType=false
-# pyright: reportMissingTypeArgument=false
+# pyright: reportMissingTypeArgument=false,reportDeprecated=false
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 THRESHOLD = 600  # 10 minutes before this check
