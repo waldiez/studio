@@ -91,6 +91,7 @@ RUN apt update && \
     libxcomposite1 \
     libxdamage1 \
     libxrandr2 \
+    tini \
     tzdata \
     locales \
     sudo \
