@@ -2,11 +2,13 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+/* eslint-disable complexity */
 import CodeEditor from "@/features/editor/components/CodeEditor";
 import MarkdownViewer from "@/features/viewers/components/MarkdownViewer";
 import MediaViewer from "@/features/viewers/components/MediaViewer";
 import MermaidViewer from "@/features/viewers/components/MermaidViewer";
 import NotebookViewer from "@/features/viewers/components/NotebookViewer";
+import PdfViewer from "@/features/viewers/components/PdfViewer";
 import SQLiteViewer from "@/features/viewers/components/SQLiteViewer";
 import WaldiezViewer from "@/features/viewers/components/WaldiezViewer";
 import { routeFile } from "@/lib/fileTypes";
@@ -87,6 +89,10 @@ export default function ViewerRouter({
         if (mime?.startsWith("image/") || mime?.startsWith("video/") || mime?.startsWith("audio/")) {
             return <MediaViewer url={data.url} mime={data.mime} className="h-full w-full" />;
         }
+        if (mime?.endsWith("/pdf")) {
+            return <PdfViewer source={data.url} />;
+        }
+
         if (path) {
             const ext = extOf(data.url);
             if (SQLITE_EXTS.has(ext)) {

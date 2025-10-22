@@ -76,6 +76,8 @@ export const mockReactFlow = () => {
     /* eslint-disable @typescript-eslint/ban-ts-comment */
     // @ts-ignore
     global.DOMMatrixReadOnly = DOMMatrixReadOnly;
+    // @ts-ignore
+    global.DOMMatrix = DOMMatrixReadOnly;
 
     Object.defineProperties(global.HTMLElement.prototype, {
         offsetHeight: {

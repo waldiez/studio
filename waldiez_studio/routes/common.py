@@ -52,6 +52,7 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
     ".mp3": "audio/mpeg",
     ".wav": "audio/wav",
     ".oga": "audio/ogg",
+    ".pdf": "application/pdf",
 }
 TEXTUAL_EXTS = {
     ".sh",

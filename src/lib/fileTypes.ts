@@ -34,6 +34,7 @@ export const routeByExt: Record<string, FileRoute> = {
   ".ogg": { kind: "media" },
   ".wav": { kind: "media" },
   ".svg": { kind: "media" },
+  ".pdf": { kind: "binary" },
   ".waldiez": { kind: "code", language: "waldiez" }
 };
 

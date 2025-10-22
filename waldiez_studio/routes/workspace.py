@@ -487,11 +487,13 @@ async def get_file(
                 "content": content,
             }
         )
-
-    headers = {"Content-Disposition": f'inline; filename="{file_path.name}"'}
+    file_name = file_path.name.encode(
+        encoding="utf-8", errors="replace"
+    ).decode(encoding="latin-1", errors="replace")
+    headers = {"Content-Disposition": f'inline; filename="{file_name}"'}
     return FileResponse(
         file_path,
-        filename=file_path.name,
+        filename=file_name,
         media_type=mime,
         headers=headers,
     )

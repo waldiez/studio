@@ -48,6 +48,10 @@ vi.mock("@/features/viewers/components/WaldiezViewer", () => ({
     default: ({ source }: any) => <div data-testid="waldiez-viewer">{source}</div>,
 }));
 
+vi.mock("@/features/viewers/components/PdfViewer", () => ({
+    default: ({ source }: any) => <div data-testid="pdf-viewer">{source}</div>,
+}));
+
 vi.mock("@/lib/fileTypes", () => ({
     routeFile: vi.fn(),
 }));
