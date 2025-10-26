@@ -17,7 +17,7 @@ const cssMapBody: CssMap = {};
 const cssMapRoot: CssMap = {};
 
 let rafSpy: ReturnType<typeof vi.spyOn>;
-let cafSpy: ReturnType<typeof vi.spyOn>;
+let cafSpy: any;
 let gcsSpy: ReturnType<typeof vi.spyOn>;
 
 describe("useXtermTheme", () => {

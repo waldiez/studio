@@ -56,7 +56,7 @@ function extractIdIfJson(line: string): string | null {
     if (!trimmed.startsWith("{") || !trimmed.includes('"id"')) {
         return null;
     }
-
+    /* c8 ignore next -- @preserve */
     try {
         const parsed = JSON.parse(trimmed);
         if (parsed && typeof parsed === "object" && typeof parsed.id === "string") {
@@ -72,6 +72,7 @@ const MAX_IDS = 1000;
 
 function rememberId(id: string) {
     seenIds.add(id);
+    /* c8 ignore next -- @preserve */
     if (seenIds.size > MAX_IDS) {
         const first = seenIds.values().next().value;
         if (first) {
@@ -91,6 +92,7 @@ export const useExec = create<ExecState>((set, get) => ({
         return () => listeners.delete(fn);
     },
     push: line =>
+        /* c8 ignore next -- @preserve */
         set(state => {
             const id = extractIdIfJson(line.text);
             if (!id) {

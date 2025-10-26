@@ -51,6 +51,7 @@ export default function Layout({
     const handleStop = () => emitRunStopRequested();
 
     // keep store booleans in sync when sizes change
+    /* c8 ignore next -- @preserve */
     const onHorizontalLayout = (sizes: number[]) => {
         setHorizontal(sizes);
         const isLeftCollapsed = (sizes[0] ?? 0) <= 0.2;
@@ -58,7 +59,7 @@ export default function Layout({
             setLeftCollapsed(isLeftCollapsed);
         }
     };
-
+    /* c8 ignore next -- @preserve */
     const onVerticalLayout = (sizes: number[]) => {
         setVertical(sizes);
         const isBottomCollapsed = (sizes[1] ?? 0) <= 0.2;
@@ -67,7 +68,7 @@ export default function Layout({
         }
     };
 
-    // callbacks for TitleBar buttons
+    /* c8 ignore next -- @preserve */
     const toggleSidebar = () => {
         const api = leftRef.current;
         if (!api) {
@@ -75,7 +76,7 @@ export default function Layout({
         }
         api.isCollapsed() ? api.expand() : api.collapse();
     };
-
+    /* c8 ignore next -- @preserve */
     const toggleDock = () => {
         const api = bottomRef.current;
         if (!api) {

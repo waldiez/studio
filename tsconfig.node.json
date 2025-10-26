@@ -11,13 +11,7 @@
         "verbatimModuleSyntax": true,
         "moduleDetection": "force",
         "noEmit": true,
-        "types": [
-            "node",
-            "jest",
-            "@testing-library/jest-dom",
-            "@vitest/browser/providers/playwright",
-            "vitest/globals"
-        ],
+        "types": ["node", "jest", "@testing-library/jest-dom", "vitest/globals"],
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,

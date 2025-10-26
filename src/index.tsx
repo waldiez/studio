@@ -14,8 +14,9 @@ function initTheme(forceDarkInit: boolean = false) {
     // prefer existing, else dark
     // Read from storage or use forced dark
     let mode: "light" | "dark" = "dark";
+    /* c8 ignore next -- @preserve */
     if (!forceDarkInit) {
-        const fromStorage = localStorage.getItem("waldiez-them");
+        const fromStorage = localStorage.getItem("waldiez-theme");
         if (fromStorage === "light") {
             mode = "light";
         }

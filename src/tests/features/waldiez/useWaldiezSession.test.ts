@@ -27,13 +27,20 @@ vi.mock("@/utils/paths", () => ({
 const mockStart = vi.fn();
 const mockStop = vi.fn();
 
-vi.mock("@/features/waldiez/controller", () => ({
-    WaldiezController: vi.fn().mockImplementation(onState => ({
-        start: mockStart,
-        stop: mockStop,
-        onState,
-    })),
-}));
+vi.mock("@/features/waldiez/controller", () => {
+    const WaldiezController = vi.fn(
+        class WaldiezController {
+            constructor(onState: any) {
+                return {
+                    start: mockStart,
+                    stop: mockStop,
+                    onState,
+                };
+            }
+        },
+    );
+    return { WaldiezController };
+});
 
 describe("useWaldiezSession", () => {
     beforeEach(() => {
@@ -67,6 +74,19 @@ describe("useWaldiezSession", () => {
         });
 
         expect(mockStart).toHaveBeenCalledWith("/test/flow.waldiez", { mode: "step" });
+    });
+
+    it("provides stepRun action with breakpoints", () => {
+        const { result } = renderHook(() => useWaldiezSession("/test/flow.waldiez"));
+
+        act(() => {
+            result.current.actions.stepRun(undefined, ["event:run_completion"]);
+        });
+
+        expect(mockStart).toHaveBeenCalledWith("/test/flow.waldiez", {
+            mode: "step",
+            args: ["--breakpoints", "event:run_completion"],
+        });
     });
 
     it("handles null path", () => {

@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
     error => {
         if (error.code === "ECONNABORTED") {
             return Promise.reject(
-                new ApiError(error.response?.status || /* c8 ignore next */ 0, "Request timed out.", error),
+                new ApiError(error.response?.status || /* c8 ignore next -- @preserve */ 0, "Request timed out.", error),
             );
         }
         let message = "An unexpected error occurred.";
@@ -48,10 +48,10 @@ axiosInstance.interceptors.response.use(
 export const getErrorMessage = (error: AxiosError): string => {
     let message = "An unexpected error occurred.";
     const errorData = error.response?.data as ApiErrorDetail;
-    /* c8 ignore next */
+    /* c8 ignore next -- @preserve */
     // noinspection SuspiciousTypeOfGuard
     if (typeof errorData === "string") {
-        /* c8 ignore next */
+        /* c8 ignore next -- @preserve */
         message = errorData;
     } else if (errorData?.detail) {
         message = errorData.detail;

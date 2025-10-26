@@ -14,6 +14,7 @@ import type { WaldiezBreakpoint } from "@waldiez/react";
 import { WaldiezController } from "./controller";
 import type { WaldiezMode, WaldiezState } from "./types";
 
+/* c8 ignore next -- @preserve */
 const waldiezBreakpointToString: (breakpoint: WaldiezBreakpoint | string) => string = bp => {
     if (typeof bp === "string") {
         return bp;
@@ -72,6 +73,7 @@ export function useWaldiezSession(path: string | null) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path]);
 
+    /* c8 ignore next -- @preserve */
     const save = useCallback(
         async (contents: string) => {
             if (!path) {

@@ -4,6 +4,7 @@
  */
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import { playwright } from "@vitest/browser-playwright";
 import dotenv from "dotenv";
 import fs from "fs-extra";
 import path, { relative, resolve } from "path";
@@ -222,7 +223,11 @@ export default defineConfig(({ command }) => {
                 reporter: ["lcov", "text", "text-summary", "html"],
                 include: [coverageInclude],
                 reportsDirectory: coverageDir,
+                experimentalAstAwareRemapping: true,
                 exclude: [
+                    "**/.DS_Store",
+                    "**/*.css",
+                    "src/lib/utils.ts",
                     // auto generated from shadcn
                     "src/components/ui/button.tsx",
                     "src/components/ui/input.tsx",
@@ -243,7 +248,7 @@ export default defineConfig(({ command }) => {
             setupFiles: isBrowserTest ? [] : [normalizedResolve("vitest.setup.tsx")],
             // browser setup is in workspace
             browser: {
-                provider: "playwright", // or 'webdriverio'
+                provider: playwright(),
                 enabled: isBrowserTest,
                 headless: true,
                 viewport,

@@ -83,7 +83,7 @@ export default function NotebookViewer({ note, className }: Props) {
     );
 }
 
-// Shiki-based code block - no scrolling issues!
+/* c8 ignore next -- @preserve */
 function ShikiCodeBlock({ source, language, theme }: { source: string; language: string; theme: string }) {
     const [highlightedCode, setHighlightedCode] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);

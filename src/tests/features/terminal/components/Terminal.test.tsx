@@ -29,21 +29,49 @@ const mockFitAddon = {
 const mockSearchAddon = {};
 const mockWebLinksAddon = {};
 
-vi.mock("xterm", () => ({
-    Terminal: vi.fn(() => mockTerminal),
-}));
+vi.mock("xterm", () => {
+    const Terminal = vi.fn(
+        class {
+            constructor() {
+                return mockTerminal;
+            }
+        },
+    );
+    return { Terminal };
+});
 
-vi.mock("xterm-addon-fit", () => ({
-    FitAddon: vi.fn(() => mockFitAddon),
-}));
+vi.mock("xterm-addon-fit", () => {
+    const FitAddon = vi.fn(
+        class {
+            constructor() {
+                return mockFitAddon;
+            }
+        },
+    );
+    return { FitAddon };
+});
 
-vi.mock("xterm-addon-search", () => ({
-    SearchAddon: vi.fn(() => mockSearchAddon),
-}));
+vi.mock("xterm-addon-search", () => {
+    const SearchAddon = vi.fn(
+        class SearchAddon {
+            constructor() {
+                return mockSearchAddon;
+            }
+        },
+    );
+    return { SearchAddon };
+});
 
-vi.mock("xterm-addon-web-links", () => ({
-    WebLinksAddon: vi.fn(() => mockWebLinksAddon),
-}));
+vi.mock("xterm-addon-web-links", () => {
+    const WebLinksAddon = vi.fn(
+        class WebLinksAddon {
+            constructor() {
+                return mockWebLinksAddon;
+            }
+        },
+    );
+    return { WebLinksAddon };
+});
 
 // Mock CSS import
 vi.mock("xterm/css/xterm.css", () => ({}));

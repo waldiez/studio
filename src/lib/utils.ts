@@ -5,7 +5,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-/* c8 ignore next 3 */
+/* c8 ignore next 3 -- @preserve */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

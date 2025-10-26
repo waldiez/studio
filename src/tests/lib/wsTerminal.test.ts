@@ -58,14 +58,20 @@ Object.defineProperty(window, "location", {
     writable: true,
 });
 
-const WebSocketMockFn= vi.fn().mockImplementation((url: string) => new MockWebSocket(url));
-(WebSocketMockFn as any).CONNECTING = MockWebSocket.CONNECTING;
-(WebSocketMockFn as any).OPEN = MockWebSocket.OPEN;
-(WebSocketMockFn as any).CLOSING = MockWebSocket.CLOSING;
-(WebSocketMockFn as any).CLOSED = MockWebSocket.CLOSED;
+const WebSocketMock = vi.fn(
+    class WebSocket {
+        constructor(url: string) {
+            return new MockWebSocket(url);
+        }
+    }
+);
 
-// @ts-expect-error: we’re deliberately replacing the global
-global.WebSocket = WebSocketMockFn;
+// Copy static properties
+(WebSocketMock as any).CONNECTING = MockWebSocket.CONNECTING;
+(WebSocketMock as any).OPEN = MockWebSocket.OPEN;
+(WebSocketMock as any).CLOSING = MockWebSocket.CLOSING;
+(WebSocketMock as any).CLOSED = MockWebSocket.CLOSED;
+vi.stubGlobal("WebSocket", WebSocketMock);
 
 describe("wsTerminal", () => {
     let mockWs: MockWebSocket;

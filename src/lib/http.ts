@@ -85,8 +85,8 @@ export const uploadFile = async (
  * @returns A promise resolving to a success message.
  */
 export const deleteFileOrFolder = async (path: string = "/"): Promise<MessageResponse> => {
-    const pathParam = /* c8 ignore next */ ["", "/"].includes(path)
-        ? /* c8 ignore next */ ""
+    const pathParam = /* c8 ignore next -- @preserve */ ["", "/"].includes(path)
+        ? /* c8 ignore next -- @preserve */ ""
         : `?path=${encodeURIComponent(path)}`;
     const response = await axiosInstance.delete<MessageResponse>(`${WORKSPACE_PREFIX}${pathParam}`);
     return response.data;

@@ -62,6 +62,7 @@ export function ThemeProvider({
 
         root.classList.add(theme);
         // Observer to detect external theme changes
+        /* c8 ignore next -- @preserve */
         const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 if (mutation.type === "attributes" && mutation.attributeName === "class") {

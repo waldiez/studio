@@ -111,7 +111,7 @@ export default function PdfViewer({
         const renderPage = async () => {
             try {
                 const page = await pdfDoc.getPage(currentPage);
-                if (cancelled) {
+                if (cancelled || !page) {
                     return;
                 }
 
@@ -134,7 +134,6 @@ export default function PdfViewer({
                 const textLayerDiv = textLayerRef.current;
                 const containerDiv = containerRef.current;
                 if (textLayerDiv && containerDiv) {
-                    console.debug("Text???");
                     // Size/position the overlay to match the canvas/view
                     textLayerDiv.style.width = `${viewport.width}px`;
                     textLayerDiv.style.height = `${viewport.height}px`;
