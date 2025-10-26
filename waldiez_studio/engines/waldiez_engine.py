@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -102,7 +103,10 @@ class WaldiezEngine(Engine):
             self.log.error("No delegate for the process.")
             return
         the_msg = msg
-        if the_msg.get("op") in (
+        the_op = the_msg.get("op", "")
+        if not the_op or not isinstance(the_op, str):
+            return
+        if the_op in (
             "waldiez_respond",
             "waldiez_control",
         ) and the_msg.get("payload", {}):
@@ -111,6 +115,8 @@ class WaldiezEngine(Engine):
             )
         else:
             await self._delegate.handle_client(msg)
+        if the_op in ("terminate", "shutdown", "interrupt"):
+            await self._after_interrupt()
 
     async def shutdown(self) -> None:
         """Finalize the run and emit 'run_end' if appropriate."""
@@ -128,6 +134,20 @@ class WaldiezEngine(Engine):
         output = src.with_suffix(".py")
         exporter.export(output, force=True)
         return output
+
+    @staticmethod
+    async def _after_interrupt() -> None:
+        """Gather any state after interrupt."""
+        # pylint: disable=broad-exception-caught
+        args = ["-m", "waldiez", "gather"]
+        with contextlib.suppress(BaseException):
+            proc = await asyncio.create_subprocess_exec(
+                sys.executable,
+                *args,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            asyncio.create_task(proc.wait())
 
     async def _send_safe(self, message: dict[str, Any]) -> None:
         try:
