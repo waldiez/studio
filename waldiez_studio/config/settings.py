@@ -60,6 +60,7 @@ class Settings(BaseSettings):
         host=host,
     )
     trusted_origin_regex: str | None = None
+    base_url: str = "/"
 
     model_config = SettingsConfigDict(
         alias_generator=to_kebab,
@@ -72,6 +73,18 @@ class Settings(BaseSettings):
         cli_implicit_flags=True,
         cli_prefix="",
     )
+
+    def get_base_url(self) -> str:
+        """Get the base url, without any trailing slash.
+
+        Returns
+        -------
+        str
+            The base url
+        """
+        if self.base_url.endswith("/"):
+            return self.base_url[:-1]
+        return self.base_url
 
     @classmethod
     def settings_customise_sources(

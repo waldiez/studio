@@ -130,6 +130,24 @@ def get_default_domain_name() -> str:
     return os.environ.get(f"{ENV_PREFIX}DOMAIN_NAME", "localhost")
 
 
+def get_default_base_url() -> str:
+    """Get the default base url.
+
+    Returns
+    -------
+    str
+        The default base url
+    """
+    if "--base-url" in sys.argv:  # pragma: no branch
+        base_url_index = sys.argv.index("--base-url") + 1
+        if base_url_index < len(sys.argv):  # pragma: no branch
+            base_url = sys.argv[base_url_index]
+            if base_url:  # pragma: no branch
+                os.environ[f"{ENV_PREFIX}BASE_URL"] = base_url
+                return base_url
+    return os.environ.get(f"{ENV_PREFIX}BASE_URL", "/")
+
+
 def get_default_host() -> str:
     """Get the default host.
 

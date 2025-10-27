@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { apiPrefix } from "@/env";
 import { useFileSystem } from "@/features/explorer/hooks/useFileSystem";
 import { onWorkspaceChanged } from "@/lib/events";
 import { act, renderHook, waitFor } from "@testing-library/react";
@@ -44,7 +45,7 @@ describe("useFileSystem", () => {
         renderHook(() => useFileSystem());
 
         await waitFor(() => {
-            expect(mockFetch).toHaveBeenCalledWith("http://localhost:3000/api/workspace", {
+            expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3000${apiPrefix}/workspace`, {
                 headers: { accept: "application/json" },
             });
         });
@@ -93,7 +94,7 @@ describe("useFileSystem", () => {
         });
 
         // cspell: disable-next-line
-        expect(mockFetch).toHaveBeenCalledWith("http://localhost:3000/api/workspace?parent=%2Fsrc", {
+        expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3000${apiPrefix}/workspace?parent=%2Fsrc`, {
             headers: { accept: "application/json" },
         });
     });
@@ -111,9 +112,12 @@ describe("useFileSystem", () => {
         });
 
         // cspell: disable-next-line
-        expect(mockFetch).toHaveBeenLastCalledWith("http://localhost:3000/api/workspace?parent=%2Fsrc", {
-            headers: { accept: "application/json" },
-        });
+        expect(mockFetch).toHaveBeenLastCalledWith(
+            `http://localhost:3000${apiPrefix}/workspace?parent=%2Fsrc`,
+            {
+                headers: { accept: "application/json" },
+            },
+        );
     });
 
     it("does not navigate up from root", async () => {
@@ -138,7 +142,7 @@ describe("useFileSystem", () => {
             await result.current.createFolder();
         });
 
-        expect(mockFetch).toHaveBeenCalledWith("http://localhost:3000/api/workspace", {
+        expect(mockFetch).toHaveBeenCalledWith(`http://localhost:3000${apiPrefix}/workspace`, {
             headers: { accept: "application/json" },
         });
     });
@@ -152,7 +156,7 @@ describe("useFileSystem", () => {
             await result.current.createFile();
         });
 
-        expect(mockFetch).toHaveBeenCalledWith("/api/workspace", {
+        expect(mockFetch).toHaveBeenCalledWith(`${apiPrefix}/workspace`, {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ type: "file", parent: "/" }),
@@ -169,7 +173,7 @@ describe("useFileSystem", () => {
             await result.current.upload(mockFile);
         });
 
-        expect(mockFetch).toHaveBeenCalledWith("/api/workspace/upload", {
+        expect(mockFetch).toHaveBeenCalledWith(`${apiPrefix}/workspace/upload`, {
             method: "POST",
             body: expect.any(FormData),
         });
@@ -184,7 +188,7 @@ describe("useFileSystem", () => {
             await result.current.rename("old-name.txt", "new-name.txt");
         });
 
-        expect(mockFetch).toHaveBeenCalledWith("/api/workspace/rename", {
+        expect(mockFetch).toHaveBeenCalledWith(`${apiPrefix}/workspace/rename`, {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ old_path: "old-name.txt", new_path: "new-name.txt" }),
@@ -201,7 +205,7 @@ describe("useFileSystem", () => {
         });
 
         expect(mockFetch).toHaveBeenCalledWith(
-            "http://localhost:3000/api/workspace?path=file-to-delete.txt",
+            `http://localhost:3000${apiPrefix}/workspace?path=file-to-delete.txt`,
             {
                 method: "DELETE",
             },
@@ -322,7 +326,7 @@ describe("useFileSystem", () => {
 
         // cspell: disable-next-line
         expect(mockFetch).toHaveBeenCalledWith(
-            "http://localhost:3000/api/workspace?parent=src%2Fcomponents",
+            `http://localhost:3000${apiPrefix}/workspace?parent=src%2Fcomponents`,
             {
                 headers: { accept: "application/json" },
             },

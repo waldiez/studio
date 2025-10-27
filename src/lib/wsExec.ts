@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { wsPrefix } from "@/env";
 import type { ExecEvent } from "@/types/events";
 
 export type StartOptions = {
@@ -27,7 +28,7 @@ export type ExecController = {
 export function openExec(filePath: string, onEvent: (e: ExecEvent) => void, start?: {
   args?: string[]; env?: Record<string,string>; cwd?: string; freshKernel?: boolean; venv?: string; timeoutSec?: number;
 }): ExecController {
-  const u = new URL(window.location.origin.replace("http", "ws") + "/ws");
+  const u = new URL(window.location.origin.replace("http", "ws") + wsPrefix);
   u.searchParams.set("path", filePath);
   const ws = new WebSocket(u);
 

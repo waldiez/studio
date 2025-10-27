@@ -3,9 +3,13 @@
 
 """Logging configuration module."""
 
-from typing import Any
+import logging
+from typing import TYPE_CHECKING, Any
 
 import uvicorn.config
+
+if TYPE_CHECKING:
+    from waldiez_studio.config import Settings
 
 
 # fmt: off
@@ -57,3 +61,36 @@ def get_logging_config(log_level: str) -> dict[str, Any]:
     }
     return logging_config
 # fmt: on
+
+
+def patch_uvicorn_logging(settings: "Settings") -> None:
+    """Patch uvicorn logging.
+
+    Parameters
+    ----------
+    settings : Settings
+        The settings to get the host/port/base_url
+    """
+    uvicorn_logger = logging.getLogger("uvicorn.error")
+    orig_info = uvicorn_logger.info
+
+    def _patched_info(msg: Any, *args: Any, **kwargs: Any) -> None:
+        if "Uvicorn running on" in msg:
+            host = (
+                settings.host
+                if settings.host not in ("127.0.0.1", "0.0.0.0")
+                else "localhost"
+            )
+            port = f":{settings.port}"
+            if settings.port in (80, 443):
+                port = ""
+            base_url = settings.get_base_url()
+            running_on = f"http://{host}{port}{base_url}"
+            msg = (
+                f"Waldiez studio running on {running_on} (Press CTRL+C to quit)"
+            )
+            orig_info(msg)
+        else:
+            orig_info(msg, *args, **kwargs)
+
+    uvicorn_logger.info = _patched_info  # type: ignore

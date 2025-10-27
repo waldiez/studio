@@ -2,6 +2,12 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { wsPrefix } from "@/env";
+
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2024 - 2025 Waldiez & contributors
+ */
 export type TermController = {
   send: (data: string) => void;
   resize: (rows: number, cols: number) => void;
@@ -19,7 +25,8 @@ export function openTerminal(
   const qs = new URLSearchParams();
   if (cwd) {qs.set("cwd", cwd.replace(/^\/+/, ""));} // workspace-relative
   const proto = location.protocol === "https:" ? "wss" : "ws";
-  const url = `${proto}://${location.host}/ws/terminal?${qs.toString()}`;
+  console.error(wsPrefix);
+  const url = `${proto}://${location.host}${wsPrefix}/terminal?${qs.toString()}`;
 
   const ws = new WebSocket(url);
 

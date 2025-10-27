@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { apiPrefix } from "@/env";
 import { onWorkspaceChanged } from "@/lib/events";
 import type { PathItem } from "@/types/api";
 
@@ -35,7 +36,7 @@ export function useFileSystem() {
             try {
                 setLoading(true);
                 setError(null);
-                const url = new URL("/api/workspace", location.origin);
+                const url = new URL(`${apiPrefix}/workspace`, location.origin);
                 if (!["", "/"].includes(target)) {
                     url.searchParams.set("parent", target);
                 }
@@ -70,7 +71,7 @@ export function useFileSystem() {
         try {
             setLoading(true);
             setError(null);
-            const r = await fetch("/api/workspace", {
+            const r = await fetch(`${apiPrefix}/workspace`, {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ type: "folder", parent: cwdRef.current }),
@@ -90,7 +91,7 @@ export function useFileSystem() {
         try {
             setLoading(true);
             setError(null);
-            const r = await fetch("/api/workspace", {
+            const r = await fetch(`${apiPrefix}/workspace`, {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ type: "file", parent: cwdRef.current }),
@@ -114,7 +115,7 @@ export function useFileSystem() {
                 const form = new FormData();
                 form.append("file", file);
                 form.append("path", cwdRef.current);
-                const r = await fetch("/api/workspace/upload", { method: "POST", body: form });
+                const r = await fetch(`${apiPrefix}/workspace/upload`, { method: "POST", body: form });
                 if (!r.ok) {
                     throw new Error(await r.text());
                 }
@@ -133,7 +134,7 @@ export function useFileSystem() {
             try {
                 setLoading(true);
                 setError(null);
-                const r = await fetch("/api/workspace/rename", {
+                const r = await fetch(`${apiPrefix}/workspace/rename`, {
                     method: "POST",
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify({ old_path: oldPath, new_path: newPath }),
@@ -156,7 +157,7 @@ export function useFileSystem() {
             try {
                 setLoading(true);
                 setError(null);
-                const url = new URL("/api/workspace", location.origin);
+                const url = new URL(`${apiPrefix}/workspace`, location.origin);
                 url.searchParams.set("path", path);
                 const r = await fetch(url.toString(), { method: "DELETE" });
                 if (!r.ok) {
@@ -215,7 +216,7 @@ export function useFileSystem() {
             try {
                 setLoading(true);
                 setError(null);
-                const url = new URL("/api/workspace/download", location.origin);
+                const url = new URL(`${apiPrefix}/workspace/download`, location.origin);
                 url.searchParams.set("path", path);
                 const r = await fetch(url, { method: "GET" });
                 if (!r.ok) {

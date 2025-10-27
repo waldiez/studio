@@ -99,17 +99,20 @@ async def client_fixture(
     static_path = tmp_path / "main" / "static"
     static_path.mkdir(parents=True, exist_ok=True)
     os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = str(static_path)
+    os.environ["WALDIEZ_STUDIO_BASE_URL"] = "/custom/"
     setup_static_files(Path(os.environ["WALDIEZ_STUDIO_ROOT_DIR"]))
     # pylint: disable=import-outside-toplevel
     from waldiez_studio.main import app
 
     async with LifespanManager(app, startup_timeout=10) as manager:
         async with AsyncClient(
-            transport=ASGITransport(app=manager.app), base_url="http://test"
+            transport=ASGITransport(app=manager.app),
+            base_url="http://test/custom",
         ) as client:
             yield client
 
     del os.environ["WALDIEZ_STUDIO_ROOT_DIR"]
+    del os.environ["WALDIEZ_STUDIO_BASE_URL"]
 
 
 @pytest.mark.asyncio

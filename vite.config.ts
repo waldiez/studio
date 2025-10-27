@@ -10,7 +10,8 @@ import fs from "fs-extra";
 import path, { relative, resolve } from "path";
 import { fileURLToPath } from "url";
 import { defineConfig, normalizePath } from "vite";
-import { viteStaticCopy } from "vite-plugin-static-copy";
+
+import { transformPublicFiles } from "./vite.plugins";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,10 +20,11 @@ const THRESHOLD_LIMIT = 80;
 const ENVS = {
     host: { key: "WALDIEZ_STUDIO_HOST", default: "localhost" },
     port: { key: "WALDIEZ_STUDIO_PORT", default: "8000" },
-    baseUrl: { key: "WALDIEZ_STUDIO_BASE_URL", default: "/frontend/" },
+    baseUrl: { key: "WALDIEZ_STUDIO_BASE_URL", default: "/" },
 };
 
 const normalizedResolve = (...paths: string[]): string => normalizePath(resolve(__dirname, ...paths));
+const outDir = normalizedResolve("waldiez_studio", "static", "frontend");
 const coverageInclude = relative(process.cwd(), normalizedResolve("src")).replace(/\\/g, "/");
 const coverageDir = relative(process.cwd(), normalizedResolve("coverage", "frontend")).replace(/\\/g, "/");
 const isBrowserTest = process.argv.includes("--browser.enabled");
@@ -63,25 +65,47 @@ if ([80, 443].includes(apiDevPort)) {
 } else {
     apiDevPortStr = `:${apiDevPortStr}`;
 }
-const proxy = {
-    "/api": {
-        target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}`,
-        changeOrigin: true,
-    },
-    "/ws": {
-        target: `${apiDevWsScheme}://${apiDevHost}${apiDevPortStr}`,
-        rewriteWsOrigin: true,
-        ws: true,
-    },
-    // monaco editor files
-    "/vs": {
-        target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}`,
-        changeOrigin: true,
-    },
-    "/min-maps": {
-        target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}`,
-        changeOrigin: true,
-    },
+/**
+ * Get the base URL for the application based on the command / mode.
+ * @param command - The command being executed, either "build" or "serve".
+ * @returns - The base URL as a string.
+ */
+const getBaseUrl = (command: "build" | "serve"): string => {
+    let baseUrl = process.env[ENVS.baseUrl.key] || ENVS.baseUrl.default;
+    if (!baseUrl.endsWith("/")) {
+        baseUrl = `${baseUrl}/`;
+    }
+    if (!baseUrl.startsWith("/")) {
+        baseUrl = `/${baseUrl}`;
+    }
+    if (baseUrl === "/" && command == "serve") {
+        baseUrl = "./";
+    }
+    return baseUrl;
+};
+const getProxy = (_command: "build" | "serve") => {
+    const urlBase = getBaseUrl(_command);
+    const baseUrl = urlBase.length > 1 ? urlBase.slice(1, urlBase.length - 1) : urlBase;
+    return {
+        "/api": {
+            target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
+            changeOrigin: true,
+        },
+        "/ws": {
+            target: `${apiDevWsScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
+            rewriteWsOrigin: true,
+            ws: true,
+        },
+        // monaco editor files
+        "/vs": {
+            target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
+            changeOrigin: true,
+        },
+        "/min-maps": {
+            target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
+            changeOrigin: true,
+        },
+    };
 };
 
 /**
@@ -93,45 +117,15 @@ const getPublicDir = (_command: "build" | "serve"): string | false => {
     return normalizedResolve("public");
 };
 
-/**
- * Get the base URL for the application based on the command / mode.
- * @param command - The command being executed, either "build" or "serve".
- * @returns - The base URL as a string.
- */
-const getBaseUrl = (command: "build" | "serve"): string => {
-    if (command === "build") {
-        const baseUrl = process.env[ENVS.baseUrl.key] || ENVS.baseUrl.default;
-        if (!baseUrl.endsWith("/")) {
-            return `${baseUrl}/`;
-        }
-        return baseUrl;
+const removeSlashes = (base: string) => {
+    let withoutSlashes = base.replace("./", "/");
+    while (withoutSlashes.endsWith("/")) {
+        withoutSlashes = withoutSlashes.slice(0, withoutSlashes.length - 1);
     }
-    return "./";
-};
-
-type CopyTarget = { src: string; dest: string };
-
-/**
- * Build viteStaticCopy targets safely
- */
-const safeTargets = (entries: [string, string][]): CopyTarget[] => {
-    return entries
-        .map(([src, dest]) => {
-            const abs = normalizedResolve("public", src);
-            const hasGlob = src.includes("*");
-
-            if (hasGlob) {
-                const dir = abs.replace(/\/\*.*$/, ""); // strip glob part
-                if (!fs.existsSync(dir)) {
-                    return null;
-                }
-            } else if (!fs.existsSync(abs)) {
-                return null;
-            }
-
-            return { src: abs, dest };
-        })
-        .filter((t): t is CopyTarget => t !== null);
+    while (withoutSlashes.startsWith("/")) {
+        withoutSlashes = withoutSlashes.slice(1, withoutSlashes.length);
+    }
+    return withoutSlashes;
 };
 
 // https://vitejs.dev/config/
@@ -141,12 +135,17 @@ export default defineConfig(({ command }) => {
         const envConfig = dotenv.parse(fs.readFileSync(envFile));
         process.env = { ...process.env, ...envConfig };
     }
+    const base = getBaseUrl(command);
+    const withoutSlashes = removeSlashes(base);
+    const basePrefix = withoutSlashes !== "" ? `/${withoutSlashes}/` : "/";
+    const replacement = withoutSlashes !== "" ? `${withoutSlashes}/frontend` : "frontend";
+    const dev = command == "serve";
     // noinspection JSUnusedGlobalSymbols
     return {
         publicDir: getPublicDir(command),
-        base: getBaseUrl(command),
+        base: dev ? base : `${base}frontend/`,
         server: {
-            proxy,
+            proxy: getProxy(command),
         },
         build: {
             emptyOutDir: true,
@@ -162,7 +161,7 @@ export default defineConfig(({ command }) => {
                 mangle: true,
             },
             target: "esnext",
-            outDir: normalizedResolve("waldiez_studio", "static", "frontend"),
+            outDir,
             rollupOptions: {
                 output: {
                     manualChunks: (id: string) => {
@@ -184,30 +183,22 @@ export default defineConfig(({ command }) => {
                 },
             },
         },
-        plugins: [
-            react(),
-            tailwindcss(),
-            viteStaticCopy({
-                targets: safeTargets([
-                    ["icons/*", "icons"],
-                    ["screenshots/*", "screenshots"],
-                    ["apple-touch-icon.png", ""],
-                    ["favicon.ico", ""],
-                    ["icon.icns", ""],
-                    ["robots.txt", ""],
-                    ["browserconfig.xml", ""],
-                    ["site.webmanifest", ""],
-                    // optional? (might not exist)
-                    ["vs/*", "vs"],
-                    ["min-maps/*", "min-maps"],
-                    ["monaco.json", ""],
-                ]),
-            }),
-        ],
+        plugins: [react(), tailwindcss(), transformPublicFiles(outDir, replacement)],
         resolve: {
             alias: {
                 "@": normalizedResolve("src"),
             },
+        },
+        define: {
+            WALDIEZ_STUDIO_API_PREFIX: dev
+                ? JSON.stringify(`${basePrefix}api`)
+                : JSON.stringify("__WALDIEZ_STUDIO_API__/api"),
+            WALDIEZ_STUDIO_WS_PREFIX: dev
+                ? JSON.stringify(`${basePrefix}ws`)
+                : JSON.stringify("__WALDIEZ_STUDIO_WS__/ws"),
+            WALDIEZ_STUDIO_VS_PREFIX: dev
+                ? JSON.stringify(`${basePrefix}vs`)
+                : JSON.stringify("__WALDIEZ_STUDIO_VS__/vs"),
         },
         test: {
             include: [testsInclude],

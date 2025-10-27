@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { vsPath } from "@/env";
 import type { WaldiezMode } from "@/features/waldiez/types";
 import { useWaldiezSession } from "@/features/waldiez/useWaldiezSession";
 import { type RunRequest, onRunRequested, onRunStopRequested } from "@/lib/events";
@@ -63,7 +64,7 @@ export default function WaldiezViewer({ source }: Props) {
                 onStepRun={actions.stepRun}
                 onConvert={actions.convert}
                 onSave={actions.save}
-                monacoVsPath="vs"
+                monacoVsPath={vsPath}
                 chat={{
                     show: state.chat?.show ?? false,
                     active: state.chat.active ?? false,

@@ -67,6 +67,8 @@ packages = ["waldiez_studio", "waldiez_studio.*"]
 artifacts = [
     "waldiez_studio/static",
     "!waldiez_studio/static/frontend/last-build.txt",
+    "!waldiez_studio/static/frontend/api_prefixes.json",
+    "!waldiez_studio/static/frontend/base_url.txt",
 ]
 exclude = [ "**/example.py", ".gitignore" ]
 

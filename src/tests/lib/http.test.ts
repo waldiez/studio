@@ -5,6 +5,7 @@
 /* eslint-disable max-nested-callbacks */
 import { describe, expect, it, vi } from "vitest";
 
+import { apiPrefix } from "@/env";
 import axiosInstance from "@/lib/axiosInstance";
 import * as fileBrowserService from "@/lib/http";
 import type { GetFileBinary, GetFileText } from "@/types/api";
@@ -252,7 +253,7 @@ describe("fileBrowserService", () => {
                     path: "/test/image.png",
                     mime: "image/png",
                     // cspell: disable-next-line
-                    url: "/api/workspace/get?path=%2Ftest%2Fimage.png",
+                    url: `${apiPrefix}/workspace/get?path=%2Ftest%2Fimage.png`,
                     filename: "image.png",
                 });
                 expect(axiosInstance.get).not.toHaveBeenCalled();
@@ -266,7 +267,7 @@ describe("fileBrowserService", () => {
                     path: "/test/video.mp4",
                     mime: "video/mp4",
                     // cspell: disable-next-line
-                    url: "/api/workspace/get?path=%2Ftest%2Fvideo.mp4",
+                    url: `${apiPrefix}/workspace/get?path=%2Ftest%2Fvideo.mp4`,
                     filename: "video.mp4",
                 });
             });
@@ -275,7 +276,7 @@ describe("fileBrowserService", () => {
                 const result = await fileBrowserService.getFile("/path/to/deep/folder/image.jpg") as GetFileBinary
                 expect(result.filename).toBe("image.jpg");
                 // cspell: disable-next-line
-                expect(result.url).toBe("/api/workspace/get?path=%2Fpath%2Fto%2Fdeep%2Ffolder%2Fimage.jpg");
+                expect(result.url).toBe(`${apiPrefix}/workspace/get?path=%2Fpath%2Fto%2Fdeep%2Ffolder%2Fimage.jpg`);
             });
 
             it("should handle files without proper filename", async () => {
@@ -292,7 +293,7 @@ describe("fileBrowserService", () => {
                     path: "/test/file.bin",
                     mime: "application/octet-stream",
                     // cspell: disable-next-line
-                    url: "/api/workspace/get?path=%2Ftest%2Ffile.bin",
+                    url: `${apiPrefix}/workspace/get?path=%2Ftest%2Ffile.bin`,
                     filename: "file.bin",
                 });
             });

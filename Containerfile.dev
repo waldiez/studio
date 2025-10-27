@@ -168,7 +168,7 @@ RUN pip install --upgrade pip
 
 #
 WORKDIR /home/waldiez/tmp
-ENV WALDIEZ_STUDIO_BASE_URL=/frontend/
+ENV WALDIEZ_STUDIO_BASE_URL=/
 #
 # copy source code
 COPY --chown=waldiez:waldiez . /home/waldiez/tmp/package

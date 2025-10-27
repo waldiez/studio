@@ -6,6 +6,7 @@ import Layout from "@/app/Layout";
 import BottomPanel from "@/components/layout/BottomPanel";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import MainView from "@/components/layout/MainView";
+import { vsPath } from "@/env";
 import GlobalRunListener from "@/hooks/GlobalRunListener";
 import KeyboardListener from "@/hooks/KeyboardListener";
 import { ThemeProvider } from "@/theme/provider";
@@ -16,7 +17,7 @@ import { loader } from "@monaco-editor/react";
 
 export function App() {
     useEffect(() => {
-        loader.config({ paths: { vs: "vs" } });
+        loader.config({ paths: { vs: vsPath } });
     }, []);
     return (
         <ThemeProvider defaultTheme="dark">

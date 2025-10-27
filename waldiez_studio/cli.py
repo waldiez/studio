@@ -35,6 +35,7 @@ except ImportError:
 from waldiez_studio._logging import get_logging_config
 from waldiez_studio.config import (
     Settings,
+    get_default_base_url,
     get_default_domain_name,
     get_default_host,
     get_default_port,
@@ -93,6 +94,7 @@ def run(
         case_sensitive=False,
     ),
     domain_name: str = get_default_domain_name(),
+    base_url: str = get_default_base_url(),
     trusted_hosts: list[str] = typer.Option(
         default_factory=list,
     ),
@@ -124,6 +126,7 @@ def run(
         force_ssl=force_ssl,
         host=host,
         port=port,
+        base_url=base_url,
     )
     logger.debug("Settings: %s", settings.model_dump_json(indent=2))
     settings.to_env()

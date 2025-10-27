@@ -43,7 +43,7 @@ RUN python3 -m pip install --user -r /tmp/requirements.txt && \
 COPY . /tmp/package
 
 # build the frontend
-ENV WALDIEZ_STUDIO_BASE_URL=/frontend/
+ENV WALDIEZ_STUDIO_BASE_URL=/
 # if there is not enough memory on the host, we can
 # try to build the frontend even with low memory:
 # ENV NODE_OPTIONS="--max-old-space-size=4096"

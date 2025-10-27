@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { wsPrefix } from "@/env";
 import { openTerminal, type TermController } from "@/lib/wsTerminal";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -90,7 +91,7 @@ describe("wsTerminal", () => {
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 // cspell: disable-next-line
-                "ws://localhost:3000/ws/terminal?cwd=test%2Fdir"
+                `ws://localhost:3000${wsPrefix}/terminal?cwd=test%2Fdir`
             );
         });
 
@@ -98,7 +99,7 @@ describe("wsTerminal", () => {
             openTerminal(undefined, onData, onExit);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
-                "ws://localhost:3000/ws/terminal?"
+                `ws://localhost:3000${wsPrefix}/terminal?`
             );
         });
 
@@ -107,7 +108,7 @@ describe("wsTerminal", () => {
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 // cspell: disable-next-line
-                "ws://localhost:3000/ws/terminal?cwd=test%2Fdir"
+                `ws://localhost:3000${wsPrefix}/terminal?cwd=test%2Fdir`
             );
         });
 
@@ -123,7 +124,7 @@ describe("wsTerminal", () => {
             openTerminal("/test", onData, onExit);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
-                "wss://example.com/ws/terminal?cwd=test"
+                `wss://example.com${wsPrefix}/terminal?cwd=test`
             );
         });
 

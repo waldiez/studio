@@ -79,6 +79,7 @@ body {
   --ansi-cyan: #5bc0de;
   --ansi-white: #f7f7f7;
   --ansi-bright-yellow: #b58900;
+  --sidebar-min-width: 40px;
 }
 
 body.waldiez-light {
@@ -298,17 +299,3 @@ body.waldiez-dark .studio-explorer-top .btn-outline:hover {
   background: none !important;
   border: none !important;
 }
-
-/* .textLayer {
-  font-family: sans-serif;
-  line-height: 1;
-  overflow: hidden;
-}
-.textLayer > span {
-  position: absolute;
-  white-space: pre;
-  transform-origin: 0 0;
-}
-.textLayer ::selection {
-  background: rgba(0, 0, 255, 0.2);
-} */

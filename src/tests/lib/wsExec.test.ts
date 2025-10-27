@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { wsPrefix } from "@/env";
 import { openExec, type ExecController, type StartOptions } from "@/lib/wsExec";
 import type { ExecEvent } from "@/types/events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -84,7 +85,7 @@ describe("wsExec", () => {
             const u = new URL(raw);
             expect(u.protocol).toBe("ws:");
             expect(u.host).toBe("localhost:3000");
-            expect(u.pathname).toBe("/ws");
+            expect(u.pathname).toBe(wsPrefix);
             expect(u.searchParams.get("path")).toBe("/test/script.py");
         });
 
@@ -270,7 +271,7 @@ describe("wsExec", () => {
             const u = new URL(raw);
             expect(u.protocol).toBe("ws:");
             expect(u.host).toBe("localhost:3000");
-            expect(u.pathname).toBe("/ws");
+            expect(u.pathname).toBe(wsPrefix);
             expect(u.searchParams.get("path")).toBe("/test/file with spaces.py");
         });
 

@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { apiPrefix } from "@/env";
 import axios, { AxiosError } from "axios";
 
 export type ApiErrorDetail = {
@@ -20,7 +21,7 @@ export class ApiError extends Error {
     }
 }
 const axiosInstance = axios.create({
-    baseURL: "/api",
+    baseURL: apiPrefix,
     timeout: 30000,
 });
 

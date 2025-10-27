@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2025 Waldiez & contributors
  */
+import { apiPrefix } from "@/env";
 import axiosInstance from "@/lib/axiosInstance";
 import type { GetFileResponse, MessageResponse, PathInstance, PathInstancesResponse } from "@/types/api";
 export { default as axiosInstance } from "@/lib/axiosInstance";
@@ -187,7 +188,7 @@ export const getFile = async (path: string): Promise<GetFileResponse> => {
   }
 
   // For media/binary files, return direct URL (no fetch needed!)
-  const mediaUrl = `/api${WORKSPACE_PREFIX}/get?${new URLSearchParams({ path }).toString()}`;
+  const mediaUrl = `${apiPrefix}${WORKSPACE_PREFIX}/get?${new URLSearchParams({ path }).toString()}`;
 
   return {
     kind: "binary",
@@ -227,8 +228,8 @@ const guessMimeType = (ext: string): string => {
 const TEXTUAL_EXTS = new Set([
   ".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx",
   ".env", ".txt", ".py", ".csv", ".json" ,
-  ".md", ".mmd", ".rst", ".css", ".html", ".xml", 
-  ".yaml", ".yml", ".toml", ".ini", ".ipynb", ".sh", 
+  ".md", ".mmd", ".rst", ".css", ".html", ".xml",
+  ".yaml", ".yml", ".toml", ".ini", ".ipynb", ".sh",
   ".bash", ".bsh", ".sh", ".zsh", ".ps1", ".bat",
   ".rs", ".java", ".waldiez"
 ]);
