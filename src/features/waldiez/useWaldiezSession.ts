@@ -111,7 +111,11 @@ export function useWaldiezSession(path: string | null) {
     );
 
     const stepRun = useCallback(
-        async (contents?: string, breakpoints?: (string | WaldiezBreakpoint)[] | undefined) => {
+        async (
+            contents?: string,
+            breakpoints?: (string | WaldiezBreakpoint)[] | undefined,
+            checkpoint?: string | null,
+        ) => {
             if (!path) {
                 return;
             }
@@ -124,6 +128,9 @@ export function useWaldiezSession(path: string | null) {
                 for (const arg of bpArgs) {
                     args.push("--breakpoints", arg);
                 }
+            }
+            if (checkpoint) {
+                args.push("--checkpoint", checkpoint);
             }
             if (args.length > 0) {
                 ctrl.start(path, { mode: "step" satisfies WaldiezMode, args });
