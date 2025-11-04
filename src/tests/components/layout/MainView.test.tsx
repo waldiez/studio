@@ -32,6 +32,7 @@ vi.mock("@/lib/http", () => ({
 
 vi.mock("@/store/workspace", () => ({
     useWorkspace: vi.fn(),
+    setFileCache: vi.fn(),
 }));
 
 // Mock URL object
@@ -56,6 +57,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => undefined,
             fileCache: {},
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -70,6 +72,7 @@ describe("MainView", () => {
                 item: { path: "test.py", name: "test.py", type: "file" },
             }),
             fileCache: {},
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -91,6 +94,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -116,6 +120,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -137,6 +142,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "image.png": mockData },
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -159,6 +165,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "image.png": mockData },
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -180,6 +187,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
+            setFileCache: () => {},
         });
 
         (saveTextFile as any).mockResolvedValue(undefined);
@@ -198,6 +206,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => undefined,
             fileCache: {},
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -219,6 +228,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
+            setFileCache: () => {},
         });
 
         render(<MainView />);
@@ -240,6 +250,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => mockActiveTab,
             fileCache: { "test.py": mockData },
+            setFileCache: () => {},
         });
 
         const { container } = render(<MainView />);
@@ -252,6 +263,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => undefined,
             fileCache: {},
+            setFileCache: () => {},
         });
 
         const { container } = render(<MainView />);
@@ -265,6 +277,7 @@ describe("MainView", () => {
         (useWorkspace as any).mockReturnValue({
             getActiveTab: () => undefined,
             fileCache: {},
+            setFileCache: () => {},
         });
 
         render(<MainView />);

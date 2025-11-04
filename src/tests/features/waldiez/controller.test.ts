@@ -53,10 +53,10 @@ describe("WaldiezController", () => {
             ctrl: mockCtrl,
         });
 
-        vi.mocked(useExec).getState = mockGetState;
+        vi.mocked(useExec).getState = mockGetState as any;
         mockAddListener.mockReturnValue(() => {}); // unsubscribe function
 
-        controller = new WaldiezController(onState);
+        controller = new WaldiezController(onState as any);
     });
 
     it("creates controller with state callback", () => {

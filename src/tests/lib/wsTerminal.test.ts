@@ -87,7 +87,7 @@ describe("wsTerminal", () => {
 
     describe("openTerminal", () => {
         it("should create WebSocket with correct URL", () => {
-            openTerminal("/test/dir", onData, onExit);
+            openTerminal("/test/dir", onData as any, onExit as any);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 // cspell: disable-next-line
@@ -96,7 +96,7 @@ describe("wsTerminal", () => {
         });
 
         it("should create WebSocket without cwd parameter", () => {
-            openTerminal(undefined, onData, onExit);
+            openTerminal(undefined, onData as any, onExit as any);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 `ws://localhost:3000${wsPrefix}/terminal?`
@@ -104,7 +104,7 @@ describe("wsTerminal", () => {
         });
 
         it("should strip leading slashes from cwd", () => {
-            openTerminal("///test/dir", onData, onExit);
+            openTerminal("///test/dir", onData as any, onExit as any);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 // cspell: disable-next-line
@@ -121,7 +121,7 @@ describe("wsTerminal", () => {
                 writable: true,
             });
 
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
 
             expect(global.WebSocket).toHaveBeenCalledWith(
                 `wss://example.com${wsPrefix}/terminal?cwd=test`
@@ -129,7 +129,7 @@ describe("wsTerminal", () => {
         });
 
         it("should send start message on WebSocket open", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -140,7 +140,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle data messages", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -153,7 +153,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle session_end messages", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -163,7 +163,7 @@ describe("wsTerminal", () => {
         });
 
         it("should ignore invalid JSON messages", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -174,7 +174,7 @@ describe("wsTerminal", () => {
         });
 
         it("should ignore unknown message types", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -185,7 +185,7 @@ describe("wsTerminal", () => {
         });
 
         it("should work without onExit callback", () => {
-            openTerminal("/test", onData);
+            openTerminal("/test", onData as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -196,7 +196,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle WebSocket close", () => {
-            const controller = openTerminal("/test", onData, onExit);
+            const controller = openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -207,7 +207,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle WebSocket error", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             // Should not throw error
@@ -219,7 +219,7 @@ describe("wsTerminal", () => {
         let controller: TermController;
 
         beforeEach(() => {
-            controller = openTerminal("/test", onData, onExit);
+            controller = openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
         });
 
@@ -368,7 +368,7 @@ describe("wsTerminal", () => {
 
     describe("message queuing", () => {
         it("should queue multiple messages and send them in order", () => {
-            const controller = openTerminal("/test", onData, onExit);
+            const controller = openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             // Send multiple messages before WebSocket opens
@@ -391,7 +391,7 @@ describe("wsTerminal", () => {
         });
 
         it("should ensure start message goes first even if queued later", () => {
-            const controller = openTerminal("/test", onData, onExit);
+            const controller = openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             // Send message before open
@@ -407,7 +407,7 @@ describe("wsTerminal", () => {
 
     describe("message handling edge cases", () => {
         it("should handle data message without data field", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -417,7 +417,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle messages with null data", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -427,7 +427,7 @@ describe("wsTerminal", () => {
         });
 
         it("should handle empty messages", () => {
-            openTerminal("/test", onData, onExit);
+            openTerminal("/test", onData as any, onExit as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -440,7 +440,7 @@ describe("wsTerminal", () => {
 
     describe("type definitions", () => {
         it("should define TermController interface correctly", () => {
-            const controller = openTerminal("/test", onData, onExit);
+            const controller = openTerminal("/test", onData as any, onExit as any);
 
             expect(typeof controller.send).toBe("function");
             expect(typeof controller.resize).toBe("function");

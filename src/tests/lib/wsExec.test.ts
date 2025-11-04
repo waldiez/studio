@@ -80,7 +80,7 @@ describe("wsExec", () => {
 
     describe("openExec", () => {
         it("should create WebSocket with correct URL", () => {
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             const raw = (global.WebSocket as any).mock.calls[0][0] as string;
             const u = new URL(raw);
             expect(u.protocol).toBe("ws:");
@@ -90,7 +90,7 @@ describe("wsExec", () => {
         });
 
         it("should send start message on WebSocket open", () => {
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -107,7 +107,7 @@ describe("wsExec", () => {
                 freshKernel: true,
             };
 
-            openExec("/test/script.py", onEvent, startOptions);
+            openExec("/test/script.py", onEvent  as any, startOptions);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateOpen();
@@ -118,7 +118,7 @@ describe("wsExec", () => {
         });
 
         it("should handle incoming messages", () => {
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             const testEvent: ExecEvent = {
@@ -132,7 +132,7 @@ describe("wsExec", () => {
         });
 
         it("should handle malformed messages", () => {
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateMalformedMessage();
@@ -144,7 +144,7 @@ describe("wsExec", () => {
         });
 
         it("should handle WebSocket errors", () => {
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
 
             mockWs.simulateError();
@@ -160,7 +160,7 @@ describe("wsExec", () => {
         let controller: ExecController;
 
         beforeEach(() => {
-            controller = openExec("/test/script.py", onEvent);
+            controller = openExec("/test/script.py", onEvent as any);
             mockWs = (global.WebSocket as any).mock.results[0].value;
             mockWs.simulateOpen();
             vi.clearAllMocks(); // Clear the start message call
@@ -265,7 +265,7 @@ describe("wsExec", () => {
 
     describe("URL construction", () => {
         it("should handle paths with special characters", () => {
-            openExec("/test/file with spaces.py", onEvent);
+            openExec("/test/file with spaces.py", onEvent as any);
 
             const raw = (global.WebSocket as any).mock.calls[0][0] as string;
             const u = new URL(raw);
@@ -281,7 +281,7 @@ describe("wsExec", () => {
                 writable: true,
             });
 
-            openExec("/test/script.py", onEvent);
+            openExec("/test/script.py", onEvent as any);
             const raw = (global.WebSocket as any).mock.calls[0][0] as string;
             const u = new URL(raw);
             expect(u.protocol).toBe("wss:");
@@ -307,7 +307,7 @@ describe("wsExec", () => {
         });
 
         it("should define ExecController interface", () => {
-            const controller = openExec("/test.py", onEvent);
+            const controller = openExec("/test.py", onEvent as any);
 
             expect(typeof controller.stdin).toBe("function");
             expect(typeof controller.stdinEOF).toBe("function");
