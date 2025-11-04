@@ -4,6 +4,7 @@
  */
 import axiosInstance from "@/lib/axiosInstance";
 import { emitWorkspaceChanged } from "@/lib/events";
+import { useWorkspace } from "@/store/workspace";
 import { deepMerge } from "@/utils/deepMerge";
 import { dirname } from "@/utils/paths";
 
@@ -54,6 +55,7 @@ const initial: WaldiezState = {
 
 export function useWaldiezSession(path: string | null) {
     const [state, setState] = useState<WaldiezState>(initial);
+    const { setFileCache } = useWorkspace();
 
     const ctrl = useMemo(
         () =>
@@ -88,8 +90,11 @@ export function useWaldiezSession(path: string | null) {
                     params: { path },
                 },
             );
+            const nameParts = path.split("/");
+            const name = nameParts[nameParts.length - 1];
+            setFileCache({ item: { type: "file", path, name }, mime: "", content: contents });
         },
-        [path],
+        [setFileCache, path],
     );
 
     const run = useCallback(

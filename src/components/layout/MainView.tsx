@@ -10,7 +10,7 @@ import { useWorkspace } from "@/store/workspace";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export default function MainView() {
-    const { getActiveTab, fileCache } = useWorkspace();
+    const { getActiveTab, fileCache, setFileCache } = useWorkspace();
     const activeTab = getActiveTab();
 
     const data = activeTab ? fileCache[activeTab.item.path] : undefined;
@@ -40,10 +40,11 @@ export default function MainView() {
             }
             const filePath = `/${activeTab.item.path}`;
             await saveTextFile(filePath, value);
+            setFileCache({ item: activeTab.item, mime: (data as any).mime, content: value });
             // useDrafts.getState().clearDraft(filePath)
             // optionally toast "Saved"
         },
-        [activeTab],
+        [activeTab, setFileCache, data],
     );
 
     useEffect(() => {

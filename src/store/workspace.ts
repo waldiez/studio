@@ -30,6 +30,8 @@ type WorkspaceState = {
     loading: boolean;
     error?: string;
 
+    clearCache: () => void;
+    setFileCache: (file: { item: PathItem; mime: string; content: string }) => void;
     list: (parent?: string) => Promise<void>;
     refresh: () => Promise<void>;
     createFile: (parent?: string) => Promise<PathItem>;
@@ -72,6 +74,8 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     },
 
     refresh: async () => get().list(get().cwd),
+
+    clearCache: () => set({ fileCache: {} }),
 
     createFile: async (parent = "/") => {
         const f = await createFile(parent);
@@ -159,6 +163,16 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
                 set({ error: e.message ?? "Failed to load file" });
             }
         }
+    },
+
+    setFileCache: (file: { item: PathItem; mime: string; content: string }) => {
+        const { item, mime, content } = file;
+        set(state => ({
+            fileCache: {
+                ...state.fileCache,
+                [item.path]: { kind: "text", content, mime, path: item.path },
+            },
+        }));
     },
 
     closeTab: (tabId: string) => {
