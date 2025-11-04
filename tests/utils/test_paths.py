@@ -5,6 +5,7 @@
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-param-doc,missing-yield-doc,unused-argument
 
+import getpass
 import os
 from collections.abc import Generator
 from pathlib import Path
@@ -26,7 +27,7 @@ def test_get_root_dir_default(base_dir: Path) -> None:
     root_dir = get_root_dir()
     assert isinstance(root_dir, Path)
     assert root_dir.exists()
-    assert root_dir.name == "default"
+    assert root_dir.name == getpass.getuser()
     root_dir.rmdir()
 
 

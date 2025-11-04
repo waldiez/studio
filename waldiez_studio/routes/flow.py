@@ -18,6 +18,7 @@ except ImportError:
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from waldiez.exporter import WaldiezExporter
+from waldiez.storage import StorageManager
 
 from waldiez_studio.models import PathItem, SaveFlowRequest
 from waldiez_studio.utils.sync import sync_to_async
@@ -26,6 +27,7 @@ from .common import check_flow_path, get_root_directory
 
 api = APIRouter()
 LOG = logging.getLogger(__name__)
+storage_manager = StorageManager()
 
 
 def export_flow_sync(
@@ -202,6 +204,43 @@ async def export_flow(
         type="file",
         name=flow_path.name,
     )
+
+
+@api.post(
+    "/flow/checkpoints",
+    responses={
+        200: {"description": "The current checkpoints of the flow."},
+        400: {"description": "Error: Invalid path or file type."},
+        404: {"description": "Error: File does not exist."},
+        500: {"description": "Error: Could not get checkpoints."},
+    },
+)
+async def get_flow_checkpoints(
+    flow_path: Path = Depends(check_flow_path),
+) -> dict[str, Any]:
+    """Get a flow's checkpoints.
+
+    Parameters
+    ----------
+    flow_path : Path
+        The path to the flow.
+
+    Returns
+    -------
+    dict[str, str]
+        Whether the export was successful and the destination or error message.
+
+    Raises
+    ------
+    HTTPException
+        If the path is invalid, the file type is invalid,
+        or an error occurs while exporting.
+    """
+    flow_contents = await sync_to_async(get_flow_contents_sync)(flow_path)
+    flow_name = flow_contents.get("name", "")
+    if not flow_name:
+        raise HTTPException(400, detail="Invalid flow name.")
+    return await sync_to_async(storage_manager.history)(flow_name)
 
 
 def get_flow_contents_sync(flow_path: Path) -> dict[str, Any]:
