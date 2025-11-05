@@ -155,6 +155,7 @@ def run(
                 "~*",
                 "**/files/**/*",
                 ".venv/*",
+                "src/*",
             ]
             if reload
             else None

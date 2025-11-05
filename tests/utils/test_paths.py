@@ -18,8 +18,13 @@ from waldiez_studio.utils.paths import get_root_dir, id_to_path, path_to_id
 @pytest.fixture(name="base_dir")
 def root_dir_fixture(tmp_path: Path) -> Generator[Path, None, None]:
     """Fixture to provide a temporary root directory."""
+    current = os.environ.get("WALDIEZ_STUDIO_ROOT_DIR", "")
     os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = str(tmp_path)
     yield tmp_path
+    if current:
+        os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = current
+    else:
+        del os.environ["WALDIEZ_STUDIO_ROOT_DIR"]
 
 
 def test_get_root_dir_default(base_dir: Path) -> None:

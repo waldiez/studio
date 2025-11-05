@@ -140,6 +140,20 @@ export function useWaldiezSession(path: string | null) {
         },
         [ctrl, path, save],
     );
+    const getCheckpoints: () => Promise<Record<string, any> | null> = useCallback(async () => {
+        if (!path) {
+            return null;
+        }
+        try {
+            const response = await axiosInstance.get("/flow/checkpoints", {
+                params: { path },
+            });
+            return response.data;
+        } catch (error) {
+            console.debug(error);
+            return null;
+        }
+    }, [path]);
     const convert = useCallback(
         async (flow: string, to: "py" | "ipynb") => {
             if (!path) {
@@ -157,5 +171,5 @@ export function useWaldiezSession(path: string | null) {
         [path, save],
     );
 
-    return { state, controller: ctrl, actions: { run, stepRun, save, convert } };
+    return { state, controller: ctrl, actions: { run, stepRun, save, convert, getCheckpoints } };
 }

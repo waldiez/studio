@@ -95,6 +95,9 @@ export default function WaldiezViewer({ source }: Props) {
                         respond: () => {},
                     },
                 }}
+                checkpoints={{
+                    get: actions.getCheckpoints,
+                }}
             />
         </div>
     );

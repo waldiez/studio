@@ -45,6 +45,7 @@ from .common import (
     get_new_file_name,
     get_new_folder_name,
     get_root_directory,
+    safe_rel,
 )
 
 api = APIRouter()
@@ -107,17 +108,25 @@ async def list_items(
         list[PathItem]
             A list of files and folders in the specified directory.
         """
-        items = [
-            PathItem(
-                name=item.name,
-                path=str(item.relative_to(root_dir)),
-                type="folder" if item.is_dir() else "file",
+        parent_rel = Path(parent.strip("/")) if parent else Path()
+        items: list[PathItem] = []
+        for item in directory.iterdir():
+            rel_path = (parent_rel / item.name).as_posix()
+            items.append(
+                PathItem(
+                    name=item.name,
+                    path=rel_path,
+                    type="folder" if item.is_dir() else "file",
+                )
             )
-            for item in directory.iterdir()
-        ]
         return sorted(items, key=lambda p: (p.type == "file", p.name.lower()))
 
-    entries = await sync_to_async(sync_list_items)(target_dir)
+    entries: list[PathItem] = []
+    try:
+        entries = await sync_to_async(sync_list_items)(target_dir)
+    except ValueError as error:
+        LOG.warning(error)
+        raise HTTPException(400, detail="Failed to list items") from error
     return PathItemListResponse(items=entries)
 
 
@@ -226,7 +235,7 @@ async def rename_file_or_folder(
 
     return PathItem(
         name=new_target.name,
-        path=str(new_target.relative_to(root_dir)),
+        path=safe_rel(new_target, root=root_dir),
         type="folder" if new_target.is_dir() else "file",
     )
 
@@ -366,7 +375,7 @@ async def upload_file(
 
     return PathItem(
         name=full_path.name,
-        path=str(full_path.relative_to(root_dir)),
+        path=safe_rel(full_path, root=root_dir),
         type="file",
     )
 
@@ -482,7 +491,7 @@ async def get_file(
         content = file_path.read_text(encoding="utf-8", errors="replace")
         return ORJSONResponse(
             {
-                "path": str(file_path.relative_to(root_dir)),
+                "path": safe_rel(file_path, root=root_dir),
                 "mime": mime,
                 "content": content,
             }
@@ -737,7 +746,7 @@ async def create_new_path_item(
         ) from error
     return PathItem(
         name=full_path.name,
-        path=str(full_path.relative_to(root_dir)),
+        path=safe_rel(full_path, root=root_dir),
         type=item_type,
     )
 

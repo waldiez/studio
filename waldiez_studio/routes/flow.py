@@ -206,7 +206,7 @@ async def export_flow(
     )
 
 
-@api.post(
+@api.get(
     "/flow/checkpoints",
     responses={
         200: {"description": "The current checkpoints of the flow."},

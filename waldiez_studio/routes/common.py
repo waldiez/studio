@@ -7,10 +7,12 @@
 
 import logging
 import re
+from collections.abc import Iterable
 from pathlib import Path
 from urllib.parse import unquote
 
 from fastapi import Depends, HTTPException, Query
+from waldiez.storage import get_root_dir as get_waldiez_root
 
 from waldiez_studio.utils.paths import get_root_dir
 
@@ -93,6 +95,106 @@ def get_root_directory() -> Path:
     return get_root_dir()
 
 
+def _is_relative_to_any(path: Path, bases: Iterable[Path]) -> bool:
+    """Check if a path is relative to any of the base roots."""
+    for base in bases:
+        try:
+            path.relative_to(base)
+            return True
+        except ValueError:
+            continue
+    return False
+
+
+def safe_rel(full: Path, root: Path) -> str:
+    """Get the relative (from root) path representation of a path.
+
+    Parameters
+    ----------
+    full : Path
+        The full path
+    root : Path
+        The root dir.
+
+    Returns
+    -------
+    str
+        The relative representation.
+    """
+    try:
+        return full.relative_to(root).as_posix()
+    except ValueError:
+        full_s, root_s = str(full), str(root)
+        if full_s.startswith(root_s.rstrip("/")):
+            return full_s[len(root_s) :].lstrip("/")
+        return full.name
+
+
+# pylint: disable=too-complex
+def _validate_symlinks_within(  # noqa: C901
+    root_dir: Path,
+    abs_path: Path,
+    *,
+    allowed_prefixes: list[Path],
+    strict: bool,
+) -> None:
+    """Validate symlinks.
+
+    Walk from root_dir to abs_path and ensure each symlink's *resolved target*
+    stays under one of the allowed prefixes. If not, raise ValueError.
+    """
+    # Compute the relative path we walked from root_dir
+    try:
+        rel = abs_path.relative_to(root_dir)
+    except ValueError:
+        # If the final absolute path isn't under root, we still want to validate
+        # the components inside root_dir we traversed to get here.
+        rel = abs_path
+
+    cur = root_dir
+    for part in rel.parts:
+        if part in ("", ".", ".."):
+            # We already guard against traversal, but keep defensive
+            if part == "..":
+                raise ValueError(
+                    "Error: Invalid path traversal '..' not allowed"
+                )
+            continue
+
+        candidate = cur / part
+        # Only check if the component exists and is a symlink
+        if candidate.exists() and candidate.is_symlink():
+            try:
+                target = candidate.resolve(strict=strict)
+            except FileNotFoundError:
+                if strict:
+                    raise
+                # If not strict, unresolved final component allowed.
+                # We still enforce that *known* symlink targets stay
+                # under allowed prefixes.
+                continue
+
+            if not _is_relative_to_any(target, allowed_prefixes):
+                msg = (
+                    f"Error: Invalid path: symlink '{candidate}' "
+                    "points outside allowed directories"
+                )
+                raise ValueError(msg)
+
+            # If we’re descending further,
+            # move the cursor to the real target dir
+            if target.is_dir():
+                cur = target
+            else:
+                # If the symlink is a file but we still have more parts to walk,
+                # that's invalid (can't descend into a file).
+                # If this is the last part, it's fine—loop will end.
+                pass
+        else:
+            # Normal component, just move on
+            cur = candidate
+
+
 def _resolve_path(path: Path, strict: bool = False) -> Path:
     """Resolve a path and ensure it exists.
 
@@ -122,7 +224,12 @@ def _resolve_path(path: Path, strict: bool = False) -> Path:
     return resolved_path
 
 
-def sanitize_path(root_dir: Path, path: str, strict: bool = False) -> Path:
+def sanitize_path(
+    root_dir: Path,
+    path: str,
+    strict: bool = False,
+    base_dir: Path | None = None,
+) -> Path:
     """Sanitize a path and ensure it is within the root directory.
 
     Parameters
@@ -133,6 +240,8 @@ def sanitize_path(root_dir: Path, path: str, strict: bool = False) -> Path:
         The path to sanitize.
     strict : bool, optional
         Whether to strictly enforce the path, by default False.
+    base_dir : Path, optional
+        Optional base_dir to allow symlinks in.
 
     Returns
     -------
@@ -146,6 +255,8 @@ def sanitize_path(root_dir: Path, path: str, strict: bool = False) -> Path:
     BaseException
         If the path cannot be resolved.
     """
+    if base_dir is None:
+        base_dir = get_waldiez_root().parent
     if path in ("/", ""):
         return root_dir
     try:
@@ -164,7 +275,15 @@ def sanitize_path(root_dir: Path, path: str, strict: bool = False) -> Path:
         resolved_path = _resolve_path(safe_path, strict=strict)
     except BaseException as error:
         raise error
-    if not resolved_path.is_relative_to(root_dir):
+    allowed_prefixes = [root_dir.resolve(), base_dir.resolve()]
+    _validate_symlinks_within(
+        root_dir.resolve(),
+        resolved_path,
+        allowed_prefixes=allowed_prefixes,
+        strict=strict,
+    )
+    print(allowed_prefixes)
+    if not _is_relative_to_any(resolved_path, allowed_prefixes):
         raise ValueError("Error: Invalid path: Path is outside root directory")
     return resolved_path
 
@@ -350,6 +469,7 @@ def check_flow_path(
     -------
     Path
         The validated flow path relative to the root directory.
+
     Raises
     ------
     HTTPException

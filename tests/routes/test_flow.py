@@ -5,7 +5,8 @@
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc,missing-param-doc,missing-raises-doc,line-too-long,unused-argument
 
-from collections.abc import AsyncGenerator
+import os
+from collections.abc import AsyncGenerator, Generator
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
@@ -14,8 +15,21 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
+import waldiez_studio.routes.flow as flow_module
 from waldiez_studio.routes import common
 from waldiez_studio.routes.flow import api
+
+
+@pytest.fixture(name="root_dir")
+def root_dir_fixture(tmp_path: Path) -> Generator[Path, None, None]:
+    """Fixture to provide a temporary root directory."""
+    current = os.environ.get("WALDIEZ_STUDIO_ROOT_DIR", "")
+    os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = str(tmp_path)
+    yield tmp_path
+    if current:
+        os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = current
+    else:
+        del os.environ["WALDIEZ_STUDIO_ROOT_DIR"]
 
 
 @pytest.fixture(autouse=True, name="client")
@@ -281,4 +295,59 @@ async def test_export_flow_export_error(
     )
     assert response.status_code == 500
     assert "Mocked export error" in response.json()["detail"]
+    test_flow.unlink()
+
+
+async def test_get_flow_checkpoints(
+    client: AsyncClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    root_dir: Path,
+) -> None:
+    """Test get checkpoints."""
+    test_flow = tmp_path / "test_get_flow_checkpoints.waldiez"
+    test_flow.write_text(
+        '{"name": "test get flow checkpoints"}', encoding="utf-8"
+    )
+
+    def _mock_get_history(_flow_name: str) -> dict[str, list[dict[str, Any]]]:
+        return {
+            "1": [{"state": {"messages": ["message1", "message2"]}}],
+            "2": [{"state": {"messages": ["message3", "message4"]}}],
+        }
+
+    monkeypatch.setattr(
+        flow_module.storage_manager, "history", _mock_get_history
+    )
+    response = await client.get(
+        "/flow/checkpoints",
+        params={
+            "path": "test_get_flow_checkpoints.waldiez",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["1"][0]["state"]["messages"][0] == "message1"
+    test_flow.unlink()
+
+
+async def test_get_flow_checkpoints_no_name(
+    client: AsyncClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    root_dir: Path,
+) -> None:
+    """Test get checkpoints."""
+    test_flow = tmp_path / "test_get_flow_checkpoints_no_name.waldiez"
+    test_flow.write_text(
+        '{"no_name": "test get flow checkpoints"}', encoding="utf-8"
+    )
+
+    response = await client.get(
+        "/flow/checkpoints",
+        params={
+            "path": "test_get_flow_checkpoints_no_name.waldiez",
+        },
+    )
+    assert response.status_code == 400
+    assert "Invalid flow name" in response.json()["detail"]
     test_flow.unlink()

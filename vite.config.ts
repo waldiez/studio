@@ -146,6 +146,21 @@ export default defineConfig(({ command }) => {
         base: dev ? base : `${base}frontend/`,
         server: {
             proxy: getProxy(command),
+            ignored: [
+                "**/node_modules/**",
+                "**/.git/**",
+                "**/.venv/**",
+                "**/.local/**",
+                "**/coverage/**",
+                "**/__pycache__/**",
+                "**/.mypy_cache/**",
+                "**/.pytest_cache/**",
+                "**/.ruff_cache/**",
+                "**/out/**",
+                "**/dist/**",
+                "/waldiez_studio/**",
+                "/tests/**",
+            ],
         },
         build: {
             emptyOutDir: true,

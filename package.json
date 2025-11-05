@@ -122,7 +122,7 @@
         "prepare": "node -e \"(async () => { await import('./.husky/install.mjs').catch(() => {}) })()\"",
         "check:tailwind": "node --import=tsx scripts/tailwind_windows_arm64.ts",
         "dev:front": "bun monaco && vite -c vite.config.ts",
-        "dev:back": "bun python -m waldiez_studio --log-level debug",
+        "dev:back": "bun python -m waldiez_studio --log-level debug --reload",
         "dev": "npm-run-all --parallel dev:front dev:back",
         "check-types": "tsc -b --noEmit",
         "python": "bun scripts/python.ts",

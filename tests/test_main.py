@@ -31,9 +31,13 @@ def root_dir_fixture(tmp_path: Path) -> Generator[Path, None, None]:
     Generator[Path, None, None]
         Temporary path generator.
     """
+    current = os.environ.get("WALDIEZ_STUDIO_ROOT_DIR", "")
     os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = str(tmp_path)
     yield tmp_path
-    del os.environ["WALDIEZ_STUDIO_ROOT_DIR"]
+    if current:
+        os.environ["WALDIEZ_STUDIO_ROOT_DIR"] = current
+    else:
+        del os.environ["WALDIEZ_STUDIO_ROOT_DIR"]
 
 
 @pytest.fixture(name="static_root")
