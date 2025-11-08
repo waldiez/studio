@@ -34,7 +34,7 @@ classifiers = [
 ]
 dependencies = [
     "aiofiles==25.1.0",
-    "aiohttp==3.13.1",
+    "aiohttp==3.13.2",
     "fastapi",
     "jupyter_client==8.6.3",
     "orjson==3.11.4",
@@ -42,7 +42,7 @@ dependencies = [
     "pydantic-settings==2.11.0",
     "python-multipart==0.0.20",
     "pywinpty==3.0.2; sys_platform == 'win32'",
-    "tenacity>=9.0.0,<=9.1.2",
+    "tenacity>=9.0.0,<10",
     "trio==0.32.0",
     "typer>=0.9.0,<1",
     "uvicorn[standard]==0.38.0",
@@ -81,7 +81,7 @@ exclude = [ "**/example.py", ".gitignore" ]
 dev = [
     "autoflake==2.3.1",
     "bandit==1.8.6",
-    "basedpyright==1.32.1",
+    "basedpyright==1.33.0",
     "black==25.9.0",
     "filelock==3.20.0",
     "flake8==7.3.0",
@@ -92,7 +92,7 @@ dev = [
     "pydocstyle==6.3.0",
     "pylint==4.0.2",
     "python-dotenv>=1.2.1",
-    "ruff==0.14.2",
+    "ruff==0.14.4",
     "toml==0.10.2; python_version <= '3.10'",
     "types-aiofiles==25.1.0.20251011",
     "types-PyYAML==6.0.12.20250915",
