@@ -44,18 +44,13 @@ describe("useXtermTheme", () => {
 
         themeState.theme = "light";
 
-        // @ts-expect-error Element | undefined
         gcsSpy = vi.spyOn(window, "getComputedStyle").mockImplementation((el: Element) => {
             const src = el === document.body ? cssMapBody : cssMapRoot;
             return {
                 getPropertyValue: (name: string) => src[name] ?? "",
             } as any;
         });
-
-        // Spy on RAF/CANCEL (don’t reassign the globals)
-        // Call the callback immediately for determinism.
         let id = 0;
-        // @ts-expect-error Element | undefined
         rafSpy = vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb: FrameRequestCallback) => {
             id += 1;
             cb(performance.now());

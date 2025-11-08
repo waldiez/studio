@@ -18,14 +18,24 @@ type Props = {
 // Configure marked once (global)
 marked.use(
     markedHighlight({
+        langPrefix: "hljs language-",
         highlight(code, lang) {
-            if (lang && hljs.getLanguage(lang)) {
-                return hljs.highlight(code, { language: lang }).value;
+            try {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang, ignoreIllegals: true }).value;
+                }
+            } catch {
+                //
             }
             return hljs.highlightAuto(code).value;
         },
     }),
 );
+marked.setOptions({
+    gfm: true,
+    breaks: false,
+    pedantic: false,
+});
 
 export default function MarkdownViewer({ source, className }: Props) {
     const html = useMemo(() => {
@@ -67,7 +77,7 @@ export default function MarkdownViewer({ source, className }: Props) {
                 "td",
                 "div",
                 "span",
-                "input", // for task list checkboxes
+                "input",
             ],
             ALLOWED_ATTR: [
                 "href",
@@ -86,6 +96,8 @@ export default function MarkdownViewer({ source, className }: Props) {
                 "width",
                 "height",
                 "colspan",
+                "rowspan",
+                "data-src",
             ],
             ALLOWED_URI_REGEXP:
                 // eslint-disable-next-line no-useless-escape

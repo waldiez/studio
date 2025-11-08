@@ -153,18 +153,6 @@ export default function PdfViewer({
                     });
                     await textLayer.render();
                     textLayer.update({ viewport });
-                    // console.debug(textContent);
-                    // Render selectable text
-                    // await pdfjs.re
-                    //     textContent,
-                    //     container: textLayerDiv,
-                    //     viewport,
-                    //     textDivs: [],
-                    //     timeout: 0,
-                    //     enhanceTextSelection: true,
-                    // }).promise;
-                } else {
-                    console.debug("No ref?");
                 }
             } catch (err: any) {
                 if (!cancelled) {
