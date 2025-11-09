@@ -33,7 +33,7 @@ jobs:
           bun run build
           python scripts/build.py
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: waldiez-studio
           path: dist/*
@@ -47,7 +47,7 @@ jobs:
       url: https://pypi.org/p/waldiez-studio
     steps:
       - name: Download the distribution packages
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v6.0.0
         with:
           name: waldiez-studio
           path: dist
