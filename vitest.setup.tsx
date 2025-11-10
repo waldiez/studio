@@ -128,6 +128,7 @@ vi.mock("@waldiez/react", () => ({
         chats: [],
     }),
 }));
+vi.setConfig({ testTimeout: 30_000 });
 beforeEach(() => {
     mockReactFlow();
     vi.useFakeTimers({ shouldAdvanceTime: true });

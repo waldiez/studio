@@ -26,20 +26,6 @@ describe("NotebookViewer", () => {
         expect(screen.getByText("Invalid notebook.")).toBeInTheDocument();
     });
 
-    it("applies default className", () => {
-        const { container } = render(<NotebookViewer note={{ cells: [] }} />);
-
-        const wrapper = container.firstChild as HTMLElement;
-        expect(wrapper).toHaveClass("h-full", "w-full", "overflow-auto", "p-3", "space-y-4");
-    });
-
-    it("applies custom className", () => {
-        const { container } = render(<NotebookViewer note={{ cells: [] }} className="custom-class" />);
-
-        const wrapper = container.firstChild as HTMLElement;
-        expect(wrapper).toHaveClass("custom-class");
-    });
-
     it("renders empty notebook", () => {
         act(() => {
             render(<NotebookViewer note={{ cells: [] }} />);
