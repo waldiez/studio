@@ -2,7 +2,7 @@
 autoflake==2.3.1
 bandit==1.8.6
 basedpyright==1.33.0
-black==25.9.0
+black==25.11.0
 filelock==3.20.0
 flake8==7.3.0
 hatchling==1.27.0
