@@ -9,6 +9,8 @@
 waldiez_studio/static/*
 waldiez_studio/files/*
 **/__pycache__/
+!__mocks__/
+!vite.plugins/
 !package.json
 !bun.lockb
 !bun.lock
