@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     host: str = get_default_host()
     port: int = get_default_port()
     domain_name: str = get_default_domain_name()
+    main_domain: str = get_default_domain_name()
     force_ssl: bool = False
     trusted_hosts: str | list[str] = get_trusted_hosts(
         domain_name=domain_name, host=host

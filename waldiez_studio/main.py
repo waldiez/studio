@@ -116,6 +116,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     ExtraHeadersMiddleware,
     csp=True,
+    main_domain=settings.main_domain,
     exclude_patterns=[
         f"^/{BASE_URL}/docs",
         f"^/{BASE_URL}/openapi.json",
