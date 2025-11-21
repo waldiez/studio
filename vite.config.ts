@@ -101,10 +101,6 @@ const getProxy = (_command: "build" | "serve") => {
             target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
             changeOrigin: true,
         },
-        "/min-maps": {
-            target: `${apiDevScheme}://${apiDevHost}${apiDevPortStr}/${baseUrl}`,
-            changeOrigin: true,
-        },
     };
 };
 
