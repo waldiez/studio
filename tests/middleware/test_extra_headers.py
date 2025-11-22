@@ -84,7 +84,6 @@ async def test_security_headers_middleware(client: AsyncClient) -> None:
         == "max-age=31556926; includeSubDomains"
     )
     assert response.headers["X-Content-Type-Options"] == "nosniff"
-    assert response.headers["X-Frame-Options"] == "DENY"
     assert response.headers["X-XSS-Protection"] == "1; mode=block"
 
 
@@ -107,7 +106,6 @@ async def test_security_headers_disabled_csp() -> None:
         response = await client.get("/")
 
         assert "Content-Security-Policy" not in response.headers
-        assert response.headers["X-Frame-Options"] == "DENY"
 
 
 @pytest.mark.anyio

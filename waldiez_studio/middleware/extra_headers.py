@@ -26,6 +26,7 @@ CSP: dict[str, str | list[str]] = {
     "font-src": ["'self'", "https://cdn.jsdelivr.net/npm/", "data:"],
     "manifest-src": "'self'",
     "media-src": ["'self'", "data:"],
+    "frame-ancestors": ["'self'"],
 }
 
 
@@ -75,6 +76,7 @@ class ExtraHeadersMiddleware:
         csp: bool = True,
         force_ssl: bool = True,
         max_age: int = 31556926,
+        main_domain: str | None = None,
     ):
         """Init SecurityHeadersMiddleware.
 
@@ -90,15 +92,21 @@ class ExtraHeadersMiddleware:
             Whether to add a Strict-Transport-Security header
         max_age: int
             The max age for the Strict-Transport-Security header
+        main_domain: str, optional
+            The main domain to allow iframes from subdomains
         """
         self.app = app
         self.csp = csp
         self.force_ssl = force_ssl
         self.max_age = max_age
+        self.main_domain = main_domain
         self.exclude_patterns = [
             re.compile(p) for p in (exclude_patterns or [])
         ]
-        self._policy = parse_policy(CSP)
+        policy = CSP.copy()
+        if main_domain:
+            policy["frame-ancestors"] = [f"*.{main_domain}"]
+        self._policy = parse_policy(policy)
 
     async def __call__(
         self, scope: Scope, receive: Receive, send: Send
@@ -131,7 +139,6 @@ class ExtraHeadersMiddleware:
                         "Cross-Origin-Opener-Policy": "same-origin",
                         "Referrer-Policy": "strict-origin-when-cross-origin",
                         "X-Content-Type-Options": "nosniff",
-                        "X-Frame-Options": "DENY",
                         "X-XSS-Protection": "1; mode=block",
                     }
                     if self.csp:
