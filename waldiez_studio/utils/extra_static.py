@@ -26,9 +26,7 @@ STATIC_ROOT = ROOT_DIR / "static"
 REGISTRY_BASE_URL = "https://registry.npmjs.org"
 PACKAGE_NAME = "monaco-editor"
 
-# 0.53.0 does not seem to play well with @monaco-editor/react
-# let's check periodically and change it to None when we are good.
-PINNED_VERSION: str | None = "0.54.0"
+PINNED_VERSION: str | None = "0.55.1"
 SWAGGER_DIST = (
     "https://raw.githubusercontent.com/swagger-api/swagger-ui/master/dist"
 )
@@ -74,12 +72,16 @@ def check_cached_details(file_path: Path) -> tuple[str, str, str] | None:
         LOG.error("Error checking cached details: %s", e)
         return None
     try:
-        last_check = datetime.fromisoformat(data.get("last_check", ""))
+        last_check = datetime.fromisoformat(
+            data.get("last_check", "").replace(
+                "Z",
+                "+00:00",
+            )
+        )
         vs_version = data.get("version")
         url = data.get("url")
         sha_sum = data.get("sha_sum")
-    except BaseException as e:
-        LOG.error("Error parsing last check timestamp: %s", e)
+    except BaseException:
         return None
     if not all((last_check, vs_version, url, sha_sum)):
         return None
@@ -142,7 +144,9 @@ async def get_package_details(static_root: Path) -> tuple[str, str, str]:
                         "version": target_version,
                         "url": tarball_url,
                         "sha_sum": sha_sum,
-                        "last_check": datetime.now(timezone.utc).isoformat(),
+                        "last_check": datetime.now(timezone.utc)
+                        .isoformat(timespec="milliseconds")
+                        .replace("+00:00", "Z"),
                     },
                     indent=2,
                 ),

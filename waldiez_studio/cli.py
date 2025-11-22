@@ -119,6 +119,10 @@ def run(
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger("waldiez::studio")
     logger.debug("Starting the application")
+    if not base_url.startswith("/"):
+        base_url = f"/{base_url}"
+    while base_url.endswith("/"):
+        base_url = base_url[:-1]
     settings = Settings(
         domain_name=domain_name,
         trusted_hosts=trusted_hosts,

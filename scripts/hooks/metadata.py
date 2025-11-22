@@ -5,6 +5,7 @@
 
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -51,9 +52,10 @@ def _write_version(version: str) -> None:
     version : str
         Version to write.
     """
+    this_year = datetime.now(tz=timezone.utc).year
     version_path = ROOT_DIR / "waldiez_studio" / "_version.py"
     version_string = f'''# SPDX-License-Identifier: Apache-2.0.
-# Copyright (c) 2024 - 2025 Waldiez and contributors.
+# Copyright (c) 2024 - {this_year} Waldiez and contributors.
 """Version information for waldiez_studio.
 
 Dev:
@@ -63,7 +65,7 @@ Dev:
     See ../scripts/hooks/metadata.py for more information.
 """
 
-__version__ = VERSION = "{version}"
+__version__ = "{version}"
 '''  # nosemgrep # nosec
     with open(
         version_path,

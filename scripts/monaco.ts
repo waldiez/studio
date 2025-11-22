@@ -21,12 +21,12 @@ const TARGET_DIR = path.resolve(__rootDir, "waldiez_studio", "static", "monaco")
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MONACO_DETAILS_PATH = path.join(TARGET_DIR, "monaco.json");
-const PINNED_VERSION: string | undefined = "0.54.0";
+const PINNED_VERSION: string | undefined = "0.51.1";
 
 interface IPackageDetails {
     version: string;
     url: string;
-    shaSum: string;
+    sha_sum: string;
     last_check: string;
 }
 
@@ -79,7 +79,7 @@ const fetchPackageDetails = async (): Promise<IPackageDetails> => {
                         const details: IPackageDetails = {
                             version,
                             url: dist.tarball,
-                            shaSum: dist.shasum,
+                            sha_sum: dist.shasum,
                             last_check: new Date().toISOString(),
                         };
 
@@ -150,7 +150,7 @@ const ensureMonacoFiles = async (): Promise<void> => {
 
     try {
         await downloadFile(details.url, tarballPath);
-        await validateChecksum(tarballPath, details.shaSum);
+        await validateChecksum(tarballPath, details.sha_sum);
         await extractTarFile(tarballPath, TARGET_DIR);
 
         const monacoRoot = path.join(TARGET_DIR, "package");

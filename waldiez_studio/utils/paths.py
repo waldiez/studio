@@ -18,7 +18,7 @@ from functools import lru_cache
 from pathlib import Path
 
 BASE_URL = "base_url.txt"
-API_PREFIXES = "api_prefixes.json"
+PREFIXES = "prefixes.json"
 
 
 @lru_cache
@@ -280,7 +280,7 @@ def replace_frontend_paths(static_root: Path, base_url: str) -> None:
 
 
 def _load_previous_prefixes(static_root: Path) -> dict[str, str]:
-    prefix_file = static_root / API_PREFIXES
+    prefix_file = static_root / PREFIXES
     previous = {
         "api": "__WALDIEZ_STUDIO_API__/api",
         "ws": "__WALDIEZ_STUDIO_WS__/ws",
@@ -303,13 +303,14 @@ def _load_previous_prefixes(static_root: Path) -> dict[str, str]:
 
 
 def _store_last_prefixes(static_root: Path, prefixes: dict[str, str]) -> None:
-    prefix_file = static_root / API_PREFIXES
+    prefix_file = static_root / PREFIXES
     try:
         prefix_file.write_text(json.dumps(prefixes), encoding="utf-8")
     except Exception as e:
         print(f"Warning: Could not store prefixes: {e}")
 
 
+# pylint: disable=too-many-locals
 def _replace_prefixes(
     static_root: Path, previous: dict[str, str], current: dict[str, str]
 ) -> int:
@@ -317,28 +318,32 @@ def _replace_prefixes(
     api_prefix = current["api"]
     ws_prefix = current["ws"]
     vs_prefix = current["vs"]
+    placeholders = {
+        "api": "__WALDIEZ_STUDIO_API__/api",
+        "ws": "__WALDIEZ_STUDIO_WS__/ws",
+        "vs": "__WALDIEZ_STUDIO_VS__/vs",
+    }
     for filepath in static_root.rglob("*.js"):
         if filepath.is_file():
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                new_content = content
+                new_content = str(content)
 
                 # First, revert previous values back to placeholders
                 # Handle both double and single quotes
-                for key, placeholder in [
-                    ("api", "__WALDIEZ_STUDIO_API__/api"),
-                    ("ws", "__WALDIEZ_STUDIO_WS__/ws"),
-                    ("vs", "__WALDIEZ_STUDIO_VS__/vs"),
-                ]:
+                for key, placeholder in placeholders.items():
                     prev_value = previous[key]
-                    new_content = new_content.replace(
-                        f'"{prev_value}"', f'"{placeholder}"'
-                    )
-                    new_content = new_content.replace(
-                        f"'{prev_value}'", f"'{placeholder}'"
-                    )
+                    cur_value = current[key]
+
+                    for value in (prev_value, cur_value):
+                        new_content = new_content.replace(
+                            f'"{value}"', f'"{placeholder}"'
+                        )
+                        new_content = new_content.replace(
+                            f"'{value}'", f"'{placeholder}'"
+                        )
 
                 new_content = new_content.replace(
                     '"__WALDIEZ_STUDIO_API__/api"', f'"{api_prefix}"'
@@ -401,14 +406,13 @@ def replace_api_prefixes(
     # Track previous values
     current = {"api": api_prefix, "ws": ws_prefix, "vs": vs_prefix}
     previous = _load_previous_prefixes(static_root)
-    # If nothing changed, skip processing
-    if previous == current:
-        return
-    modified = _replace_prefixes(
-        static_root, previous=previous, current=current
-    )
-    # Store current values for next time
-    _store_last_prefixes(static_root, prefixes=current)
+    try:
+        modified = _replace_prefixes(
+            static_root, previous=previous, current=current
+        )
+    finally:
+        # Store current values for next time
+        _store_last_prefixes(static_root, prefixes=current)
     if modified:
         files = "files" if modified != 1 else "file"
         print(f"API prefix replacement complete: {modified} {files} modified")

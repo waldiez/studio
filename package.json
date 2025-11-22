@@ -128,7 +128,7 @@
         "python": "bun scripts/python.ts",
         "monaco": "bun scripts/monaco.ts",
         "before:build": "bun monaco",
-        "after:build": "bun scripts/store-last-build-dt.ts",
+        "after:build": "bun scripts/post-build.ts",
         "build": "bun before:build && npx tsc -b && npx vite -c vite.config.ts build && bun after:build",
         "build:back": "bun python scripts/build.py",
         "image": "bun python scripts/image.py",
