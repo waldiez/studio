@@ -41,7 +41,7 @@ export default function CodeEditor({
         ...options,
     });
 
-    const handleMount: OnMount = useCallback(
+    const onMount: OnMount = useCallback(
         (editor, monaco) => {
             editorRef.current = editor;
             monacoRef.current = monaco;
@@ -76,15 +76,25 @@ export default function CodeEditor({
         [language, onSave, path, value],
     );
 
+    const handleChange = useCallback(
+        (value?: string) => {
+            if (value) {
+                onChange?.(value);
+            }
+        },
+        [onChange],
+    );
+
     return (
         <div className={className ?? "h-full w-full"}>
             <Editor
                 theme={theme === "dark" ? "vs-dark" : "vs"}
                 defaultLanguage={language}
+                language={language}
                 defaultValue={value}
                 value={value}
-                onChange={v => onChange?.(v ?? "")}
-                onMount={handleMount}
+                onChange={handleChange}
+                onMount={onMount}
                 options={mergedOptions}
                 loading={<div className="p-3 text-sm opacity-70">Loading editor...</div>}
             />
