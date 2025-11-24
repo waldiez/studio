@@ -1,7 +1,7 @@
 {
     "name": "@waldiez/studio",
     "description": "Make AG2 Agents Collaborate: Drag, Drop, and Orchestrate with Waldiez.",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "type": "module",
     "keywords": [
         "waldiez"
@@ -35,7 +35,7 @@
         "@radix-ui/react-tabs": "^1.1.13",
         "@tailwindcss/vite": "^4.1.17",
         "@tanstack/react-table": "^8.21.3",
-        "@waldiez/react": "^0.6.5",
+        "@waldiez/react": "^0.6.6",
         "@xterm/xterm": "^5.5.0",
         "axios": "^1.13.2",
         "class-variance-authority": "^0.7.1",
@@ -74,7 +74,7 @@
         "@types/fs-extra": "^11.0.4",
         "@types/jest": "^30.0.0",
         "@types/node": "^24.10.1",
-        "@types/react": "^19.2.6",
+        "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
         "@types/tar-stream": "^3.1.4",
         "@vitejs/plugin-react": "^5.1.1",

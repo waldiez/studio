@@ -21,7 +21,7 @@ const TARGET_DIR = path.resolve(__rootDir, "waldiez_studio", "static", "monaco")
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MONACO_DETAILS_PATH = path.join(TARGET_DIR, "monaco.json");
-const PINNED_VERSION: string | undefined = "0.51.1";
+const PINNED_VERSION: string | undefined = "0.55.1";
 
 interface IPackageDetails {
     version: string;
