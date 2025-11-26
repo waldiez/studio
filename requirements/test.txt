@@ -4,6 +4,7 @@ filelock==3.20.0
 httpx<1
 pytest-asyncio==1.3.0
 pytest-cov==7.0.0
+pytest-env==1.2.0
 pytest-html==4.1.1
 pytest-httpx
 pytest-sugar==1.1.1

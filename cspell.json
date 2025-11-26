@@ -136,6 +136,7 @@
         "pytest",
         "PYTHONDONTWRITEBYTECODE",
         "PYTHONIOENCODING",
+        "PYTHONTRACEMALLOC",
         "PYTHONUNBUFFERED",
         "pywinpty",
         "pyyaml",
