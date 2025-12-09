@@ -1,18 +1,18 @@
 -r main.txt
 autoflake==2.3.1
 bandit==1.9.2
-basedpyright==1.34.0
-black==25.11.0
+basedpyright==1.35.0
+black==25.12.0
 filelock==3.20.0
 flake8==7.3.0
-hatchling==1.27.0
+hatchling==1.28.0
 isort==7.0.0
-mypy==1.18.2
-prek==0.2.19
+mypy==1.19.0
+prek==0.2.21
 pydocstyle==6.3.0
-pylint==4.0.3
+pylint==4.0.4
 python-dotenv>=1.2.1
-ruff==0.14.6
+ruff==0.14.8
 toml==0.10.2; python_version <= '3.10'
 types-PyYAML==6.0.12.20250915
 types-aiofiles==25.1.0.20251011
