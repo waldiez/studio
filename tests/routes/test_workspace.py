@@ -112,7 +112,7 @@ async def test_upload_file(client: AsyncClient, tmp_path: Path) -> None:
             data={"path": ""},
             files={"file": ("test_file.txt", f, "text/plain")},
         )
-
+    print(response.json())
     assert response.status_code == 200
     uploaded_file = tmp_path / "test_file.txt"
     assert uploaded_file.exists()
