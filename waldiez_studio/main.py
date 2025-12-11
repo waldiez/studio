@@ -210,14 +210,14 @@ app.mount(
 app.mount(
     f"{BASE_URL}/icons",
     StaticFiles(directory=FRONTEND_DIR / "icons"),
-    name="frontend-icons",
+    name="icons",
 )
 
 # /BASE_URL/screenshots/* -> screenshots shown in store/listings
 app.mount(
     f"{BASE_URL}/screenshots",
     StaticFiles(directory=FRONTEND_DIR / "screenshots"),
-    name="frontend-screenshots",
+    name="screenshots",
 )
 
 # include api routes
