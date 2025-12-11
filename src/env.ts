@@ -3,6 +3,25 @@
  * Copyright 2024 - 2025 Waldiez & contributors
  */
 
-export const apiPrefix = WALDIEZ_STUDIO_API_PREFIX || "/api";
-export const wsPrefix = WALDIEZ_STUDIO_WS_PREFIX || "/ws";
-export const vsPath = WALDIEZ_STUDIO_VS_PREFIX || "/vs";
+type WaldiezRuntimeConfig = {
+    baseUrl: string; // e.g. "", "/studio"
+    apiPrefix: string; // e.g. "/api", "/studio/api"
+    wsPrefix: string; // e.g. "/ws", "/studio/ws"
+    vsPrefix: string; // e.g. "/vs", "/studio/vs"
+};
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    interface Window {
+        __WALDIEZ_STUDIO_CONFIG__?: WaldiezRuntimeConfig;
+    }
+}
+
+const cfg: WaldiezRuntimeConfig | undefined =
+    typeof window !== "undefined" ? window.__WALDIEZ_STUDIO_CONFIG__ : undefined;
+
+// Fallbacks mainly useful for tests or if backend route is missing
+export const baseUrl = cfg?.baseUrl ?? "";
+export const apiPrefix = cfg?.apiPrefix ?? "/api";
+export const wsPrefix = cfg?.wsPrefix ?? "/ws";
+export const vsPath = cfg?.vsPrefix ?? "/vs";

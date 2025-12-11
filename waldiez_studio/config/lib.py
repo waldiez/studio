@@ -143,9 +143,20 @@ def get_default_base_url() -> str:
         if base_url_index < len(sys.argv):  # pragma: no branch
             base_url = sys.argv[base_url_index]
             if base_url:  # pragma: no branch
+                if not base_url.startswith("/"):
+                    base_url = f"/{base_url}"
+                while base_url.endswith("/"):
+                    base_url = base_url[:-1]
                 os.environ[f"{ENV_PREFIX}BASE_URL"] = base_url
                 return base_url
-    return os.environ.get(f"{ENV_PREFIX}BASE_URL", "/")
+    # else:
+    base_url = os.environ.get(f"{ENV_PREFIX}BASE_URL", "/")
+    if not base_url.startswith("/"):
+        base_url = f"/{base_url}"
+    while base_url.endswith("/"):
+        base_url = base_url[:-1]
+    os.environ[f"{ENV_PREFIX}BASE_URL"] = base_url
+    return base_url
 
 
 def get_default_host() -> str:

@@ -5,7 +5,7 @@
     "orientation": "portrait-primary",
     "lang": "en",
     "prefer_related_applications": false,
-    "scope": "/%BASE_URL%/",
+    "scope": "/",
     "start_url": "/%BASE_URL%/",
     "id": "/",
     "icons": [

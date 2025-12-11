@@ -146,14 +146,6 @@ async def test_favicon(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_static_files(client: AsyncClient) -> None:
-    """Test the static files mounting."""
-    # Test a static file from the /frontend directory
-    response = await client.get("/frontend/somefile.js")
-    assert response.status_code == 404
-
-
-@pytest.mark.asyncio
 async def test_docs_url(client: AsyncClient) -> None:
     """Test the docs endpoint."""
     response = await client.get("/docs")

@@ -5,6 +5,7 @@
 
 """Application entry point."""
 
+import json
 import logging
 import mimetypes
 from collections.abc import AsyncIterator
@@ -28,11 +29,7 @@ from waldiez_studio.config.settings import get_settings
 from waldiez_studio.middleware import ExtraHeadersMiddleware
 from waldiez_studio.routes import api_router, ws_router, ws_term_router
 from waldiez_studio.utils.extra_static import ensure_extra_static_files
-from waldiez_studio.utils.paths import (
-    get_static_dir,
-    replace_api_prefixes,
-    replace_frontend_paths,
-)
+from waldiez_studio.utils.paths import get_static_dir
 
 LOG = logging.getLogger(__name__)
 
@@ -74,8 +71,6 @@ async def lifespan(
         LOG.error("Failed to prepare extra static files.")
         raise RuntimeError("Critical setup step failed.") from e
     patch_uvicorn_logging(settings)
-    replace_frontend_paths(static_root=FRONTEND_DIR, base_url=BASE_URL)
-    replace_api_prefixes(static_root=FRONTEND_DIR, base_url=BASE_URL)
     yield
 
 
@@ -250,10 +245,39 @@ async def health_check() -> Response:
 # mount frontend static files
 mimetypes.add_type("application/manifest+json", ".webmanifest")
 app.mount(
-    f"{BASE_URL}/frontend",
+    "/frontend",
     StaticFiles(directory=FRONTEND_DIR),
     name="frontend",
 )
+
+
+@app.get(f"{BASE_URL}/config.js", include_in_schema=False)
+def frontend_config() -> Response:
+    """Get the config for the base url at runtime.
+
+    Returns
+    -------
+    Response
+        The js file contents.
+    """
+    api_prefix = f"{BASE_URL}/api"
+    ws_prefix = f"{BASE_URL}/ws"
+    vs_prefix = f"{BASE_URL}/vs"
+
+    cfg = {
+        "baseUrl": BASE_URL,
+        "apiPrefix": api_prefix,
+        "wsPrefix": ws_prefix,
+        "vsPrefix": vs_prefix,
+    }
+
+    body = (
+        "window.__WALDIEZ_STUDIO_CONFIG__ = "
+        + json.dumps(cfg, separators=(",", ":"))
+        + ";"
+    )
+    return Response(content=body, media_type="application/javascript")
+
 
 if BASE_URL not in ("", "/"):  # pragma: no cover
 
