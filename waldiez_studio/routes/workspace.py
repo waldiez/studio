@@ -316,7 +316,7 @@ async def save_text_file(
     },
 )
 async def upload_file(
-    path: str = Form(...),
+    path: str = Form(default=""),
     file: UploadFile = File(...),
     root_dir: Path = Depends(get_root_directory),
 ) -> PathItem:

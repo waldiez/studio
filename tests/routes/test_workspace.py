@@ -112,9 +112,31 @@ async def test_upload_file(client: AsyncClient, tmp_path: Path) -> None:
             data={"path": ""},
             files={"file": ("test_file.txt", f, "text/plain")},
         )
-    print(response.json())
+
     assert response.status_code == 200
     uploaded_file = tmp_path / "test_file.txt"
+    assert uploaded_file.exists()
+
+
+@pytest.mark.asyncio
+async def test_upload_file_in_subdir(
+    client: AsyncClient, tmp_path: Path
+) -> None:
+    """Test uploading a file in subdir."""
+    test_dir = tmp_path / "sub"
+    test_dir.mkdir()
+    with open(test_dir / "tmp_test_file1.txt", "w", encoding="utf-8") as f:
+        f.write("This is a test file.")
+
+    with open(test_dir / "tmp_test_file1.txt", "rb") as f:
+        response = await client.post(
+            "/workspace/upload",
+            data={"path": "sub"},
+            files={"file": ("test_file1.txt", f, "text/plain")},
+        )
+
+    assert response.status_code == 200
+    uploaded_file = test_dir / "test_file1.txt"
     assert uploaded_file.exists()
 
 
