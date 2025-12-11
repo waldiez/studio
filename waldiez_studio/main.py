@@ -37,11 +37,16 @@ settings = get_settings()
 BASE_URL = settings.get_base_url()
 STATIC_DIR = get_static_dir()
 FRONTEND_DIR = STATIC_DIR / "frontend"
+FRONTEND_ASSETS = FRONTEND_DIR / "assets"
+SCREENSHOTS_DIR = FRONTEND_DIR / "screenshots"
+ICONS_DIR = FRONTEND_DIR / "icons"
 MONACO_DIR = STATIC_DIR / "monaco"
 MONACO_VS = MONACO_DIR / "vs"
 MONACO_MIN_MAPS = MONACO_DIR / "min-maps"
 SWAGGER_DIR = STATIC_DIR / "swagger"
-FRONTEND_DIR.mkdir(parents=True, exist_ok=True)
+FRONTEND_ASSETS.mkdir(parents=True, exist_ok=True)
+SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+ICONS_DIR.mkdir(parents=True, exist_ok=True)
 MONACO_DIR.mkdir(parents=True, exist_ok=True)
 MONACO_VS.mkdir(parents=True, exist_ok=True)
 MONACO_MIN_MAPS.mkdir(parents=True, exist_ok=True)
@@ -149,7 +154,7 @@ async def custom_swagger_ui_html() -> HTMLResponse:
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url=f"{BASE_URL}/swagger/js/swagger-ui-bundle.js",
         swagger_css_url=f"{BASE_URL}/swagger/css/swagger-ui.css",
-        swagger_favicon_url=f"{BASE_URL}/frontend/favicon.ico",
+        swagger_favicon_url=f"{BASE_URL}/favicon.ico",
     )
 
 
@@ -191,6 +196,30 @@ app.mount(
     name="swagger",
 )
 
+# frontend static
+mimetypes.add_type("application/manifest+json", ".webmanifest")
+
+# /BASE_URL/assets/* -> built JS/CSS/etc
+app.mount(
+    f"{BASE_URL}/assets",
+    StaticFiles(directory=FRONTEND_ASSETS),
+    name="assets",
+)
+
+# /BASE_URL/icons/* -> icon assets
+app.mount(
+    f"{BASE_URL}/icons",
+    StaticFiles(directory=FRONTEND_DIR / "icons"),
+    name="frontend-icons",
+)
+
+# /BASE_URL/screenshots/* -> screenshots shown in store/listings
+app.mount(
+    f"{BASE_URL}/screenshots",
+    StaticFiles(directory=FRONTEND_DIR / "screenshots"),
+    name="frontend-screenshots",
+)
+
 # include api routes
 app.include_router(api_router, prefix=f"{BASE_URL}/api")
 app.include_router(ws_router, prefix=BASE_URL)
@@ -218,9 +247,44 @@ async def favicon() -> Response:
     -------
     Response
         The favicon file
-
     """
     return FileResponse(FRONTEND_DIR / "favicon.ico")
+
+
+@app.get(f"{BASE_URL}/apple-touch-icon.png", include_in_schema=False)
+async def apple_touch_icon() -> Response:
+    """Serve the Apple touch icon.
+
+    Returns
+    -------
+    Response
+        The Apple touch icon file
+    """
+    return FileResponse(FRONTEND_DIR / "apple-touch-icon.png")
+
+
+@app.get(f"{BASE_URL}/site.webmanifest", include_in_schema=False)
+async def site_webmanifest() -> Response:
+    """Serve the site webmanifest.
+
+    Returns
+    -------
+    Response
+        The webmanifest file
+    """
+    return FileResponse(FRONTEND_DIR / "site.webmanifest")
+
+
+@app.get(f"{BASE_URL}/browserconfig.xml", include_in_schema=False)
+async def browserconfig() -> Response:
+    """Serve the browserconfig.xml file.
+
+    Returns
+    -------
+    Response
+        The browserconfig.xml file
+    """
+    return FileResponse(FRONTEND_DIR / "browserconfig.xml")
 
 
 @app.get("/health/", include_in_schema=False)
@@ -240,15 +304,6 @@ async def health_check() -> Response:
         The health check
     """
     return Response(status_code=200)
-
-
-# mount frontend static files
-mimetypes.add_type("application/manifest+json", ".webmanifest")
-app.mount(
-    "/frontend",
-    StaticFiles(directory=FRONTEND_DIR),
-    name="frontend",
-)
 
 
 @app.get(f"{BASE_URL}/config.js", include_in_schema=False)
@@ -292,6 +347,20 @@ if BASE_URL not in ("", "/"):  # pragma: no cover
             The redirection
         """
         return RedirectResponse(BASE_URL)
+
+else:
+
+    @app.get(f"{BASE_URL}", include_in_schema=False)
+    @app.get(f"{BASE_URL}/", include_in_schema=False)
+    async def send_index() -> Response:
+        """Serve the frontend's index.html.
+
+        Returns
+        -------
+        Response
+            The frontend
+        """
+        return FileResponse(FRONTEND_DIR / "index.html")
 
 
 # pylint: disable=unused-argument

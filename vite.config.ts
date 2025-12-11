@@ -114,9 +114,14 @@ export default defineConfig(({ command }) => {
     }
 
     const dev = command === "serve";
-    const base = dev ? "/" : "/frontend/";
 
-    const replacement = "frontend";
+    // DEV: Vite at root "/"
+    // PROD: assets relative to index.html -> BASE_URL/assets/*
+    const base = dev ? "/" : "./";
+
+    // If transformPublicFiles uses this to replace %BASE_URL%, we'll
+    // want it to point to the root under BASE_URL (no extra prefix).
+    const replacement = ""; // we'll map %BASE_URL%foo -> ./foo
 
     return {
         publicDir: getPublicDir(command),
@@ -142,7 +147,6 @@ export default defineConfig(({ command }) => {
         build: {
             emptyOutDir: true,
             minify: "terser",
-            assetsDir: "assets",
             terserOptions: {
                 format: {
                     comments: false,
@@ -155,6 +159,7 @@ export default defineConfig(({ command }) => {
             },
             target: "esnext",
             outDir,
+            assetsDir: "assets",
             rollupOptions: {
                 output: {
                     manualChunks: (id: string) => {

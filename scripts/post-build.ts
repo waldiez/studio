@@ -23,45 +23,8 @@ const storeLastBuildDt = () => {
     fs.writeFileSync(dstPath, buildDt);
 };
 
-const storeBaseUrl = () => {
-    const destDir = path.resolve(__rootDir, "waldiez_studio", "static", "frontend");
-    if (!fs.existsSync(destDir)) {
-        throw new Error(`Destination directory does not exist: ${destDir}`);
-    }
-    const dstPath = path.resolve(destDir, "base_url.txt");
-    if (fs.existsSync(dstPath)) {
-        fs.unlinkSync(dstPath);
-    }
-    fs.writeFileSync(dstPath, "/");
-};
-
-const storePrefixes = () => {
-    const destDir = path.resolve(__rootDir, "waldiez_studio", "static", "frontend");
-    if (!fs.existsSync(destDir)) {
-        throw new Error(`Destination directory does not exist: ${destDir}`);
-    }
-    const dstPath = path.resolve(destDir, "prefixes.json");
-    if (fs.existsSync(dstPath)) {
-        fs.unlinkSync(dstPath);
-    }
-    fs.writeFileSync(
-        dstPath,
-        JSON.stringify(
-            {
-                api: "__WALDIEZ_STUDIO_API__/api",
-                ws: "__WALDIEZ_STUDIO_WS__/ws",
-                vs: "__WALDIEZ_STUDIO_WS__/vs",
-            },
-            null,
-            2,
-        ),
-    );
-};
-
 const main = () => {
     storeLastBuildDt();
-    storeBaseUrl();
-    storePrefixes();
 };
 
 main();
