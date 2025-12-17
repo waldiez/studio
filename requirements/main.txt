@@ -11,4 +11,4 @@ tenacity>=9.0.0,<10
 trio==0.32.0
 typer>=0.9.0,<1
 uvicorn[standard]==0.38.0
-waldiez==0.6.11
+waldiez @ git+https://github.com/waldiez/waldiez@dev
