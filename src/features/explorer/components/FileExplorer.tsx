@@ -97,7 +97,7 @@ export default function FileExplorer() {
     return (
         <div
             className={cn(
-                "h-full flex flex-col bg-[var(--background-color)]",
+                "h-full flex flex-col bg-(--background-color)",
                 isDragging && "ring-2 ring-blue-500 ring-inset",
             )}
             onDragOver={handleDragOver}
@@ -105,7 +105,7 @@ export default function FileExplorer() {
             onDrop={handleDrop}
         >
             {/* Toolbar */}
-            <div className="studio-explorer-top h-10 px-2 flex items-center gap-1 border-b border-[var(--border-color)]">
+            <div className="studio-explorer-top h-10 px-2 flex items-center gap-1 border-b border-(--border-color)">
                 <Button size="sm" className="btn-outline" onClick={() => fs.goUp()} title="Up one folder">
                     <ArrowUp className="size-4" />
                 </Button>
@@ -160,7 +160,7 @@ export default function FileExplorer() {
             </div>
 
             {/* Breadcrumbs */}
-            <div className="px-2 py-1 text-xs flex gap-1 flex-wrap border-b border-[var(--border-color)]">
+            <div className="px-2 py-1 text-xs flex gap-1 flex-wrap border-b border-(--border-color)">
                 {fs.breadcrumbs.map((b, i) => (
                     <span key={`bread-${b.path}`} className="flex items-center gap-1">
                         <button className="hover:underline" onClick={() => fs.goTo(b.path)}>
@@ -191,8 +191,8 @@ export default function FileExplorer() {
                             <li
                                 key={`fs-${it.path}`}
                                 className={cn(
-                                    "group px-2 py-1 flex items-center gap-2 hover:bg-[var(--primary-alt-color-hover)] cursor-default",
-                                    selected && "bg-[var(--primary-alt-color-hover)]",
+                                    "group px-2 py-1 flex items-center gap-2 hover:bg-(--primary-alt-color-hover) cursor-default",
+                                    selected && "bg-(--primary-alt-color-hover)",
                                 )}
                                 onClick={() => fs.setSelection(it)}
                                 onDoubleClick={() => onItemDoubleClick(it)}
@@ -243,7 +243,7 @@ export default function FileExplorer() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         align="end"
-                                        className="min-w-40 border-[var(--border-color)]"
+                                        className="min-w-40 border-(--border-color)"
                                     >
                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                         <DropdownMenuSeparator />

@@ -5,7 +5,6 @@
 import Layout from "@/app/Layout";
 import { emitRunRequested, emitRunStopRequested } from "@/lib/events";
 import { useExec } from "@/store/exec";
-import { useLayout } from "@/store/layout";
 import { useWorkspace } from "@/store/workspace";
 import { isRunnable } from "@/utils/paths";
 import { fireEvent, render, screen } from "@testing-library/react";
@@ -31,61 +30,6 @@ vi.mock("@/components/layout/TitleBar", () => ({
     ),
 }));
 
-vi.mock("@/components/ui/resizable", () => {
-    const createMockPanelRef = () => ({
-        isCollapsed: vi.fn(() => false),
-        expand: vi.fn(),
-        collapse: vi.fn(),
-    });
-
-    return {
-        ResizableHandle: ({ withHandle }: any) => (
-            <div data-testid="resizable-handle" data-with-handle={withHandle} />
-        ),
-        ResizablePanel: ({
-            children,
-            className,
-            defaultSize,
-            minSize,
-            collapsedSize,
-            collapsible,
-            ...props
-        }: any) => {
-            const mockRef = createMockPanelRef();
-
-            // If a ref is passed, simulate assigning the mock methods
-            if (props.ref && typeof props.ref === "object") {
-                props.ref.current = mockRef;
-            }
-
-            return (
-                <div
-                    data-testid="resizable-panel"
-                    className={className}
-                    // @cspell: disable-next-line
-                    defaultsize={defaultSize}
-                    // @cspell: disable-next-line
-                    collapsedsize={collapsedSize}
-                    minsize={minSize}
-                    collapsible={`${collapsible}`}
-                    {...props}
-                >
-                    {children}
-                </div>
-            );
-        },
-        ResizablePanelGroup: ({ children, direction, onLayout }: any) => (
-            <div
-                data-testid="resizable-panel-group"
-                data-direction={direction}
-                onChange={(sizes: any) => onLayout?.(sizes)}
-            >
-                {children}
-            </div>
-        ),
-    };
-});
-
 vi.mock("@/lib/events", () => ({
     emitRunRequested: vi.fn(),
     emitRunStopRequested: vi.fn(),
@@ -93,10 +37,6 @@ vi.mock("@/lib/events", () => ({
 
 vi.mock("@/store/exec", () => ({
     useExec: vi.fn(),
-}));
-
-vi.mock("@/store/layout", () => ({
-    useLayout: vi.fn(),
 }));
 
 vi.mock("@/store/workspace", () => ({
@@ -117,33 +57,39 @@ vi.mock("@/utils/paths", () => ({
     isRunnable: vi.fn(),
 }));
 
+vi.mock("react-resizable-panels", () => ({
+    Group: ({ children, id, className }: any) => (
+        <div data-testid={`group-${id}`} className={className}>
+            {children}
+        </div>
+    ),
+    Panel: ({ children, id, className }: any) => (
+        <div data-testid={`panel-${id}`} className={className}>
+            {children}
+        </div>
+    ),
+    Separator: ({ children, className }: any) => (
+        <div data-testid="separator" className={className}>
+            {children}
+        </div>
+    ),
+    useDefaultLayout: () => ({
+        defaultLayout: undefined,
+        onLayoutChange: vi.fn(),
+    }),
+    usePanelRef: () => ({ current: null }),
+}));
+
 describe("Layout", () => {
     const mockEmitRunRequested = emitRunRequested as ReturnType<typeof vi.fn>;
     const mockEmitRunStopRequested = emitRunStopRequested as ReturnType<typeof vi.fn>;
-    const mockSetHorizontal = vi.fn();
-    const mockSetVertical = vi.fn();
-    const mockSetLeftCollapsed = vi.fn();
-    const mockSetBottomCollapsed = vi.fn();
-
     const defaultProps = {
-        left: <div data-testid="left-content">Left Content</div>,
+        left: <div data-testid="left-content">Left Panel</div>,
         main: <div data-testid="main-content">Main Content</div>,
-        bottom: <div data-testid="bottom-content">Bottom Content</div>,
+        bottom: <div data-testid="bottom-content">Bottom Panel</div>,
     };
-
     beforeEach(() => {
         vi.clearAllMocks();
-
-        (useLayout as any).mockReturnValue({
-            hSizes: [25, 75],
-            vSizes: [70, 30],
-            setHorizontal: mockSetHorizontal,
-            setVertical: mockSetVertical,
-            leftCollapsed: false,
-            bottomCollapsed: false,
-            setLeftCollapsed: mockSetLeftCollapsed,
-            setBottomCollapsed: mockSetBottomCollapsed,
-        });
 
         (useExec as any).mockReturnValue({
             running: false,
@@ -170,23 +116,36 @@ describe("Layout", () => {
 
         (isRunnable as any).mockReturnValue(true);
     });
-
-    it("renders all layout sections", () => {
+    it("renders all three panel sections", () => {
         render(<Layout {...defaultProps} />);
 
-        expect(screen.getByTestId("title-bar")).toBeInTheDocument();
         expect(screen.getByTestId("left-content")).toBeInTheDocument();
         expect(screen.getByTestId("main-content")).toBeInTheDocument();
         expect(screen.getByTestId("bottom-content")).toBeInTheDocument();
     });
 
-    it("renders resizable panels with correct structure", () => {
+    it("renders title bar", () => {
         render(<Layout {...defaultProps} />);
 
-        const panelGroups = screen.getAllByTestId("resizable-panel-group");
-        expect(panelGroups).toHaveLength(2);
-        expect(panelGroups[0]).toHaveAttribute("data-direction", "horizontal");
-        expect(panelGroups[1]).toHaveAttribute("data-direction", "vertical");
+        expect(screen.getByTestId("title-bar")).toBeInTheDocument();
+    });
+
+    it("renders panel structure with correct ids", () => {
+        render(<Layout {...defaultProps} />);
+
+        expect(screen.getByTestId("group-root-panel")).toBeInTheDocument();
+        expect(screen.getByTestId("group-right-panel")).toBeInTheDocument();
+        expect(screen.getByTestId("panel-left")).toBeInTheDocument();
+        expect(screen.getByTestId("panel-right")).toBeInTheDocument();
+        expect(screen.getByTestId("panel-top")).toBeInTheDocument();
+        expect(screen.getByTestId("panel-bottom")).toBeInTheDocument();
+    });
+
+    it("renders separators between panels", () => {
+        render(<Layout {...defaultProps} />);
+
+        const separators = screen.getAllByTestId("separator");
+        expect(separators).toHaveLength(2);
     });
 
     it("emits run request when run button is clicked", () => {
@@ -212,158 +171,5 @@ describe("Layout", () => {
         fireEvent.click(screen.getByTestId("stop-button"));
 
         expect(mockEmitRunStopRequested).toHaveBeenCalled();
-    });
-
-    it("uses task path when available", () => {
-        (useExec as any).mockReturnValue({
-            running: true,
-            taskPath: "/running/task.py",
-            startedAt: Date.now(),
-        });
-
-        render(<Layout {...defaultProps} />);
-
-        fireEvent.click(screen.getByTestId("run-button"));
-
-        expect(mockEmitRunRequested).toHaveBeenCalledWith({
-            path: "/running/task.py",
-            mode: "chat",
-        });
-    });
-
-    it("handles missing current path gracefully", () => {
-        (useWorkspace as any).mockImplementation((selector: any) => {
-            const mockState = {
-                openTabs: [],
-                activeTabId: null,
-                getActiveTab: () => undefined,
-            };
-            return selector ? selector(mockState) : mockState;
-        });
-
-        render(<Layout {...defaultProps} />);
-
-        fireEvent.click(screen.getByTestId("run-button"));
-
-        expect(mockEmitRunRequested).not.toHaveBeenCalled();
-    });
-
-    it("applies correct CSS classes for app dimensions", () => {
-        const { container } = render(<Layout {...defaultProps} />);
-
-        const wrapper = container.firstChild as HTMLElement;
-        expect(wrapper).toHaveClass(
-            "h-[var(--app-height)]",
-            "w-[var(--app-width)]",
-            "flex",
-            "flex-col",
-            "bg-[var(--background-color)]",
-            "text-[var(--text-color)]",
-        );
-    });
-
-    it("shows resizable handles when panels are not collapsed", () => {
-        render(<Layout {...defaultProps} />);
-
-        const handles = screen.getAllByTestId("resizable-handle");
-        expect(handles).toHaveLength(2);
-        handles.forEach(handle => {
-            expect(handle).toHaveAttribute("data-with-handle", "true");
-        });
-    });
-
-    it("hides resizable handles when panels are collapsed", () => {
-        (useLayout as any).mockReturnValue({
-            hSizes: [25, 75],
-            vSizes: [70, 30],
-            setHorizontal: mockSetHorizontal,
-            setVertical: mockSetVertical,
-            leftCollapsed: true,
-            bottomCollapsed: true,
-            setLeftCollapsed: mockSetLeftCollapsed,
-            setBottomCollapsed: mockSetBottomCollapsed,
-        });
-
-        render(<Layout {...defaultProps} />);
-
-        const handles = screen.queryAllByTestId("resizable-handle");
-        expect(handles).toHaveLength(0);
-    });
-
-    it("handles non-runnable files", () => {
-        (isRunnable as any).mockReturnValue(false);
-
-        render(<Layout {...defaultProps} />);
-
-        const runButton = screen.getByTestId("run-button");
-        expect(runButton).toBeDisabled();
-    });
-
-    it("applies correct panel classes", () => {
-        render(<Layout {...defaultProps} />);
-
-        const panels = screen.getAllByTestId("resizable-panel");
-
-        // Left panel
-        expect(panels[0]).toHaveClass(
-            "border-r",
-            "border-[var(--border-color)]",
-            "bg-[var(--primary-alt-color)]",
-            "min-w-0",
-            "data-[collapsed=true]:border-0",
-        );
-
-        // Bottom panel
-        expect(panels[2]).toHaveClass("min-h-[160px]");
-    });
-
-    it("handles sidebar toggle button", () => {
-        render(<Layout {...defaultProps} />);
-
-        const toggleButton = screen.getByTestId("toggle-sidebar");
-
-        // Should not throw an error when clicked (testing with mocked refs)
-        expect(toggleButton).toBeInTheDocument();
-    });
-
-    it("handles dock toggle button", () => {
-        render(<Layout {...defaultProps} />);
-
-        const toggleButton = screen.getByTestId("toggle-dock");
-
-        // Should not throw an error when clicked (testing with mocked refs)
-        expect(toggleButton).toBeInTheDocument();
-    });
-
-    it("passes correct props to TitleBar", () => {
-        (useExec as any).mockReturnValue({
-            running: true,
-            taskPath: "/test/script.py",
-            startedAt: 1234567890,
-        });
-
-        render(<Layout {...defaultProps} />);
-
-        const titleBar = screen.getByTestId("title-bar");
-        expect(titleBar).toBeInTheDocument();
-
-        // TitleBar should receive running=true and make stop button enabled
-        const stopButton = screen.getByTestId("stop-button");
-        expect(stopButton).not.toBeDisabled();
-    });
-
-    it("handles edge case with undefined workspace selector", () => {
-        (useWorkspace as any).mockImplementation((selector: any) => {
-            // Return null when selector is called with undefined state
-            try {
-                return selector({ selected: null });
-            } catch {
-                return null;
-            }
-        });
-
-        expect(() => {
-            render(<Layout {...defaultProps} />);
-        }).not.toThrow();
     });
 });

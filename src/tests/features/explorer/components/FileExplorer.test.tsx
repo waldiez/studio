@@ -380,7 +380,7 @@ describe("FileExplorer", () => {
         render(<FileExplorer />);
 
         const listItem = screen.getByText("test.txt").closest("li");
-        expect(listItem).toHaveClass("bg-[var(--primary-alt-color-hover)]");
+        expect(listItem).toHaveClass("bg-(--primary-alt-color-hover)");
     });
 
     it("handles nested folder paths correctly", () => {
