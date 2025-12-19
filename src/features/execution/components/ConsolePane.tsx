@@ -19,13 +19,13 @@ export default function ConsolePane() {
             {lines.map((l, i) => (
                 <pre
                     key={i}
-                    className={
+                    className={`whitespace-pre-wrap break-words ${
                         l.kind === "stderr"
                             ? "text-[var(--ansi-red)]"
                             : l.kind === "system"
                               ? "opacity-70"
                               : ""
-                    }
+                    }`}
                 >
                     {l.text}
                 </pre>
