@@ -28,25 +28,34 @@ type ExecState = {
     clear: () => void;
     push: (line: ExecLine) => void;
 };
-const getErrorMsg = (evt: any) => {
-    if (typeof evt === "string") {
-        return evt;
-    }
+// eslint-disable-next-line max-statements
+const getMsg = (evt: any) => {
     if (!evt) {
         return "";
     }
+    if (typeof evt === "string") {
+        try {
+            const inner = JSON.parse(evt);
+            return getMsg(inner);
+        } catch {
+            return evt;
+        }
+    }
     if (typeof evt === "object") {
         if ("data" in evt) {
-            return getErrorMsg(evt.data);
+            return getMsg(evt.data);
         }
         if ("error" in evt) {
-            return getErrorMsg(evt.error);
+            return getMsg(evt.error);
         }
         if ("text" in evt) {
-            return getErrorMsg(evt.text);
+            return getMsg(evt.text);
         }
         if ("message" in evt) {
-            return getErrorMsg(evt.message);
+            return getMsg(evt.message);
+        }
+        if (Object.keys(evt).length === 0) {
+            return "";
         }
         return evt ? JSON.stringify(evt) : "";
     }
@@ -132,9 +141,10 @@ export const useExec = create<ExecState>((set, get) => ({
             path,
             evt => {
                 if (evt.type === "run_stdout") {
-                    push({ kind: "stdout", text: evt.data?.text ?? "", ts: Date.now() });
+                    const text = getMsg(evt.data);
+                    push({ kind: "stdout", text, ts: Date.now() });
                 } else if (evt.type === "run_stderr" || evt.type === "error") {
-                    const errorMsg = getErrorMsg(evt);
+                    const errorMsg = getMsg(evt);
                     push({ kind: "stderr", text: errorMsg, ts: Date.now() });
                 } else if (evt.type === "run_status") {
                     push({ kind: "system", text: `[status] ${evt.data?.state}`, ts: Date.now() });
@@ -146,7 +156,7 @@ export const useExec = create<ExecState>((set, get) => ({
                     });
                     set({ running: false, ctrl: null, taskPath: null, startedAt: null });
                 } else if (evt.type === "compile_error") {
-                    const errorMsg = getErrorMsg(evt);
+                    const errorMsg = getMsg(evt);
                     push({ kind: "stderr", text: errorMsg, ts: Date.now() });
                 }
                 for (const fn of listeners) {

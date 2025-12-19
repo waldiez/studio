@@ -118,10 +118,16 @@ export class WaldiezController {
 
     private _onExecEvent = (evt: ExecEvent) => {
         if (evt.type === "run_stdout") {
-            this._handleStdout(evt.data.text ?? "");
+            try {
+                const inner = JSON.parse(evt.data.text);
+                this._handleStdout(inner);
+            } catch {
+                this._handleStdout(evt.data.text ?? "");
+            }
             return;
         }
         if (evt.type === "input_request" || evt.type === "debug_input_request") {
+            console.debug("Got input request:", evt);
             this._onState({
                 stdinRequest: { prompt: evt.data.prompt, password: !!evt.data.password },
             });
@@ -326,7 +332,16 @@ export class WaldiezController {
                     timeline: res.timeline,
                 },
             });
+            return;
         }
+        if (!res.message || !res.message.content) {
+            return;
+        }
+        this._onState({
+            stepByStep: {
+                eventHistory: [res.message],
+            },
+        });
     }
 }
 
