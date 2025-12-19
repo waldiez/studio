@@ -293,8 +293,8 @@ export class WaldiezController {
         if (stateUpdate.pendingControlInput !== undefined) {
             patch.stepByStep!.pendingControlInput = stateUpdate.pendingControlInput;
             this._currentRequestId = stateUpdate.pendingControlInput?.request_id;
-        } else {
-            patch.stepByStep!.pendingControlInput = undefined;
+            // } else {
+            //     patch.stepByStep!.pendingControlInput = undefined;
         }
         if (stateUpdate.activeRequest !== undefined) {
             patch.stepByStep!.activeRequest = stateUpdate.activeRequest;
@@ -340,6 +340,7 @@ export class WaldiezController {
         this._onState({
             stepByStep: {
                 eventHistory: [res.message],
+                currentEvent: res.message,
             },
         });
     }
