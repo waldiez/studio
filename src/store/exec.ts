@@ -45,6 +45,9 @@ const getErrorMsg = (evt: any) => {
         if ("text" in evt) {
             return getErrorMsg(evt.text);
         }
+        if ("message" in evt) {
+            return getErrorMsg(evt.message);
+        }
         return evt ? JSON.stringify(evt) : "";
     }
     return String(evt);
@@ -142,6 +145,9 @@ export const useExec = create<ExecState>((set, get) => ({
                         ts: Date.now(),
                     });
                     set({ running: false, ctrl: null, taskPath: null, startedAt: null });
+                } else if (evt.type === "compile_error") {
+                    const errorMsg = getErrorMsg(evt);
+                    push({ kind: "stderr", text: errorMsg, ts: Date.now() });
                 }
                 for (const fn of listeners) {
                     try {
