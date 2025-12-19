@@ -18,8 +18,8 @@ from fastapi import WebSocket
 
 from .base import Engine
 
-_READ_CHUNK = 16_384  # 16 KB per read; safe and responsive
-_MAX_PENDING_LINE_BYTES = 2_000_000  # safety: split very long lines
+_READ_CHUNK = 16_384  # 16 KB per read
+_MAX_PENDING_LINE_BYTES = 2_000_000
 
 
 class SubprocessEngine(Engine):
@@ -339,6 +339,7 @@ class SubprocessEngine(Engine):
                 chunk = await stream.read(_READ_CHUNK)
                 if not chunk:  # EOF
                     break
+                self.log.debug("CHUNK: %s", chunk)
                 buf.extend(chunk)
 
                 # Emit every complete line we have
