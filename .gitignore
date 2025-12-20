@@ -1,6 +1,8 @@
 **/.local/
 **/.venv/
 **/.cache/
+**/.hatch/
+**/.tox/
 **/build/
 **/dist/
 **/site/

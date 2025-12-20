@@ -34,7 +34,7 @@ FILE_PATTERNS = [
     ".coverage*",
 ]
 
-SKIP_DIRS = [".venv", "node_modules", ".git"]
+SKIP_DIRS = [".venv", "node_modules", ".git", ".hatch", ".tox"]
 
 
 # pylint: disable=broad-exception-caught

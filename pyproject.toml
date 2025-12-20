@@ -12,7 +12,7 @@ authors = [
   { name= 'Christos Chatzigeorgiou', email= 'chrihatz@waldiez.io' },
 ]
 readme = "README.md"
-requires-python = '>=3.10,<3.14'
+requires-python = '>=3.10'
 dynamic = ["version"]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -23,6 +23,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
@@ -86,7 +87,7 @@ dev = [
     "hatchling==1.28.0",
     "isort==7.0.0",
     "mypy==1.19.1",
-    "prek==0.2.22",
+    "prek==0.2.23",
     "pydocstyle==6.3.0",
     "pylint==4.0.4",
     "python-dotenv>=1.2.1",

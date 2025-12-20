@@ -127,7 +127,6 @@ export class WaldiezController {
             return;
         }
         if (evt.type === "input_request" || evt.type === "debug_input_request") {
-            console.debug("Got input request:", evt);
             this._onState({
                 stdinRequest: { prompt: evt.data.prompt, password: !!evt.data.password },
             });
