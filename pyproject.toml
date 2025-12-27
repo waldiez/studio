@@ -46,8 +46,8 @@ dependencies = [
     "tenacity>=9.0.0,<10",
     "trio==0.32.0",
     "typer>=0.9.0,<1",
-    "uvicorn[standard]==0.38.0",
-    "waldiez==0.7.0",
+    "uvicorn[standard]==0.40.0",
+    "waldiez @ git+https://github.com/waldiez/waldiez.git@dev",
 ]
 
 [project.urls]
@@ -80,14 +80,14 @@ exclude = [ "**/example.py", ".gitignore" ]
 dev = [
     "autoflake==2.3.1",
     "bandit==1.9.2",
-    "basedpyright==1.36.1",
+    "basedpyright==1.36.2",
     "black==25.12.0",
     "filelock==3.20.1",
     "flake8==7.3.0",
     "hatchling==1.28.0",
     "isort==7.0.0",
     "mypy==1.19.1",
-    "prek==0.2.23",
+    "prek==0.2.25",
     "pydocstyle==6.3.0",
     "pylint==4.0.4",
     "python-dotenv>=1.2.1",
