@@ -52,7 +52,7 @@ RUN bun install && bun run build
 RUN python3 -m build --sdist --wheel --outdir dist/
 
 # Final image
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 LABEL maintainer="waldiez <development@waldiez.io>"
 LABEL org.opencontainers.image.source="quay.io/waldiez/studio"
