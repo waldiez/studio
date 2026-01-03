@@ -1,6 +1,6 @@
 /**
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2024 - 2025 Waldiez & contributors
+ * Copyright 2024 - 2026 Waldiez & contributors
  */
 export type ExecEvent =
     | { type: "run_status"; data: { state: string; pid?: number; cwd?: string } }

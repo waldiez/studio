@@ -1,6 +1,6 @@
 /**
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2024 - 2025 Waldiez & contributors
+ * Copyright 2024 - 2026 Waldiez & contributors
  */
 import type { WaldiezMode, WaldiezState } from "@/features/waldiez/types";
 import { describe, expect, it } from "vitest";

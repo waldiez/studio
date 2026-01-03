@@ -1,6 +1,6 @@
 /**
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2024 - 2025 Waldiez & contributors
+ * Copyright 2024 - 2026 Waldiez & contributors
  */
 import PdfViewer from "@/features/viewers/components/PdfViewer";
 import { act, render, screen, waitFor } from "@testing-library/react";
