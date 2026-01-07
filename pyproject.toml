@@ -87,7 +87,7 @@ dev = [
     "hatchling==1.28.0",
     "isort==7.0.0",
     "mypy==1.19.1",
-    "prek==0.2.25",
+    "prek==0.2.27",
     "pydocstyle==6.3.0",
     "pylint==4.0.4",
     "python-dotenv>=1.2.1",
