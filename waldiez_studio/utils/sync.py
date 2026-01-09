@@ -9,6 +9,7 @@ import contextvars
 from collections.abc import Coroutine
 from concurrent.futures import Executor
 from functools import partial, wraps
+from inspect import iscoroutinefunction
 from typing import Any, Callable, TypeVar
 
 try:
@@ -39,7 +40,7 @@ def sync_to_async(
     Callable
         The asynchronous function.
     """
-    if asyncio.iscoroutinefunction(func):
+    if iscoroutinefunction(func):
         return func
 
     @wraps(func)
