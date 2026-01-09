@@ -177,6 +177,10 @@ dev-back:
 dev-front:
 	${.PACKAGE_MANAGER} run dev:front
 
+.PHONY: dev-reload
+dev-reload:
+	${.PACKAGE_MANAGER} run dev:reload
+
 .PHONY: dev
 dev:
 	${.PACKAGE_MANAGER} run dev
