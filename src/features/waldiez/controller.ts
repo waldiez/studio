@@ -164,11 +164,13 @@ export class WaldiezController {
                     payload: { ...response, type: "debug_input_response" },
                 });
             },
-            respond: payload =>
+            respond: payload => {
+                // console.debug({payload});
                 this.getCtrl()?.send({
                     op: "waldiez_respond",
                     payload: { ...(payload as any), type: "input_response" },
-                }),
+                });
+            },
             close: () => this.closeStep(),
         };
     }

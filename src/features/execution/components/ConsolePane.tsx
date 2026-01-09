@@ -16,6 +16,9 @@ export default function ConsolePane() {
 
     return (
         <div className="h-full w-full font-mono text-sm overflow-auto p-2">
+            {lines.length === 0 && (
+                <pre className={"whitespace-pre-wrap break-words opacity-70"}>No output yet...</pre>
+            )}
             {lines.map((l, i) => (
                 <pre
                     key={i}

@@ -23,7 +23,7 @@ type BottomPanelProps = {
 };
 
 export default function BottomPanel({ className, defaultTab, value, onValueChange }: BottomPanelProps) {
-    const [internal, setInternal] = React.useState<string>(defaultTab || "terminal");
+    const [internal, setInternal] = React.useState<string>(defaultTab || "output");
     const fs = useFileSystem();
     const controlled = value !== undefined;
     const active = controlled ? value : internal;
@@ -41,19 +41,6 @@ export default function BottomPanel({ className, defaultTab, value, onValueChang
                 <div className="h-9 flex items-center">
                     <TabsList className="h-8 bg-transparent text-[var(--text-color)] border-b border-[var(--border-color)] rounded-none p-0">
                         <TabsTrigger
-                            value="terminal"
-                            className="
-                                px-3 h-8 rounded-none border-none shadow-none
-                                text-sm opacity-80
-                                data-[state=active]:opacity-100
-                                data-[state=active]:text-[var(--primary-color)]
-                                data-[state=active]:border-b
-                                data-[state=active]:border-b-[var(--primary-color)]
-                            "
-                        >
-                            TERMINAL
-                        </TabsTrigger>
-                        <TabsTrigger
                             value="output"
                             className="
                                 px-3 h-8 rounded-none border-none shadow-none
@@ -66,19 +53,32 @@ export default function BottomPanel({ className, defaultTab, value, onValueChang
                         >
                             OUTPUT
                         </TabsTrigger>
+                        <TabsTrigger
+                            value="terminal"
+                            className="
+                                px-3 h-8 rounded-none border-none shadow-none
+                                text-sm opacity-80
+                                data-[state=active]:opacity-100
+                                data-[state=active]:text-[var(--primary-color)]
+                                data-[state=active]:border-b
+                                data-[state=active]:border-b-[var(--primary-color)]
+                            "
+                        >
+                            TERMINAL
+                        </TabsTrigger>
                     </TabsList>
                 </div>
 
                 {/* Content area */}
                 <div className="flex-1 min-h-0">
-                    <TabsContent value="terminal" className="m-0 h-full data-[state=inactive]:hidden">
-                        <div className="h-full min-h-0">
-                            <Terminal cwd={fs.cwd} />
-                        </div>
-                    </TabsContent>
                     <TabsContent value="output" className="m-0 h-full data-[state=inactive]:hidden">
                         <div className="h-full min-h-0">
                             <ConsolePane />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="terminal" className="m-0 h-full data-[state=inactive]:hidden">
+                        <div className="h-full min-h-0">
+                            <Terminal cwd={fs.cwd} />
                         </div>
                     </TabsContent>
                 </div>
