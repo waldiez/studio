@@ -36,6 +36,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[json]": {
+        "editor.tabSize": 2,
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[css]": {
