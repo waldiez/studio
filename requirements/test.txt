@@ -1,6 +1,6 @@
 -r main.txt
 asgi-lifespan==2.1.0
-filelock==3.20.2
+filelock==3.20.3
 httpx<1
 pytest-asyncio==1.3.0
 pytest-cov==7.0.0
