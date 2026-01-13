@@ -96,7 +96,7 @@ dev = [
     "types-aiofiles==25.1.0.20251011",
     "types-PyYAML==6.0.12.20250915",
     "types-toml==0.10.8.20240310",
-    "yamllint==1.37.1",
+    "yamllint==1.38.0",
 ]
 test = [
     "asgi-lifespan==2.1.0",
