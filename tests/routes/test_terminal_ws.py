@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Tests for the terminal WebSocket routes."""
+
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-yield-doc
 # pylint: disable=missing-param-doc,missing-raises-doc,invalid-name,no-self-use

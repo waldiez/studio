@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Tests for waldiez_studio.utils.task_runner."""
+
 # mypy: disable-error-code="attr-defined"
 # pylint: disable=missing-function-docstring,missing-return-doc,
 # pylint: disable=missing-yield-doc,missing-param-doc,

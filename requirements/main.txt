@@ -1,7 +1,7 @@
 aiofiles==25.1.0
 aiohttp==3.13.3
 fastapi<1
-jupyter_client==8.7.0
+jupyter_client==8.8.0
 orjson==3.11.5
 puremagic==1.30
 pydantic-settings==2.12.0
@@ -11,4 +11,4 @@ tenacity>=9.0.0,<10
 trio==0.32.0
 typer>=0.9.0,<1
 uvicorn[standard]==0.40.0
-waldiez==0.7.1
+waldiez @ git+https://github.com/waldiez/waldiez@dev

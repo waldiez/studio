@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Tests for waldiez_studio.utils.paths."""
+
 # flake8: noqa
 # pylint: disable=missing-function-docstring,missing-return-doc,missing-param-doc,missing-yield-doc,unused-argument
 

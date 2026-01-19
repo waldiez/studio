@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Utilities for managing extra static files."""
+
 # pylint: disable=broad-except,too-many-try-statements,invalid-name
 
 import asyncio

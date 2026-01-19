@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Models for the workspace API."""
+
 # mypy: disable-error-code="unused-ignore,assignment"
 
 from pydantic import BaseModel

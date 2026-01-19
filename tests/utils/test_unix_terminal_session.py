@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0.
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 """Test waldiez_studio.utils.terminal_session.*. on unix"""
+
 # mypy: disable-error-code="attr-defined"
 # pylint: disable=missing-function-docstring,missing-return-doc,
 # pylint: disable=missing-yield-doc,missing-param-doc,no-member

@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Middleware for additional headers."""
+
 # src/credits:
 # https://github.com/fastapi/fastapi/discussions/8548#discussioncomment-5152780
 

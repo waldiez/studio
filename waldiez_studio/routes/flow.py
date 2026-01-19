@@ -2,6 +2,7 @@
 # Copyright (c) 2024 - 2026 Waldiez and contributors.
 
 """Flow API routes."""
+
 # mypy: disable-error-code="unused-ignore,assignment"
 # pylint: disable=broad-except,wrong-import-order,ungrouped-imports
 # pyright: reportUnreachable=false,reportCallInDefaultInitializer=false
