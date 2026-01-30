@@ -33,7 +33,11 @@ class UnixSession(BaseSession):
         except OSError as e:
             raise RuntimeError(f"Failed to create PTY: {e}") from e
         if self.pid == 0:  # child  # pragma: no cover
-            os.chdir(str(workdir))
+            initial_dir = workdir / "workspace"
+            if initial_dir.is_dir():
+                os.chdir(str(initial_dir))
+            else:
+                os.chdir(str(workdir))
             shell = os.environ.get("SHELL", "/bin/bash")
             if shell not in UnixSession.ALLOWED_SHELLS:
                 shell = "/bin/bash"

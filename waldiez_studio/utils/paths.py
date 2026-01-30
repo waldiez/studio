@@ -75,6 +75,12 @@ def get_root_dir(user_id: str | None = None) -> Path:
         # if current user is "waldiez", let's skip dupe
         if root_dir.name.lower() != "waldiez":
             root_dir = root_dir / "waldiez"
+        if (
+            root_dir.resolve().as_posix()
+            == (Path.home().resolve() / "waldiez").resolve()
+            and (root_dir / "workspace").exists()
+        ):
+            root_dir = root_dir / "workspace"
         root_dir.mkdir(parents=True, exist_ok=True)
         return root_dir
     files_root = Path(__file__).parent.parent / "files"

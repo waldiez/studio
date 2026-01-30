@@ -4,12 +4,13 @@
  */
 import { vsPath } from "@/env";
 import type { WaldiezMode } from "@/features/waldiez/types";
+import { useAutoSave } from "@/features/waldiez/useAutoSave";
 import { useWaldiezSession } from "@/features/waldiez/useWaldiezSession";
 import { type RunRequest, onRunRequested, onRunStopRequested } from "@/lib/events";
 import { useWorkspace } from "@/store/workspace";
 import { extOf } from "@/utils/paths";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import Waldiez, { importFlow } from "@waldiez/react";
 
@@ -23,6 +24,21 @@ export default function WaldiezViewer({ source }: Props) {
     const flowProps = useMemo(() => importFlow(source), [source]);
 
     const { state, actions } = useWaldiezSession(path);
+
+    // Auto-save: track flow changes and periodically save
+    const { setContents: setAutoSaveContents } = useAutoSave(path, actions.save, {
+        intervalMs: 30000, // 30 seconds
+        enabled: true,
+    });
+
+    // Update auto-save contents when flow changes
+    const handleFlowChange = useCallback(
+        (flow: string) => {
+            console.log(flow.length);
+            setAutoSaveContents(flow);
+        },
+        [setAutoSaveContents],
+    );
 
     useEffect(() => {
         if (!path || extOf(path) !== ".waldiez") {
@@ -60,6 +76,7 @@ export default function WaldiezViewer({ source }: Props) {
         <div className="relative flex-1 w-full h-full">
             <Waldiez
                 {...flowProps}
+                onChange={handleFlowChange}
                 onRun={actions.run}
                 onStepRun={actions.stepRun}
                 onConvert={actions.convert}

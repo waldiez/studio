@@ -9,4 +9,4 @@ Dev:
     See ../scripts/hooks/metadata.py for more information.
 """
 
-__version__ = "0.7.1"
+__version__ = "0.7.202601301"

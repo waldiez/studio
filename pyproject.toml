@@ -38,7 +38,7 @@ dependencies = [
     "aiohttp==3.13.3",
     "fastapi<1",
     "jupyter_client==8.8.0",
-    "orjson==3.11.5",
+    "orjson==3.11.6",
     "puremagic==1.30",
     "pydantic-settings==2.12.0",
     "python-multipart==0.0.22",

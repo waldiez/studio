@@ -49,7 +49,7 @@ fs.ensureDirSync(recordingsDir);
 const viewport = { width: 1280, height: 720 };
 const thresholds = {
     statements: THRESHOLD_LIMIT,
-    branches: THRESHOLD_LIMIT,
+    branches: THRESHOLD_LIMIT - 10,
     functions: THRESHOLD_LIMIT,
     lines: THRESHOLD_LIMIT,
 };

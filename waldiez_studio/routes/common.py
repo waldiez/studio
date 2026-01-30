@@ -224,6 +224,21 @@ def _resolve_path(path: Path, strict: bool = False) -> Path:
     return resolved_path
 
 
+def _finalize_path(
+    resolved_path: Path,
+    base_dir: Path,
+) -> Path:
+    the_path = Path(resolved_path)
+    LOG.info("Base: %s", base_dir)
+    LOG.info("Resolved: %s", the_path)
+    if (
+        resolved_path.as_posix() == Path.home() / "waldiez"
+        and base_dir == resolved_path / "workspace"
+    ):
+        the_path = resolved_path / "workspace"
+    return the_path
+
+
 def sanitize_path(
     root_dir: Path,
     path: str,
@@ -275,17 +290,18 @@ def sanitize_path(
         resolved_path = _resolve_path(safe_path, strict=strict)
     except BaseException as error:
         raise error
-    allowed_prefixes = [root_dir.resolve(), base_dir.resolve()]
+    resolved_root = root_dir.resolve()
+    resolved_base = base_dir.resolve()
+    allowed_prefixes = [resolved_root, resolved_base]
     _validate_symlinks_within(
         root_dir.resolve(),
         resolved_path,
         allowed_prefixes=allowed_prefixes,
         strict=strict,
     )
-    print(allowed_prefixes)
     if not _is_relative_to_any(resolved_path, allowed_prefixes):
         raise ValueError("Error: Invalid path: Path is outside root directory")
-    return resolved_path
+    return _finalize_path(resolved_path, resolved_base)
 
 
 def check_path(

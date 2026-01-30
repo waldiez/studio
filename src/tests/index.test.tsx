@@ -5,6 +5,9 @@
 import { startApp } from "@/index";
 import { afterEach, beforeEach, it, vi } from "vitest";
 
+let getItemSpy: any;
+let setItemSpy: any;
+
 describe("index", () => {
     beforeEach(() => {
         // mock 'ReactDOM.createRoot(document.getElementById('root')!).render(...'
@@ -15,8 +18,23 @@ describe("index", () => {
                 }),
             },
         }));
+        Object.defineProperty(window, "localStorage", {
+            value: {
+                getItem: vi.fn(() => null),
+                setItem: vi.fn(),
+                removeItem: vi.fn(),
+                clear: vi.fn(),
+            },
+            writable: true,
+            configurable: true,
+        });
+
+        getItemSpy = vi.spyOn(window.localStorage, "getItem");
+        setItemSpy = vi.spyOn(window.localStorage, "setItem");
     });
     afterEach(() => {
+        getItemSpy.mockRestore();
+        setItemSpy.mockRestore();
         vi.resetAllMocks();
     });
 

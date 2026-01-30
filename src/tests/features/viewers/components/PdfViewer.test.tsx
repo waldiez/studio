@@ -246,7 +246,9 @@ describe("PdfViewer", () => {
     it("zooms in", async () => {
         const user = userEvent.setup();
         render(<PdfViewer source="test.pdf" />);
-
+        await waitFor(() => {
+            expect(screen.queryByText("Loading PDF...")).not.toBeInTheDocument();
+        });
         await waitFor(() => {
             expect(screen.getByLabelText("Zoom in")).toBeInTheDocument();
         });

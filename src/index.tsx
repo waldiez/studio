@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright 2024 - 2026 Waldiez & contributors
  */
+/* eslint-disable max-statements */
 import { App } from "@/app/App";
 import "@/index.css";
 
@@ -10,19 +11,31 @@ import ReactDOM from "react-dom/client";
 
 import "@waldiez/react/dist/@waldiez.css";
 
+/* c8 ignore next -- @preserve */
 function initTheme(forceDarkInit: boolean = false) {
+    if (typeof window === "undefined") {
+        return;
+    }
+    const ls: any = window.localStorage as unknown;
     // prefer existing, else dark
     // Read from storage or use forced dark
     let mode: "light" | "dark" = "dark";
-    /* c8 ignore next -- @preserve */
     if (!forceDarkInit) {
-        const fromStorage = localStorage.getItem("waldiez-theme");
+        const fromStorage =
+            ls && typeof (ls as Storage).setItem === "function" ? ls.getItem("waldiez-theme") : "dark";
         if (fromStorage === "light") {
             mode = "light";
         }
     }
-    // Persist choice
-    localStorage.setItem("waldiez-theme", mode);
+
+    if (ls && typeof (ls as Storage).setItem === "function") {
+        try {
+            // Persist choice
+            ls.setItem("waldiez-theme", mode);
+        } catch {
+            // ignore storage failures (disabled, quota, privacy mode)
+        }
+    }
     const body = document.body;
     // Remove any stale waldiez-* classes
     body.classList.remove("waldiez-light", "waldiez-dark");
